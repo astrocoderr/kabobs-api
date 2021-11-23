@@ -70,7 +70,7 @@ export class UsersService {
         return newData[1][0]
       })
       .catch(error => {
-        console.log('****************************************', error)
+        // error log
       })
 
     if(!user){
