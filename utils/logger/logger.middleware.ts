@@ -12,12 +12,26 @@ export class LoggerMiddleware implements NestMiddleware {
     const now = Date.now()
 
     response.on('finish', () => {
-      const { statusCode } = response;
+      const { statusCode, statusMessage,  } = response;
       const contentLength = response.get('content-length');
 
-      this.logger.log(
+      const errorResponse = {
+        code: statusCode,
+        timestamp: new Date().toLocaleDateString(),
+        path: originalUrl,
+        method: method,
+        message: statusMessage
+      };
+
+      statusCode >= 400 ?
+        this.logger.error(
+          `${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent} ${ip} +${Date.now()-now}ms`,
+          JSON.stringify(errorResponse),
+
+        ) :
+        this.logger.log(
         `${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent} ${ip} +${Date.now()-now}ms`,
-      );
+        )
     });
 
     next();
