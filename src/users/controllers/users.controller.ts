@@ -1,19 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
-import { UsersService } from "../services/users.service";
-import { CreateUserDTO } from "../dto/create-user.dto";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { User } from "../models/user.model";
-import { UpdateUserDto } from "../dto/update-user.dto";
-import { BanUserDto } from "../dto/ban-user.dto";
-import { AddRoleUserDto } from "../dto/add-role-user.dto";
-import { UnbanUserDto } from "../dto/unban-user.dto";
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { UsersService } from '../services/users.service';
+import { CreateUserDTO } from '../dto/create-user.dto';
+import { User } from '../models/user.model';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { BanUserDto } from '../dto/ban-user.dto';
+import { AddRoleUserDto } from '../dto/add-role-user.dto';
+import { UnbanUserDto } from '../dto/unban-user.dto';
+
 
 @ApiTags('Employees' )
-@Controller('/v1/users')
+@Controller('/users')
 export class UsersController {
-
-  constructor(private userService: UsersService) {
-  }
+  constructor(private userService: UsersService) {}
 
   // Extra Links
   @ApiOperation({ summary: 'Adding employee roles' })
