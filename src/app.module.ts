@@ -1,39 +1,48 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { WinstonModule } from 'nest-winston';
 
 import { UsersModule } from './users/users.module';
-import { User } from './users/models/user.model';
 import { RolesModule } from './roles/roles.module';
-import { Role } from './roles/models/roles.model';
-import { UserRoles } from './roles/models/user-roles.model';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
 import { CustomersModule } from './customers/customers.module';
-import { Customer } from './customers/models/customer.model';
 import { AddressesModule } from './addresses/addresses.module';
-import { Addresses } from './addresses/models/addresses.model';
-import { CustomerAddresses } from './addresses/models/customer-addresses.model';
 
-import { LoggerMiddleware } from './utils/logger/logger.middleware';
+import { LoggerMiddleware } from '../utils/logger/logger.middleware';
+import { LoggerInterceptor } from '../utils/logger/logger.interceptor';
+import { configuration } from '../config/configuration';
+import { validationSchema } from '../config/validation'
+import { loggerFactory } from '../utils/logger/logger.factory';
+import { databaseFactory } from '../connectors/database.factory';
 
 
 @Module({
-  controllers: [  ],
-  providers: [  ],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerInterceptor
+    }
+  ],
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+      validationSchema,
       envFilePath: `.${process.env.NODE_ENV}.env`
     }),
-    SequelizeModule.forRoot({
-      dialect: 'postgres',
-      host: process.env.DB_HOST,
-      database: process.env.DB_NAME,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      models: [ User, Role, UserRoles, Customer, Addresses, CustomerAddresses ],
-      autoLoadModels: true
+    WinstonModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => loggerFactory(configService),
+      inject: [ConfigService]
+    }),
+    SequelizeModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => databaseFactory(configService),
+      inject: [ConfigService]
     }),
     UsersModule,
     RolesModule,
@@ -45,7 +54,10 @@ import { LoggerMiddleware } from './utils/logger/logger.middleware';
 })
 
 export class AppModule implements NestModule {
+  constructor(private readonly configService: ConfigService) {}
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
+    if(this.configService.get('ENVIRONMENT') !== this.configService.get('PROD_ENV')){
+      consumer.apply(LoggerMiddleware).forRoutes('*');
+    }
   }
 }
