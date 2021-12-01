@@ -1,14 +1,14 @@
-import { Body, Controller, Post } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { AuthDto } from "../dto/auth.dto";
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { AuthDto } from '../dto/auth.dto';
 import { AuthService } from '../services/auth.service';
 
+
 @ApiTags('Authentication')
-@Controller('/v1/auth')
+@Controller('/auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @ApiOperation({ summary: 'Authorization' })
   @ApiResponse({ status: 200, type: String  })
