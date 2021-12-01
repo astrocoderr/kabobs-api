@@ -1,21 +1,24 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
-import * as bcrypt from "bcryptjs";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcryptjs';
 // import { HttpException, HttpStatus } from '@nestjs/common';
-import { User } from "../models/user.model";
-import { CreateUserDTO } from "../dto/create-user.dto";
-import { RolesService } from "../../roles/services/roles.service";
-import { UpdateUserDto } from "../dto/update-user.dto";
-import { BanUserDto } from "../dto/ban-user.dto";
-import { AddRoleUserDto } from "../dto/add-role-user.dto";
-import { UnbanUserDto } from "../dto/unban-user.dto";
+
+import { User } from '../models/user.model';
+import { CreateUserDTO } from '../dto/create-user.dto';
+import { RolesService } from '../../roles/services/roles.service';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { BanUserDto } from '../dto/ban-user.dto';
+import { AddRoleUserDto } from '../dto/add-role-user.dto';
+import { UnbanUserDto } from '../dto/unban-user.dto';
 
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User) private userModel: typeof User,
-    private roleService: RolesService
+    private roleService: RolesService,
+    private configService: ConfigService
   ) {}
 
   // Creating a user
@@ -23,7 +26,7 @@ export class UsersService {
     try{
       const user = await this.userModel.create({
         ...dto,
-        password: await bcrypt.hash(dto.password, Number(process.env.BCRYPT_SALT))
+        password: await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT'))
       })
       const role = await this.roleService.getRole(dto.role)
 
@@ -78,7 +81,7 @@ export class UsersService {
     }
 
     if(dto.password){
-      user.password = await bcrypt.hash(dto.password, Number(process.env.BCRYPT_SALT))
+      user.password = await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT'))
 
       await user.save()
     }
@@ -98,12 +101,6 @@ export class UsersService {
 
   // Removing a user
   async removeUser(id: number){
-    // return await this.userModel.destroy({ where: { id } })
-    //   .then(function(rowDeleted){ // rowDeleted will return number of rows deleted
-    //     if(rowDeleted === 1){
-    //       return { deleted: true }
-    //     }
-    //   })
     const user = await this.userModel.update({ active: false },{
       where: { id },
       returning: true
