@@ -10,7 +10,7 @@ import { UpdateCustomerDto } from '../dto/update-customer.dto';
 
 
 @ApiTags('Customers')
-@Controller('/v1/customers')
+@Controller('/customers')
 export class CustomersController {
   constructor(private customerService: CustomersService) {}
 
