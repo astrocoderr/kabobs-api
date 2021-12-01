@@ -7,7 +7,7 @@ import { CreateAddressDto } from '../dto/create-address.dto';
 
 
 @ApiTags('Addresses')
-@Controller('/v1/addresses')
+@Controller('/addresses')
 export class AddressesController {
   constructor(private addressesService: AddressesService) {
   }
