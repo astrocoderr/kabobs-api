@@ -5,8 +5,8 @@ import * as bcrypt from 'bcryptjs';
 import { AuthDto } from '../dto/auth.dto';
 import { UsersService } from '../../users/services/users.service';
 import { User } from '../../users/models/user.model';
-import { RedisService } from "../../redis/services/redis.service";
-import { RedisCacheModule } from "../../redis/redis.module";
+import { RedisService } from '../../redis/services/redis.service';
+import { RedisCacheModule } from '../../redis/redis.module';
 
 @Injectable()
 export class AuthService {
@@ -23,8 +23,6 @@ export class AuthService {
     return this.generateToken(user)
   }
 
-
-  // Helper Methods
 
   // Validate User Credentials
   private async validateUser(dto: AuthDto){
