@@ -21,6 +21,7 @@ import { DocsConfig } from '../swagger-docs/swagger-docs.config';
       disableErrorMessages: config.get('ENVIRONMENT') === config.get('PROD_ENV')
     })
   )
+  app.enableCors({ origin: [ `http://localhost:${config.get('PORT')}` ] });
   await app.listen(config.get('PORT'), () => {
     Logger.log(`Listening at http://localhost:${config.get('PORT')}/${config.get('GLOBAL_PREFIX')}`)
     Logger.log(`Running in ${config.get('ENVIRONMENT')} mode`)
