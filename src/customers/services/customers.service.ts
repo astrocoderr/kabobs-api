@@ -1,19 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import * as bcrypt from 'bcryptjs'
+import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcryptjs';
 
 import { Customer } from '../models/customer.model';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { BanCustomerDto } from '../dto/ban-customer.dto';
 import { UnbanCustomerDto } from '../dto/unban-customer.dto';
-import { AddressesService } from "../../addresses/services/addresses.service";
+import { AddressesService } from '../../addresses/services/addresses.service';
 
 @Injectable()
 export class CustomersService {
   constructor(
     @InjectModel(Customer) private customerModel: typeof Customer,
-    private addressService: AddressesService
+    private addressService: AddressesService,
+    private configService: ConfigService
   ) {}
 
   // Creating a customer
@@ -21,7 +23,7 @@ export class CustomersService {
     try{
       const customer = await this.customerModel.create({
         ...dto,
-        password: await bcrypt.hash(dto.password, Number(process.env.BCRYPT_SALT)),
+        password: await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT')),
         status: true
       })
 
@@ -52,14 +54,6 @@ export class CustomersService {
     return await this.customerModel.findByPk(id, { include: { all: true } });
   }
 
-  // Getting a customer by email
-  // async getCustomerByEmail(email: string){
-  //   return await this.customerModel.findOne({
-  //     where: { email },
-  //     include: { all: true }
-  //   })
-  // }
-
   // Editing a customer
   async modifyCustomer(id: number, dto: UpdateCustomerDto){
     const customer = await this.customerModel.update(dto,{
@@ -77,7 +71,7 @@ export class CustomersService {
     }
 
     if(dto.password){
-      customer.password = await bcrypt.hash(dto.password, Number(process.env.BCRYPT_SALT))
+      customer.password = await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT'))
 
       await customer.save()
     }
@@ -89,12 +83,6 @@ export class CustomersService {
 
   // Removing a customer
   async removeCustomer(id: number){
-    // return await this.customerModel.destroy({ where: { id } })
-    //   .then(function(rowDeleted){ // rowDeleted will return number of rows deleted
-    //     if(rowDeleted === 1){
-    //       return { deleted: true }
-    //     }
-    //   })
     const customer = await this.customerModel.update({ active: false },{
       where: { id },
       returning: true
