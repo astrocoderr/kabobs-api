@@ -1,4 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body, Controller, Delete, Get, Param,
+  Post, Put, UseGuards
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CustomersService } from '../services/customers.service';
@@ -7,9 +10,11 @@ import { UnbanCustomerDto } from '../dto/unban-customer.dto';
 import { Customer } from '../models/customer.model';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
+import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
 
 
 @ApiTags('Customers')
+@UseGuards(JwtAuthGuard)
 @Controller('/customers')
 export class CustomersController {
   constructor(private customerService: CustomersService) {}
