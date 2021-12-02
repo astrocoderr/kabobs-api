@@ -19,7 +19,8 @@ export const configuration = () => {
     // json web token
     JWT: {
       SECRET: process.env.JWT_SECRET,
-      EXPIRES_IN: process.env.JWT_EXPIRES_IN
+      EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+      BEARER: process.env.JWT_BEARER
     },
 
     // bcrypt
@@ -31,7 +32,7 @@ export const configuration = () => {
       PORT: process.env.REDIS_PORT
     },
 
-    // loggerFactory
+    // logger
     LOGGER: {
       META: process.env.LOGGER_META,
       APPNAME: process.env.LOGGER_APPNAME,
@@ -53,6 +54,12 @@ export const configuration = () => {
           PATH: process.env.LOGGER_ERROR_FILE_PATH
         }
       }
+    },
+
+    // roles
+    ROLES: {
+      KEY: process.env.ROLES_KEY,
+      ADMIN: process.env.ROLES_ADMIN
     },
 
     // other params
