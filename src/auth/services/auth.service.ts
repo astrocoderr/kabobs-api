@@ -1,12 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 import { AuthDto } from '../dto/auth.dto';
 import { UsersService } from '../../users/services/users.service';
 import { User } from '../../users/models/user.model';
 import { RedisService } from '../../redis/services/redis.service';
-import { RedisCacheModule } from '../../redis/redis.module';
+
 
 @Injectable()
 export class AuthService {
@@ -14,7 +16,7 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
     private redisService: RedisService,
-    private redisCacheModule: RedisCacheModule
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
   // Authorization
@@ -31,6 +33,7 @@ export class AuthService {
     if(!user){
       throw new UnauthorizedException({ message: 'Email is not correct' })
     }
+
     const password = await bcrypt.compare(dto.password, user.password)
 
     if(!password){
@@ -45,11 +48,7 @@ export class AuthService {
     const payload = { email: user.email, id: user.id }
 
     const token = this.jwtService.sign(payload)
-
-    // await this.redisCacheModule.onModuleInit()
-
     await this.redisService.set(token, { hello: 'world' })
-    console.log('console+++++', await this.redisService.get(token))
 
     return {
       token
