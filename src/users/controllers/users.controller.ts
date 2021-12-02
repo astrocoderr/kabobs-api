@@ -1,4 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body, Controller, Delete, Get, Param,
+  Post, Put, UseGuards
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { UsersService } from '../services/users.service';
@@ -8,9 +11,12 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { BanUserDto } from '../dto/ban-user.dto';
 import { AddRoleUserDto } from '../dto/add-role-user.dto';
 import { UnbanUserDto } from '../dto/unban-user.dto';
+import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 
 @ApiTags('Employees' )
+@UseGuards(JwtAuthGuard)
 @Controller('/users')
 export class UsersController {
   constructor(private userService: UsersService) {}
@@ -68,6 +74,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Getting employees' })
   @ApiResponse({ status: 200, type: [User] })
+  @Roles('admin')
   @Get()
   getUsers(){
     return this.userService.getUsers()
