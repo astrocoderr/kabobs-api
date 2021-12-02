@@ -17,6 +17,9 @@ import { configuration } from '../config/configuration';
 import { validationSchema } from '../config/validation'
 import { loggerFactory } from '../utils/logger/logger.factory';
 import { databaseFactory } from '../connectors/database.factory';
+import { OrdersModule } from './orders/orders.module';
+import { KitchensModule } from './kitchens/kitchens.module';
+import { PromocodesModule } from './promocodes/promocodes.module';
 
 
 @Module({
@@ -50,6 +53,9 @@ import { databaseFactory } from '../connectors/database.factory';
     RedisModule,
     CustomersModule,
     AddressesModule,
+    OrdersModule,
+    KitchensModule,
+    PromocodesModule
   ],
 })
 
