@@ -10,6 +10,7 @@ import { Customer } from './models/customer.model';
 import { Addresses } from '../addresses/models/addresses.model';
 import { CustomerAddresses } from '../addresses/models/customer-addresses.model';
 import { AddressesModule } from '../addresses/addresses.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   controllers: [CustomersController],
@@ -19,7 +20,8 @@ import { AddressesModule } from '../addresses/addresses.module';
       User, Role, UserRoles, Customer,
       Addresses, CustomerAddresses
     ]),
-    AddressesModule
+    AddressesModule,
+    AuthModule
   ],
   exports: [
     CustomersService
