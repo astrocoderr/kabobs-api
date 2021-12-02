@@ -13,6 +13,7 @@ export const validationSchema = Joi.object({
   DB_AUTOLOAD_MODELS: Joi.boolean().default(true),
   JWT_SECRET: Joi.string(),
   JWT_EXPIRES_IN: Joi.string().default('24h'),
+  JWT_BEARER: Joi.string().default('Bearer'),
   BCRYPT_SALT: Joi.number().default(10),
   REDIS_HOST: Joi.string().default('127.0.0.1'),
   REDIS_PORT: Joi.number().default(6379),
@@ -24,5 +25,7 @@ export const validationSchema = Joi.object({
   LOGGER_WARN_FILE_PATH: Joi.string(),
   LOGGER_ERROR_FILE_PATH: Joi.string(),
   LOGGER_APPNAME: Joi.string().default('api'),
+  ROLES_KEY: Joi.string().default('roles'),
+  ROLES_ADMIN: Joi.string().default('admin'),
   PROD_ENV: Joi.string().default('.production.env')
 })
