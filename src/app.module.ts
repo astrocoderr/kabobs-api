@@ -10,6 +10,10 @@ import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
 import { CustomersModule } from './customers/customers.module';
 import { AddressesModule } from './addresses/addresses.module';
+import { OrdersModule } from './orders/orders.module';
+import { KitchensModule } from './kitchens/kitchens.module';
+import { PromocodesModule } from './promocodes/promocodes.module';
+import { MealsModule } from './meals/meals.module';
 
 import { LoggerMiddleware } from '../utils/logger/logger.middleware';
 import { LoggerInterceptor } from '../utils/logger/logger.interceptor';
@@ -17,9 +21,6 @@ import { configuration } from '../config/configuration';
 import { validationSchema } from '../config/validation'
 import { loggerFactory } from '../utils/logger/logger.factory';
 import { databaseFactory } from '../connectors/database.factory';
-import { OrdersModule } from './orders/orders.module';
-import { KitchensModule } from './kitchens/kitchens.module';
-import { PromocodesModule } from './promocodes/promocodes.module';
 
 
 @Module({
@@ -55,7 +56,8 @@ import { PromocodesModule } from './promocodes/promocodes.module';
     AddressesModule,
     OrdersModule,
     KitchensModule,
-    PromocodesModule
+    PromocodesModule,
+    MealsModule
   ],
 })
 
