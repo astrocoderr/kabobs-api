@@ -1,8 +1,12 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException, HttpException, HttpStatus,
+  Inject, Injectable
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
-// import { HttpException, HttpStatus } from '@nestjs/common';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 import { User } from '../models/user.model';
 import { CreateUserDTO } from '../dto/create-user.dto';
@@ -18,7 +22,8 @@ export class UsersService {
   constructor(
     @InjectModel(User) private userModel: typeof User,
     private roleService: RolesService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
   // Creating a user
@@ -33,12 +38,13 @@ export class UsersService {
       if(role){
         await user.$set('role', [role])
       }else{
-        // logging
+        this.logger.error(`Error in users.service.ts - 'role' is not found`)
       }
 
       return await this.userModel.findByPk(user.id, { include: { all: true } })
     }catch(ex){
-      throw new Error(ex)
+      this.logger.error(`Error in users.service.ts - ${ex}`)
+      throw new BadGatewayException({ message: ex.message })
     }
   }
 
