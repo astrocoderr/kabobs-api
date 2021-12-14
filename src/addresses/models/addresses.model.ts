@@ -1,8 +1,10 @@
-import { BelongsToMany, Column, DataType, Model, Table } from 'sequelize-typescript';
+import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { Customer } from '../../customers/models/customer.model';
+import { Customer } from '../../customers/models/customers.model';
 import { CustomerAddresses } from './customer-addresses.model';
+import { Order } from '../../orders/models/orders.model';
+import { Kitchen } from '../../kitchens/models/kitchens.model';
 
 // address creation attributes
 interface AddressesFields {
@@ -61,4 +63,16 @@ export class Addresses extends Model<Addresses, AddressesFields>{
 
   @BelongsToMany(() => Customer, () => CustomerAddresses)
   customer: Customer[]
+
+  @BelongsTo(() => Order)
+  order: Order
+
+  @ForeignKey(() => Order)
+  orderID: number
+
+  @BelongsTo(() => Kitchen)
+  kitchen: Order
+
+  @ForeignKey(() => Kitchen)
+  kitchenID: number
 }
