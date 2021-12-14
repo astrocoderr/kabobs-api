@@ -7,7 +7,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CustomersService } from '../services/customers.service';
 import { BanCustomerDto } from '../dto/ban-customer.dto';
 import { UnbanCustomerDto } from '../dto/unban-customer.dto';
-import { Customer } from '../models/customer.model';
+import { Customer } from '../models/customers.model';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
