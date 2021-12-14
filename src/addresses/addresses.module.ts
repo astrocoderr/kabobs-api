@@ -5,9 +5,13 @@ import { SequelizeModule } from "@nestjs/sequelize";
 import { Role } from "../roles/models/roles.model";
 import { User } from "../users/models/user.model";
 import { UserRoles } from "../roles/models/user-roles.model";
-import { Customer } from "../customers/models/customer.model";
+import { Customer } from "../customers/models/customers.model";
 import { Addresses } from "./models/addresses.model";
 import { CustomerAddresses } from "./models/customer-addresses.model";
+import { Promocode } from '../promocodes/models/promocodes.model';
+import { Order } from '../orders/models/orders.model';
+import { Kitchen } from '../kitchens/models/kitchens.model';
+import { KitchenUser } from '../kitchens/models/kitchen-users.model';
 
 @Module({
   controllers: [AddressesController],
@@ -15,7 +19,8 @@ import { CustomerAddresses } from "./models/customer-addresses.model";
   imports: [
     SequelizeModule.forFeature([
       Role, User, UserRoles, Customer,
-      Addresses, CustomerAddresses
+      Addresses, CustomerAddresses, Promocode,
+      Order, Kitchen, KitchenUser
     ])
   ],
   exports: [
