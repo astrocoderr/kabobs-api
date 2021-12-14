@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Logger } from 'winston';
@@ -31,13 +31,15 @@ export class AuthService {
     const user = await this.userService.getUserByEmail(dto.email)
 
     if(!user){
-      throw new UnauthorizedException({ message: 'Email is not correct' })
+      this.logger.error(`Error in auth.service.ts - 'user' is not found`);
+      throw new HttpException('Email is not correct', HttpStatus.BAD_REQUEST);
     }
 
     const password = await bcrypt.compare(dto.password, user.password)
 
     if(!password){
-      throw new UnauthorizedException({ message: 'Password is not correct' })
+      this.logger.error(`Error in auth.service.ts - 'password' is not found`);
+      throw new HttpException('Password is not correct', HttpStatus.BAD_REQUEST);
     }
 
     return user
