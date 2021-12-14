@@ -3,10 +3,9 @@ import {
   DataType, ForeignKey, HasOne, Model, Table
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from "../../roles/models/roles.model";
-import { UserRoles } from "../../roles/models/user-roles.model";
 import { Addresses } from "../../addresses/models/addresses.model";
 import { CustomerAddresses } from "../../addresses/models/customer-addresses.model";
+
 
 // customer creation attributes
 interface CustomerFields {
@@ -22,7 +21,7 @@ interface CustomerFields {
   kitchenID: number;
   isVIP: boolean;
   language: string;
-  managerID: number;
+  userID: number;
   status: boolean;
   password: string;
 }
@@ -116,7 +115,7 @@ export class Customer extends Model<Customer, CustomerFields>{
 
   @ApiProperty({ example: '1', description: 'manager identifier' })
   @Column({ type: DataType.INTEGER, allowNull: false })
-  managerID: number;
+  userID: number;
 
   @ApiProperty({ example: true, description: 'is customer is active' })
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
