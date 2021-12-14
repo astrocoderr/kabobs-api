@@ -1,21 +1,27 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/sequelize';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 import { AddressesService } from '../../addresses/services/addresses.service';
-import { ConfigService } from '@nestjs/config';
 import { Order } from '../models/orders.model';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
+import { UsersService } from '../../users/services/users.service';
+import { PromocodesService } from '../../promocodes/services/promocodes.service';
+import { CustomersService } from '../../customers/services/customers.service';
 
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel(Order) private orderModel: typeof Order,
+    private userService: UsersService,
+    private customerService: CustomersService,
     private addressService: AddressesService,
     private configService: ConfigService,
+    private promocodeService: PromocodesService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
@@ -24,6 +30,37 @@ export class OrdersService {
     try{
       const order = await this.orderModel.create(dto)
 
+      // managerID
+      const user = await this.userService.getUser(dto.userID)
+
+      if(user){
+        await order.$set('user', [user.id])
+      }else {
+        this.logger.error(`Error in orders.service.ts - 'user' is not found`);
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
+
+      // customerID
+      const customer = await this.customerService.getCustomer(dto.customerID)
+
+      if(customer){
+        await order.$set('customer', [customer.id])
+      }else {
+        this.logger.error(`Error in orders.service.ts - 'customer' is not found`);
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
+
+      // promocodeID
+      const promocode = await this.promocodeService.getPromocode(dto.promocodeID)
+
+      if(promocode){
+        await order.$set('promocode', [promocode.id])
+      }else{
+        this.logger.error(`Error in orders.service.ts - 'promocode' is not found`);
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
+
+      // addressID
       const address = await this.addressService.getAddress(dto.addressID)
 
       if(address){
@@ -32,6 +69,8 @@ export class OrdersService {
         this.logger.error(`Error in orders.service.ts - 'address' is not found`);
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
+
+      // logic meals service [sample | dataset]
 
       return await this.orderModel.findByPk(order.id, { include: { all: true } })
     }catch(ex){
