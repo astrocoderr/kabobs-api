@@ -1,21 +1,24 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 
-import { Customer } from '../models/customer.model';
+import { Customer } from '../models/customers.model';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { BanCustomerDto } from '../dto/ban-customer.dto';
 import { UnbanCustomerDto } from '../dto/unban-customer.dto';
 import { AddressesService } from '../../addresses/services/addresses.service';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class CustomersService {
   constructor(
     @InjectModel(Customer) private customerModel: typeof Customer,
     private addressService: AddressesService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
   // Creating a customer
@@ -32,12 +35,14 @@ export class CustomersService {
       if(address){
         await customer.$set('address', [address.id])
       }else{
-        // logging
+        this.logger.error(`Error in customers.service.ts - 'address' is not found`);
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
 
       return await this.customerModel.findByPk(customer.id, { include: { all: true } })
     }catch(ex){
-      throw new Error(ex)
+      this.logger.error(`Error in customers.service.ts - '${ex}'`);
+      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
     }
   }
 
@@ -63,11 +68,14 @@ export class CustomersService {
       .then(newData => {
         return newData[1][0]
       })
-      .catch(error => { /* logging */ })
+      .catch(error => {
+        this.logger.error(`Error in customers.service.ts - '${error}'`);
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      })
 
     if(!customer){
-      // throw Error
-      return
+      this.logger.error(`Error in customers.service.ts - 'customer' is not found`);
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     if(dto.password){
@@ -90,11 +98,14 @@ export class CustomersService {
       .then(newData => {
         return newData[1][0]
       })
-      .catch(error => { /* logging */ })
+      .catch(error => {
+        this.logger.error(`Error in customers.service.ts - '${error}'`);
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      })
 
     if(!customer){
-      // throw Error
-      return
+      this.logger.error(`Error in customers.service.ts - 'customer' is not found`);
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     return customer
@@ -106,7 +117,8 @@ export class CustomersService {
     const customer = await this.customerModel.findByPk(dto.customerID)
 
     if(!customer){
-      throw new HttpException('Customer is not found', HttpStatus.NOT_FOUND)
+      this.logger.error(`Error in customers.service.ts - 'customer' is not found`);
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     customer.banned = true
@@ -122,7 +134,8 @@ export class CustomersService {
     const customer = await this.customerModel.findByPk(dto.customerID)
 
     if(!customer){
-      throw new HttpException('User is not found', HttpStatus.NOT_FOUND)
+      this.logger.error(`Error in customers.service.ts - 'customer' is not found`);
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     customer.banned = false
