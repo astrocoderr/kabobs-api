@@ -1,9 +1,13 @@
 import { User } from '../src/users/models/user.model';
 import { Role } from '../src/roles/models/roles.model';
 import { UserRoles } from '../src/roles/models/user-roles.model';
-import { Customer } from '../src/customers/models/customer.model';
+import { Customer } from '../src/customers/models/customers.model';
 import { Addresses } from '../src/addresses/models/addresses.model';
 import { CustomerAddresses } from '../src/addresses/models/customer-addresses.model';
+import { Promocode } from '../src/promocodes/models/promocodes.model';
+import { Order } from '../src/orders/models/orders.model';
+import { Kitchen } from '../src/kitchens/models/kitchens.model';
+import { KitchenUser } from '../src/kitchens/models/kitchen-users.model';
 
 
 export const databaseFactory = (configService) => ({
@@ -13,6 +17,9 @@ export const databaseFactory = (configService) => ({
   port: configService.get('DB.PORT'),
   username: configService.get('DB.USER'),
   password: configService.get('DB.PASS'),
-  models: [ User, Role, UserRoles, Customer, Addresses, CustomerAddresses ],
+  models: [
+    User, Role, UserRoles, Customer, Addresses, CustomerAddresses,
+    Promocode, Order, Kitchen, KitchenUser
+  ],
   autoLoadModels: configService.get('DB.AUTOLOADMODELS')
 })
