@@ -1,5 +1,5 @@
 import {
-  BadGatewayException, HttpException, HttpStatus,
+  HttpException, HttpStatus,
   Inject, Injectable
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
@@ -39,12 +39,13 @@ export class UsersService {
         await user.$set('role', [role])
       }else{
         this.logger.error(`Error in users.service.ts - 'role' is not found`)
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
 
       return await this.userModel.findByPk(user.id, { include: { all: true } })
     }catch(ex){
-      this.logger.error(`Error in users.service.ts - ${ex}`)
-      throw new BadGatewayException({ message: ex.message })
+      this.logger.error(`Error in users.service.ts - '${ex}'`)
+      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
     }
   }
 
@@ -79,11 +80,13 @@ export class UsersService {
         return newData[1][0]
       })
       .catch(error => {
-        // error log
+        this.logger.error(`Error in users.service.ts - '${error}'`)
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       })
 
     if(!user){
-      return 'hohoh'
+      this.logger.error(`Error in users.service.ts - 'user' is not found`)
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     if(dto.password){
@@ -98,7 +101,8 @@ export class UsersService {
       if(role){
         await user.$set('role', [role])
       }else{
-        // logging
+        this.logger.error(`Error in users.service.ts - 'role' is not found`)
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
     }
 
@@ -114,11 +118,14 @@ export class UsersService {
       .then(newData => {
         return newData[1][0]
       })
-      .catch(error => { /* logging */ })
+      .catch(error => {
+        this.logger.error(`Error in users.service.ts - '${error}'`)
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      })
 
     if(!user){
-      // throw Error
-      return
+      this.logger.error(`Error in users.service.ts - 'user' is not found`)
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     return user
@@ -130,13 +137,15 @@ export class UsersService {
     const user = await this.userModel.findByPk(dto.userID)
 
     if(!user){
-      throw new HttpException('User is not found', HttpStatus.NOT_FOUND)
+      this.logger.error(`Error in users.service.ts - 'user' is not found`)
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     const role = await this.roleService.getRole(dto.roleID)
 
     if(!role){
-      throw new HttpException('Role is not found', HttpStatus.NOT_FOUND)
+      this.logger.error(`Error in users.service.ts - 'role' is not found`)
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     await user.$add('role', role.id)
@@ -149,13 +158,15 @@ export class UsersService {
     const user = await this.userModel.findByPk(id)
 
     if(!user){
-      throw new HttpException('User is not found', HttpStatus.NOT_FOUND)
+      this.logger.error(`Error in users.service.ts - 'user' is not found`)
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     const role = await this.roleService.getRole(roleID)
 
     if(!role){
-      throw new HttpException('Role is not found', HttpStatus.NOT_FOUND)
+      this.logger.error(`Error in users.service.ts - 'role' is not found`)
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     await user.$remove('role', role.id)
@@ -169,7 +180,8 @@ export class UsersService {
     const user = await this.userModel.findByPk(dto.userID)
 
     if(!user){
-      throw new HttpException('User is not found', HttpStatus.NOT_FOUND)
+      this.logger.error(`Error in users.service.ts - 'user' is not found`)
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     user.banned = true
@@ -185,7 +197,8 @@ export class UsersService {
     const user = await this.userModel.findByPk(dto.userID)
 
     if(!user){
-      throw new HttpException('User is not found', HttpStatus.NOT_FOUND)
+      this.logger.error(`Error in users.service.ts - 'user' is not found`)
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     user.banned = false

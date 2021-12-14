@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { Role } from '../models/roles.model';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class RolesService {
-
-  constructor(@InjectModel(Role) private roleModel: typeof Role) {}
+  constructor(
+    @InjectModel(Role) private roleModel: typeof Role,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+  ) {}
 
   async createRole(dto: CreateRoleDto){
     return await this.roleModel.create(dto);
@@ -29,11 +33,14 @@ export class RolesService {
       .then(newData => {
         return newData[1][0]
       })
-      .catch(error => { /* logging */})
+      .catch(error => {
+        this.logger.error(`Error in roles.service.ts - '${error}'`);
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      })
 
     if(!role){
-      // throw Error
-      return
+      this.logger.error(`Error in roles.service.ts - 'role' is not found`);
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     return role
