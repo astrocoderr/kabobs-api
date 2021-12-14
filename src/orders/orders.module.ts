@@ -14,6 +14,9 @@ import { Order } from './models/orders.model';
 import { AddressesModule } from '../addresses/addresses.module';
 import { Kitchen } from '../kitchens/models/kitchens.model';
 import { KitchenUser } from '../kitchens/models/kitchen-users.model';
+import { UsersModule } from '../users/users.module';
+import { PromocodesModule } from '../promocodes/promocodes.module';
+import { CustomersModule } from '../customers/customers.module';
 
 @Module({
   providers: [OrdersService],
@@ -26,6 +29,9 @@ import { KitchenUser } from '../kitchens/models/kitchen-users.model';
     ]),
     AuthModule,
     AddressesModule,
+    UsersModule,
+    PromocodesModule,
+    CustomersModule
   ]
 })
 export class OrdersModule {}
