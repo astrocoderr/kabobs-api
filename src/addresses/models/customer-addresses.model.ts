@@ -4,7 +4,7 @@ import {
 } from 'sequelize-typescript';
 
 import { Addresses } from './addresses.model';
-import { Customer } from '../../customers/models/customer.model';
+import { Customer } from '../../customers/models/customers.model';
 
 // customer_addresses model
 @Table({ tableName: 'customer_addresses' })
