@@ -50,7 +50,7 @@ export class UpdateCustomerDto {
   @IsNumber()
   bitrixID: number;
 
-  @ApiProperty({ example: '37', description: "kitchen's identifier" })
+  @ApiProperty({ example: '37', description: "kitchens's identifier" })
   @IsNumber()
   kitchenID: number;
 
@@ -64,7 +64,7 @@ export class UpdateCustomerDto {
 
   @ApiProperty({ example: '1', description: 'manager identifier' })
   @IsNumber()
-  managerID: number;
+  userID: number;
 
   @ApiProperty({ example: 'qwerty1234', description: 'password' })
   @IsString()
