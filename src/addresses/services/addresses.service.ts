@@ -1,12 +1,17 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from "@nestjs/sequelize";
 
 import { Addresses } from "../models/addresses.model";
 import { CreateAddressDto } from "../dto/create-address.dto";
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class AddressesService {
-  constructor(@InjectModel(Addresses) private addressModel: typeof Addresses) {}
+  constructor(
+    @InjectModel(Addresses) private addressModel: typeof Addresses,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+  ) {}
 
   async createAddress(dto: CreateAddressDto){
     return await this.addressModel.create(dto);
@@ -28,11 +33,14 @@ export class AddressesService {
       .then(newData => {
         return newData[1][0]
       })
-      .catch(error => { /* logging */})
+      .catch(error => {
+        this.logger.error(`Error in addresses.service.ts - '${error}'`);
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      })
 
     if(!address){
-      // throw Error
-      return
+      this.logger.error(`Error in addresses.service.ts - 'address' is not found`);
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
     return address
