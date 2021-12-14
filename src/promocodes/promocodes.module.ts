@@ -24,7 +24,9 @@ import { KitchenUser } from '../kitchens/models/kitchen-users.model';
       Order, Kitchen, KitchenUser
     ]),
     AuthModule
+  ],
+  exports: [
+    PromocodesService
   ]
-
 })
 export class PromocodesModule {}
