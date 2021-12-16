@@ -8,6 +8,7 @@ import { Promocode } from '../src/promocodes/models/promocodes.model';
 import { Order } from '../src/orders/models/orders.model';
 import { Kitchen } from '../src/kitchens/models/kitchens.model';
 import { KitchenUser } from '../src/kitchens/models/kitchen-users.model';
+import { OrderDays } from '../src/order-days/models/order-days.model';
 
 
 export const databaseFactory = (configService) => ({
@@ -19,7 +20,7 @@ export const databaseFactory = (configService) => ({
   password: configService.get('DB.PASS'),
   models: [
     User, Role, UserRoles, Customer, Addresses, CustomerAddresses,
-    Promocode, Order, Kitchen, KitchenUser
+    Promocode, Order, Kitchen, KitchenUser, OrderDays
   ],
   autoLoadModels: configService.get('DB.AUTOLOADMODELS')
 })
