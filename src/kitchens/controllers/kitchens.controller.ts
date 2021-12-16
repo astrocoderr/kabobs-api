@@ -18,14 +18,14 @@ export class KitchensController {
   constructor(private kitchenService: KitchensService) {}
 
   // Kitchen CRUD
-  @ApiOperation({ summary: 'Creating a kitchens' })
+  @ApiOperation({ summary: 'Creating a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Post()
   createUser(@Body()  dto: CreateKitchenDto){
     return this.kitchenService.createKitchen(dto)
   }
 
-  @ApiOperation({ summary: 'Getting a kitchens' })
+  @ApiOperation({ summary: 'Getting a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Get('/:id')
   getUser(@Param('id') id: number){
@@ -39,14 +39,14 @@ export class KitchensController {
     return this.kitchenService.getKitchens()
   }
 
-  @ApiOperation({ summary: 'Modifying a kitchens' })
+  @ApiOperation({ summary: 'Modifying a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Put('/:id')
   modifyUser(@Param('id') id: number, @Body() dto: UpdateKitchenDto){
     return this.kitchenService.modifyKitchen(id, dto)
   }
 
-  @ApiOperation({ summary: 'Removing a kitchens' })
+  @ApiOperation({ summary: 'Removing a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Delete('/:id')
   removeUser(@Param('id') id: number){
