@@ -5,6 +5,7 @@ import { Customer } from '../../customers/models/customers.model';
 import { CustomerAddresses } from './customer-addresses.model';
 import { Order } from '../../orders/models/orders.model';
 import { Kitchen } from '../../kitchens/models/kitchens.model';
+import { OrderDays } from '../../order-days/models/order-days.model';
 
 // address creation attributes
 interface AddressesFields {
@@ -71,8 +72,14 @@ export class Addresses extends Model<Addresses, AddressesFields>{
   orderID: number
 
   @BelongsTo(() => Kitchen)
-  kitchen: Order
+  kitchen: Kitchen
 
   @ForeignKey(() => Kitchen)
   kitchenID: number
+
+  @BelongsTo(() => OrderDays)
+  orderDays: OrderDays
+
+  @ForeignKey(() => OrderDays)
+  orderDaysID: number
 }
