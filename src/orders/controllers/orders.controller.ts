@@ -18,14 +18,14 @@ export class OrdersController {
   constructor(private orderService: OrdersService) {}
 
   // Order CRUD
-  @ApiOperation({ summary: 'Creating an orders' })
+  @ApiOperation({ summary: 'Creating an order' })
   @ApiResponse({ status: 200, type: Order })
   @Post()
   createUser(@Body()  dto: CreateOrderDto){
     return this.orderService.createOrder(dto)
   }
 
-  @ApiOperation({ summary: 'Getting an orders' })
+  @ApiOperation({ summary: 'Getting an order' })
   @ApiResponse({ status: 200, type: Order })
   @Get('/:id')
   getUser(@Param('id') id: number){
@@ -39,14 +39,14 @@ export class OrdersController {
     return this.orderService.getOrders()
   }
 
-  @ApiOperation({ summary: 'Modifying an orders' })
+  @ApiOperation({ summary: 'Modifying an order' })
   @ApiResponse({ status: 200, type: Order })
   @Put('/:id')
   modifyUser(@Param('id') id: number, @Body() dto: UpdateOrderDto){
     return this.orderService.modifyOrder(id, dto)
   }
 
-  @ApiOperation({ summary: 'Removing an orders' })
+  @ApiOperation({ summary: 'Removing an order' })
   @ApiResponse({ status: 200, type: Order })
   @Delete('/:id')
   removeUser(@Param('id') id: number){
