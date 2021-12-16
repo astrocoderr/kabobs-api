@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+import { SequelizeModule } from '@nestjs/sequelize';
+
 import { OrdersService } from './services/orders.service';
 import { OrdersController } from './controllers/orders.controller';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from '../users/models/user.model';
 import { Role } from '../roles/models/roles.model';
 import { UserRoles } from '../roles/models/user-roles.model';
@@ -17,6 +18,9 @@ import { KitchenUser } from '../kitchens/models/kitchen-users.model';
 import { UsersModule } from '../users/users.module';
 import { PromocodesModule } from '../promocodes/promocodes.module';
 import { CustomersModule } from '../customers/customers.module';
+import { OrderDays } from '../order-days/models/order-days.model';
+import { OrderDaysModule } from '../order-days/order-days.module';
+
 
 @Module({
   providers: [OrdersService],
@@ -25,13 +29,14 @@ import { CustomersModule } from '../customers/customers.module';
     SequelizeModule.forFeature([
       User, Role, UserRoles, Customer,
       Addresses, CustomerAddresses, Promocode,
-      Order, Kitchen, KitchenUser
+      Order, Kitchen, KitchenUser, OrderDays
     ]),
     AuthModule,
     AddressesModule,
     UsersModule,
     PromocodesModule,
-    CustomersModule
+    CustomersModule,
+    OrderDaysModule
   ]
 })
 export class OrdersModule {}

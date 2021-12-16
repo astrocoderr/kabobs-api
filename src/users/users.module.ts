@@ -15,6 +15,7 @@ import { Promocode } from '../promocodes/models/promocodes.model';
 import { Order } from '../orders/models/orders.model';
 import { Kitchen } from '../kitchens/models/kitchens.model';
 import { KitchenUser } from '../kitchens/models/kitchen-users.model';
+import { OrderDays } from '../order-days/models/order-days.model';
 
 @Module({
   controllers: [UsersController],
@@ -23,7 +24,7 @@ import { KitchenUser } from '../kitchens/models/kitchen-users.model';
     SequelizeModule.forFeature([
       User, Role, UserRoles, Customer,
       Addresses, CustomerAddresses, Promocode,
-      Order, Kitchen, KitchenUser
+      Order, Kitchen, KitchenUser, OrderDays
     ]),
     RolesModule,
     forwardRef(() => AuthModule)

@@ -17,6 +17,7 @@ import { AddressesModule } from '../addresses/addresses.module';
 import { KitchenUsersController } from './controllers/kitchen-users.controller';
 import { KitchenUsersService } from './services/kitchen-users.service';
 import { KitchenUser } from './models/kitchen-users.model';
+import { OrderDays } from '../order-days/models/order-days.model';
 
 
 @Module({
@@ -26,7 +27,7 @@ import { KitchenUser } from './models/kitchen-users.model';
     SequelizeModule.forFeature([
       User, Role, UserRoles, Customer,
       Addresses, CustomerAddresses, Promocode,
-      Order, Kitchen, KitchenUser
+      Order, Kitchen, KitchenUser, OrderDays
     ]),
     AuthModule,
     AddressesModule
