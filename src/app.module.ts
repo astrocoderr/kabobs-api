@@ -20,7 +20,7 @@ import { configuration } from '../config/configuration';
 import { validationSchema } from '../config/validation'
 import { loggerFactory } from '../utils/logger/logger.factory';
 import { databaseFactory } from '../connectors/database.factory';
-import { MealdaysModule } from './mealdays/mealdays.module';
+import { OrderDaysModule } from './order-days/order-days.module';
 
 
 @Module({
@@ -57,7 +57,7 @@ import { MealdaysModule } from './mealdays/mealdays.module';
     PromocodesModule,
     OrdersModule,
     KitchensModule,
-    MealdaysModule,
+    OrderDaysModule,
   ],
 })
 
