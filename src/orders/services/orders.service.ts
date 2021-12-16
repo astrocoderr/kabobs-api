@@ -11,6 +11,7 @@ import { UpdateOrderDto } from '../dto/update-order.dto';
 import { UsersService } from '../../users/services/users.service';
 import { PromocodesService } from '../../promocodes/services/promocodes.service';
 import { CustomersService } from '../../customers/services/customers.service';
+import { OrderDaysService } from '../../order-days/services/order-days.service';
 
 
 @Injectable()
@@ -22,6 +23,7 @@ export class OrdersService {
     private addressService: AddressesService,
     private configService: ConfigService,
     private promocodeService: PromocodesService,
+    private orderDaysService: OrderDaysService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
@@ -70,7 +72,19 @@ export class OrdersService {
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
 
-      // logic meals service [sample | dataset]
+      // meals logic
+      const orderDays = await this.orderDaysService.createOrderDay({
+        ...dto,
+        orderID: order.id,
+        date: order.startDate
+      })
+
+      if(orderDays){
+        await order.$set('address', [orderDays.id])
+      }else{
+        this.logger.error(`Error in orders.service.ts - 'orderDays' is not found`);
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
 
       return await this.orderModel.findByPk(order.id, { include: { all: true } })
     }catch(ex){
