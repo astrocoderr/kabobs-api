@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsBoolean, IsDateString, IsNumber
+  IsBoolean, IsDateString, IsNumber, IsString
 } from 'class-validator';
 
 export class CreateOrderDto {
@@ -40,6 +40,14 @@ export class CreateOrderDto {
   @IsNumber()
   addressID: number;
 
+  @ApiProperty({ example: 'new meal from spain', description: "kitchens's comment" })
+  @IsString()
+  kitchenComment: string;
+
+  @ApiProperty({ example: 'new address without roads', description: "delivery's comment" })
+  @IsString()
+  deliveryComment: string;
+
   @ApiProperty({ example: '2021-11-11T10:00:00:000Z', description: 'start date' })
   @IsDateString()
   startDate: Date;
@@ -68,6 +76,10 @@ export class CreateOrderDto {
   @ApiProperty({ example: '500', description: '500 czech koruna' })
   @IsNumber()
   price: number;
+
+  @ApiProperty({ example: '2,11,98', description: 'ignored meals identifiers' })
+  @IsString()
+  ignoredMeals: string;
 
   @ApiProperty({ example: true, description: 'is orders is active' })
   @IsBoolean()
