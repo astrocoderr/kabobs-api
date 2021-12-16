@@ -17,6 +17,7 @@ interface OrderFields {
   creatorID: number;
   promocodeID: number;
   kcal: number;
+  prot: number;
   fat: number;
   carb: number;
   startDate: Date;
@@ -24,7 +25,10 @@ interface OrderFields {
   mealsPerDay: number;
   weekSize: number;
   price: number;
+  ignoredMeals: string;
   addressID: number;
+  kitchenComment: string;
+  deliveryComment: string;
   deliveryTime: Date;
   status: number;
   source: number;
@@ -239,7 +243,7 @@ export class Order extends Model<Order, OrderFields>{
   active: boolean;
 
   @ApiProperty({ example: '2,11,98', description: 'ignored meals identifiers' })
-  @Column({ type: DataType.INTEGER, allowNull: true, defaultValue: null })
+  @Column({ type: DataType.STRING, allowNull: true, defaultValue: null })
   ignoredMeals: string;
 
   @ApiProperty({ example: 'new meal from spain', description: "kitchens's comment" })
