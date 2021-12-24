@@ -11,6 +11,8 @@ import { UnbanCustomerDto } from '../dto/unban-customer.dto';
 import { AddressesService } from '../../addresses/services/addresses.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { SearchCustomerDto } from '../dto/search-customer.dto';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class CustomersService {
@@ -50,6 +52,26 @@ export class CustomersService {
   async getCustomers(){
     return await this.customerModel.findAll({
       where: { active: true },
+      include: { all: true }
+    });
+  }
+
+  // Searching customers
+  async searchCustomers(dto: SearchCustomerDto){
+    return await this.customerModel.findAll({
+      where: {
+        [Op.or]: [
+          { firstName: dto.search },
+          { lastName: dto.search },
+          { phone: dto.search },
+          { additionalPhone: dto.search },
+          { factorID: dto.search },
+          { kitchenID: dto.search },
+          { language: dto.search },
+          { userID: dto.search },
+          { active: true }
+        ]
+      },
       include: { all: true }
     });
   }
