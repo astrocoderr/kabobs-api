@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 
@@ -12,6 +13,7 @@ import { UsersService } from '../../users/services/users.service';
 import { PromocodesService } from '../../promocodes/services/promocodes.service';
 import { CustomersService } from '../../customers/services/customers.service';
 import { OrderDaysService } from '../../order-days/services/order-days.service';
+import { SearchOrderDto } from '../dto/search-order.dto';
 
 
 @Injectable()
@@ -27,7 +29,7 @@ export class OrdersService {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
-  // Creating an orders
+  // Creating an order
   async createOrder(dto: CreateOrderDto){
     try{
       const order = await this.orderModel.create(dto)
@@ -101,12 +103,34 @@ export class OrdersService {
     });
   }
 
-  // Getting an orders
+  // Getting an order
   async getOrder(id: number){
     return await this.orderModel.findByPk(id, { include: { all: true } });
   }
 
-  // Editing an orders
+  // Searching an order(s)
+  async searchOrders(dto: SearchOrderDto){
+    return await this.orderModel.findAll({
+      where: {
+        [Op.or]: [
+          { customerID: dto.search },
+          { userID: dto.search },
+          { creatorID: dto.search },
+          { promocodeID: dto.search },
+          { kcal: dto.search },
+          { prot: dto.search },
+          { fat: dto.search },
+          { carb: dto.search },
+          { price: dto.search },
+          { kitchenComment: dto.search },
+          { deliveryComment: dto.search }
+        ]
+      },
+      include: { all: true }
+    })
+  }
+
+  // Editing an order
   async modifyOrder(id: number, dto: UpdateOrderDto){
     const order = await this.orderModel.update(dto,{
       where: { id },
@@ -128,7 +152,7 @@ export class OrdersService {
     return await this.orderModel.findByPk(order.id, { include: { all: true } })
   }
 
-  // Removing an orders
+  // Removing an order
   async removeOrder(id: number){
     const order = await this.orderModel.update({ active: false },{
       where: { id },
