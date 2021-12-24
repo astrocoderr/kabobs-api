@@ -3,6 +3,7 @@ import {
   Inject, Injectable
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { Logger } from 'winston';
@@ -15,6 +16,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { BanUserDto } from '../dto/ban-user.dto';
 import { AddRoleUserDto } from '../dto/add-role-user.dto';
 import { UnbanUserDto } from '../dto/unban-user.dto';
+import { SearchUserDto } from '../dto/search-user.dto';
 
 
 @Injectable()
@@ -53,6 +55,22 @@ export class UsersService {
   async getUsers(){
     return await this.userModel.findAll({
       where: { active: true },
+      include: { all: true }
+    });
+  }
+
+  // Searching user(s)
+  async searchUsers(dto: SearchUserDto){
+    return await this.userModel.findAll({
+      where: {
+        [Op.or]: [
+          { firstName: dto.search },
+          { lastName: dto.search },
+          { email: dto.search },
+          { branchID: dto.search },
+          { bitrixID: dto.search }
+        ]
+      },
       include: { all: true }
     });
   }
