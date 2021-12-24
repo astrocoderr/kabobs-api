@@ -30,7 +30,7 @@ interface OrderDaysFields {
 }
 
 // order-days model
-@Table({ tableName: 'orders' })
+@Table({ tableName: 'order-days' })
 export class OrderDays extends Model<OrderDays, OrderDaysFields>{
   @ApiProperty({ example: '1', description: 'unique identifier' })
   @Column({
@@ -68,6 +68,7 @@ export class OrderDays extends Model<OrderDays, OrderDaysFields>{
   @BelongsTo(() => Order)
   order: number;
 
+  @Column({ type: DataType.INTEGER, allowNull: false })
   @ForeignKey(() => Order)
   orderID: number
 
