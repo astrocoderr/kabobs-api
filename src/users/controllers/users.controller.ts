@@ -1,6 +1,6 @@
 import {
-  Body, Controller, Delete, Get, Param,
-  Post, Put, UseGuards
+  Body, Controller, Delete, Get, Inject, Param,
+  Post, Put, Query, UseGuards
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -13,13 +13,19 @@ import { AddRoleUserDto } from '../dto/add-role-user.dto';
 import { UnbanUserDto } from '../dto/unban-user.dto';
 import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
+import { SearchUserDto } from '../dto/search-user.dto';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 
 @ApiTags('Employees' )
 @UseGuards(JwtAuthGuard)
 @Controller('/users')
 export class UsersController {
-  constructor(private userService: UsersService) {}
+  constructor(
+    private userService: UsersService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+  ) {}
 
   // Extra Links
   @ApiOperation({ summary: 'Adding employee roles' })
@@ -65,6 +71,17 @@ export class UsersController {
     return this.userService.createUser(dto)
   }
 
+  @ApiOperation({ summary: "Searching employees by 'firstName', " +
+      "'lastName', 'email', 'branchID', 'bitrixID'"
+  })
+  @ApiResponse({ status: 200, type: [User] })
+  @Roles('admin')
+  @Get()
+  searchUsers(@Query() search: SearchUserDto){
+    return this.userService.searchUsers(search)
+  }
+
+
   @ApiOperation({ summary: 'Getting an employee' })
   @ApiResponse({ status: 200, type: User })
   @Get('/:id')
@@ -79,6 +96,8 @@ export class UsersController {
   getUsers(){
     return this.userService.getUsers()
   }
+
+
 
   @ApiOperation({ summary: 'Modifying an employee' })
   @ApiResponse({ status: 200, type: User })
