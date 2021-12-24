@@ -20,6 +20,9 @@ import { PromocodesModule } from '../promocodes/promocodes.module';
 import { CustomersModule } from '../customers/customers.module';
 import { OrderDays } from '../order-days/models/order-days.model';
 import { OrderDaysModule } from '../order-days/order-days.module';
+import { GroupIngredient } from '../group-ingredients/models/group-ingredients.model';
+import { Ingredient } from '../ingredients/models/ingredients.model';
+import { Techcard } from '../techcards/models/techcards.model';
 
 
 @Module({
@@ -29,7 +32,8 @@ import { OrderDaysModule } from '../order-days/order-days.module';
     SequelizeModule.forFeature([
       User, Role, UserRoles, Customer,
       Addresses, CustomerAddresses, Promocode,
-      Order, Kitchen, KitchenUser, OrderDays
+      Order, Kitchen, KitchenUser, OrderDays,
+      GroupIngredient, Ingredient, Techcard
     ]),
     AuthModule,
     AddressesModule,

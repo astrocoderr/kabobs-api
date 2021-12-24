@@ -15,6 +15,9 @@ import { Order } from '../orders/models/orders.model';
 import { Kitchen } from '../kitchens/models/kitchens.model';
 import { KitchenUser } from '../kitchens/models/kitchen-users.model';
 import { OrderDays } from '../order-days/models/order-days.model';
+import { GroupIngredient } from '../group-ingredients/models/group-ingredients.model';
+import { Ingredient } from '../ingredients/models/ingredients.model';
+import { Techcard } from '../techcards/models/techcards.model';
 
 @Module({
   providers: [RolesService],
@@ -23,7 +26,8 @@ import { OrderDays } from '../order-days/models/order-days.model';
     SequelizeModule.forFeature([
       Role, User, UserRoles, Customer,
       Addresses, CustomerAddresses, Promocode,
-      Order, Kitchen, KitchenUser, OrderDays
+      Order, Kitchen, KitchenUser, OrderDays,
+      GroupIngredient, Ingredient, Techcard
     ]),
     AuthModule
   ],

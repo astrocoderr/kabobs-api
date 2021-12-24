@@ -21,6 +21,9 @@ import { validationSchema } from '../config/validation'
 import { loggerFactory } from '../utils/logger/logger.factory';
 import { databaseFactory } from '../connectors/database.factory';
 import { OrderDaysModule } from './order-days/order-days.module';
+import { GroupIngredientsModule } from './group-ingredients/group-ingredients.module';
+import { IngredientsModule } from './ingredients/ingredients.module';
+import { TechcardsModule } from './techcards/techcards.module';
 
 
 @Module({
@@ -58,6 +61,9 @@ import { OrderDaysModule } from './order-days/order-days.module';
     OrdersModule,
     KitchensModule,
     OrderDaysModule,
+    GroupIngredientsModule,
+    IngredientsModule,
+    TechcardsModule,
   ],
 })
 
