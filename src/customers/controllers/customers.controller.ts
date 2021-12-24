@@ -1,6 +1,6 @@
 import {
   Body, Controller, Delete, Get, Param,
-  Post, Put, UseGuards
+  Post, Put, Query, UseGuards
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -11,6 +11,7 @@ import { Customer } from '../models/customers.model';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { SearchCustomerDto } from '../dto/search-customer.dto';
 
 
 @ApiTags('Customers')
@@ -56,11 +57,21 @@ export class CustomersController {
     return this.customerService.getCustomer(id)
   }
 
-  @ApiOperation({ summary: 'Getting customers' })
+  @ApiOperation({
+    summary: "Searching a customer by 'firstName', 'lastName', " +
+      "'phone', 'additionalPhone', 'factorID', 'kitchenID', 'language', 'userID'"
+  })
   @ApiResponse({ status: 200, type: [Customer] })
   @Get()
   getUsers(){
     return this.customerService.getCustomers()
+  }
+
+  @ApiOperation({ summary: 'Searching a customer' })
+  @ApiResponse({ status: 200, type: [Customer] })
+  @Get()
+  searchUsers(@Query() search: SearchCustomerDto){
+    return this.customerService.searchCustomers(search)
   }
 
   @ApiOperation({ summary: 'Modifying a customer' })
