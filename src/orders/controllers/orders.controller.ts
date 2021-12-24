@@ -1,5 +1,5 @@
 import {
-  Body, Controller, Delete, Get, Param, Post, Put,
+  Body, Controller, Delete, Get, Param, Post, Put, Query,
   UseGuards
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -9,11 +9,12 @@ import { Order } from '../models/orders.model';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
 import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { SearchOrderDto } from '../dto/search-order.dto';
 
 
 @ApiTags('Orders')
 @UseGuards(JwtAuthGuard)
-@Controller('order')
+@Controller('orders')
 export class OrdersController {
   constructor(private orderService: OrdersService) {}
 
@@ -21,35 +22,45 @@ export class OrdersController {
   @ApiOperation({ summary: 'Creating an order' })
   @ApiResponse({ status: 200, type: Order })
   @Post()
-  createUser(@Body()  dto: CreateOrderDto){
+  createOrder(@Body()  dto: CreateOrderDto){
     return this.orderService.createOrder(dto)
   }
 
   @ApiOperation({ summary: 'Getting an order' })
   @ApiResponse({ status: 200, type: Order })
   @Get('/:id')
-  getUser(@Param('id') id: number){
+  getOrder(@Param('id') id: number){
     return this.orderService.getOrder(id)
   }
 
   @ApiOperation({ summary: 'Getting orders' })
   @ApiResponse({ status: 200, type: [Order] })
   @Get()
-  getUsers(){
+  getOrders(){
     return this.orderService.getOrders()
+  }
+
+  @ApiOperation({ summary:
+      "Search order by 'customerID', 'userID', 'creatorID', 'promocodeID', " +
+      "'kcal', 'prot', 'fat', 'carb', 'price', 'kitchenComment', 'deliveryComment'"
+  })
+  @ApiResponse({ status: 200, type: [Order] })
+  @Get()
+  searchOrders(@Query() search: SearchOrderDto){
+    return this.orderService.searchOrders(search)
   }
 
   @ApiOperation({ summary: 'Modifying an order' })
   @ApiResponse({ status: 200, type: Order })
   @Put('/:id')
-  modifyUser(@Param('id') id: number, @Body() dto: UpdateOrderDto){
+  modifyOrder(@Param('id') id: number, @Body() dto: UpdateOrderDto){
     return this.orderService.modifyOrder(id, dto)
   }
 
   @ApiOperation({ summary: 'Removing an order' })
   @ApiResponse({ status: 200, type: Order })
   @Delete('/:id')
-  removeUser(@Param('id') id: number){
+  removeOrder(@Param('id') id: number){
     return this.orderService.removeOrder(id)
   }
 }
