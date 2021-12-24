@@ -1,7 +1,9 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { SequelizeModule } from '@nestjs/sequelize';
+
+
 import { IngredientsController } from './controllers/ingredients.controller';
 import { IngredientsService } from './services/ingredients.service';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from '../users/models/user.model';
 import { Role } from '../roles/models/roles.model';
 import { UserRoles } from '../roles/models/user-roles.model';
