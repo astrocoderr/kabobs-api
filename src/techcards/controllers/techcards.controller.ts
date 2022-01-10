@@ -22,21 +22,21 @@ export class TechcardsController {
   @ApiOperation({ summary: 'Creating a techcard' })
   @ApiResponse({ status: 200, type: Techcard })
   @Post()
-  createOrder(@Body()  dto: CreateTechcardsDto){
+  createTechcard(@Body()  dto: CreateTechcardsDto){
     return this.techcardsService.createTechcard(dto)
   }
 
   @ApiOperation({ summary: 'Getting a techcard' })
   @ApiResponse({ status: 200, type: Techcard })
   @Get('/:id')
-  getOrder(@Param('id') id: number){
+  getTechcard(@Param('id') id: number){
     return this.techcardsService.getTechcard(id)
   }
 
   @ApiOperation({ summary: 'Getting techcards' })
   @ApiResponse({ status: 200, type: [Techcard] })
   @Get()
-  getOrders(){
+  getTechcards(){
     return this.techcardsService.getTechcards()
   }
 
@@ -47,21 +47,21 @@ export class TechcardsController {
   })
   @ApiResponse({ status: 200, type: [Techcard] })
   @Get()
-  searchOrders(@Query() search: SearchTechcardDto){
+  searchTechcards(@Query() search: SearchTechcardDto){
     return this.techcardsService.searchTechcard(search)
   }
 
   @ApiOperation({ summary: 'Modifying a techcard' })
   @ApiResponse({ status: 200, type: Techcard })
   @Put('/:id')
-  modifyOrder(@Param('id') id: number, @Body() dto: UpdateTechcardDto){
+  modifyTechcard(@Param('id') id: number, @Body() dto: UpdateTechcardDto){
     return this.techcardsService.modifyTechcard(id, dto)
   }
 
   @ApiOperation({ summary: 'Removing a teachcard' })
   @ApiResponse({ status: 200, type: Techcard })
   @Delete('/:id')
-  removeOrder(@Param('id') id: number){
+  removeTechcard(@Param('id') id: number){
     return this.techcardsService.removeTechcard(id)
   }
 }
