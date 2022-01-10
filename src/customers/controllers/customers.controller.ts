@@ -16,7 +16,7 @@ import { SearchCustomerDto } from '../dto/search-customer.dto';
 
 @ApiTags('Customers')
 @UseGuards(JwtAuthGuard)
-@Controller('/customers')
+@Controller('customers')
 export class CustomersController {
   constructor(private customerService: CustomersService) {}
 
