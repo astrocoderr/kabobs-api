@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsBoolean, IsNumber, IsString, MaxLength, MinLength
+  IsNumber, IsString, MaxLength, MinLength
 } from 'class-validator';
 
 
@@ -31,7 +31,7 @@ export class CreateIngerdientDto {
   @IsNumber()
   group: number;
 
-  @ApiProperty({ example: 'unit', description: "unit" })
+  @ApiProperty({ example: 'unit', description: 'unit' })
   @IsString()
   unit: string;
 
@@ -50,8 +50,4 @@ export class CreateIngerdientDto {
   @ApiProperty({ example: 'apple, pineapple', description: 'tags; (apple, pineaplle)' })
   @IsString()
   tags: string;
-
-  @ApiProperty({ example: true, description: 'is orders is active' })
-  @IsBoolean()
-  active: boolean;
 }

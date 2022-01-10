@@ -31,7 +31,7 @@ export class UpdateIngredientDto {
   @IsNumber()
   group: number;
 
-  @ApiProperty({ example: 'unit', description: "unit" })
+  @ApiProperty({ example: 'unit', description: 'unit' })
   @IsString()
   unit: string;
 

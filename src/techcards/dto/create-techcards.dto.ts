@@ -39,10 +39,6 @@ export class CreateTechcardsDto {
   @IsNumber()
   ingredient: number;
 
-  @ApiProperty({ example: '5', description: 'ingredients amount' })
-  @IsNumber()
-  ingredientAmount: string;
-
   @ApiProperty({ example: '20', description: 'amount' })
   @IsNumber()
   amount: number;
@@ -69,19 +65,15 @@ export class CreateTechcardsDto {
 
   @ApiProperty({ example: '3', description: '3 small boxes' })
   @IsNumber()
-  boxes_small: number;
+  boxesSmall: number;
 
   @ApiProperty({ example: '2', description: '2 medium boxes' })
   @IsNumber()
-  boxes_medium: number;
+  boxesMedium: number;
 
   @ApiProperty({ example: '1', description: '1 big box' })
   @IsNumber()
-  boxes_big: number;
-
-  @ApiProperty({ example: true, description: 'is techcard is active' })
-  @IsBoolean()
-  active: boolean;
+  boxesBig: number;
 
   @ApiProperty({ example: '2', description: 'ingredients amount' })
   @IsNumber()

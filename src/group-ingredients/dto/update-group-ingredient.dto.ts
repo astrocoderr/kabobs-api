@@ -9,8 +9,4 @@ export class UpdateGroupIngredientDto {
   @MinLength(1)
   @MaxLength(50)
   name: string;
-
-  @ApiProperty({ example: true, description: 'is group-ingredients is active' })
-  @IsBoolean()
-  active: boolean;
 }
