@@ -24,6 +24,7 @@ import { OrderDaysModule } from './order-days/order-days.module';
 import { GroupIngredientsModule } from './group-ingredients/group-ingredients.module';
 import { IngredientsModule } from './ingredients/ingredients.module';
 import { TechcardsModule } from './techcards/techcards.module';
+import { KitchenUsersModule } from './kitchen-users/kitchen-users.module';
 
 
 @Module({
@@ -64,6 +65,7 @@ import { TechcardsModule } from './techcards/techcards.module';
     GroupIngredientsModule,
     IngredientsModule,
     TechcardsModule,
+    KitchenUsersModule,
   ],
 })
 
