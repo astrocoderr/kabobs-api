@@ -13,7 +13,7 @@ import { UpdateKitchenDto } from '../dto/update-kitchen.dto';
 
 @ApiTags('Kitchens')
 @UseGuards(JwtAuthGuard)
-@Controller('kitchen')
+@Controller('kitchens')
 export class KitchensController {
   constructor(private kitchenService: KitchensService) {}
 
@@ -21,14 +21,14 @@ export class KitchensController {
   @ApiOperation({ summary: 'Creating a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Post()
-  createUser(@Body()  dto: CreateKitchenDto){
+  createKitchen(@Body()  dto: CreateKitchenDto){
     return this.kitchenService.createKitchen(dto)
   }
 
   @ApiOperation({ summary: 'Getting a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Get('/:id')
-  getUser(@Param('id') id: number){
+  getKitchen(@Param('id') id: number){
     return this.kitchenService.getKitchen(id)
   }
 
