@@ -6,9 +6,10 @@ import {
 import { Addresses } from './addresses.model';
 import { Customer } from '../../customers/models/customers.model';
 
-// customer_addresses model
-@Table({ tableName: 'customer_addresses' })
-export class CustomerAddresses extends Model<CustomerAddresses>{
+
+// customer_addresses_associations model
+@Table({ tableName: 'customer_addresses_associations' })
+export class CustomerAddressesAssociations extends Model<CustomerAddressesAssociations>{
   @Column({
     type: DataType.INTEGER,
     unique: true,
