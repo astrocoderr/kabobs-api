@@ -1,11 +1,14 @@
 import {
-  BelongsTo, Column, DataType, ForeignKey,
-  HasMany, Model, Table
+  BelongsTo, BelongsToMany, Column, DataType, ForeignKey,
+  Model, Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { User } from '../../users/models/user.model';
 import { Ingredient } from '../../ingredients/models/ingredients.model';
+import {
+  IngredientTechcardsAssociations
+} from './ingredient-techcards-associations.model';
 
 
 // techcards creation attributes
@@ -26,9 +29,9 @@ interface TechcardFields {
   amountPiece: number;
   percent: number;
   tags: string;
-  boxes_small: number;
-  boxes_medium: number;
-  boxes_big: number;
+  boxesSmall: number;
+  boxesMedium: number;
+  boxesBig: number;
 }
 
 // techcard model
@@ -67,7 +70,7 @@ export class Techcard extends Model<Techcard, TechcardFields>{
     type: 'object',
     description: 'role identifier'
   })
-  @HasMany(() => Ingredient)
+  @BelongsToMany(() => Ingredient, () => IngredientTechcardsAssociations)
   ingredient: number;
 
   @ForeignKey(() => Ingredient)
@@ -165,13 +168,17 @@ export class Techcard extends Model<Techcard, TechcardFields>{
 
   @ApiProperty({ example: 3, description: '3 small boxes' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  boxes_small: number;
+  boxesSmall: number;
 
   @ApiProperty({ example: 2, description: '2 medium boxes' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  boxes_medium: number;
+  boxesMedium: number;
 
   @ApiProperty({ example: 1, description: '1 big box' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  boxes_big: number;
+  boxesBig: number;
+
+  @ApiProperty({ example: 'description', description: 'description' })
+  @Column({ type: DataType.STRING, allowNull: true })
+  description: string;
 }

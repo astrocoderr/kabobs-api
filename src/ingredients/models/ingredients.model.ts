@@ -1,12 +1,15 @@
 import {
-  BelongsTo, Column,
-  DataType, ForeignKey, HasMany, Model, Table
+  BelongsTo, BelongsToMany, Column,
+  DataType, ForeignKey, Model, Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { User } from '../../users/models/user.model';
 import { GroupIngredient } from '../../group-ingredients/models/group-ingredients.model';
 import { Techcard } from '../../techcards/models/techcards.model';
+import {
+  IngredientGroupAssociations,
+} from '../../group-ingredients/models/ingredient-group-associations.model';
 
 
 // ingredient creation attributes
@@ -60,7 +63,7 @@ export class Ingredient extends Model<Ingredient, IngredientFields>{
     type: 'object',
     description: 'role identifier'
   })
-  @HasMany(() => GroupIngredient)
+  @BelongsToMany(() => GroupIngredient, () => IngredientGroupAssociations)
   group: number;
 
   @ForeignKey(() => GroupIngredient)
@@ -127,6 +130,10 @@ export class Ingredient extends Model<Ingredient, IngredientFields>{
   @ApiProperty({ example: '3', description: 'percent' })
   @Column({ type: DataType.INTEGER, allowNull: true })
   percent: number;
+
+  @ApiProperty({ example: 'unit', description: 'unit' })
+  @Column({ type: DataType.STRING, allowNull: true })
+  unit: string;
 
   @ApiProperty({ example: 'apple, pineapple', description: 'apple, pineapple' })
   @Column({ type: DataType.STRING, allowNull: true })

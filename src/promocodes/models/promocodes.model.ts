@@ -25,7 +25,7 @@ export class Promocode extends Model<Promocode, PromocodeFields>{
   })
   id: number;
 
-    @ApiProperty({ example: '1Ae78FlS@MPL3', description: 'code' })
+  @ApiProperty({ example: '1Ae78FlS@MPL3', description: 'code' })
   @Column({ type: DataType.STRING, allowNull: false })
   code: string;
 
@@ -34,11 +34,11 @@ export class Promocode extends Model<Promocode, PromocodeFields>{
   type: number;
 
   @ApiProperty({ example: '500', description: 'price amount' })
-  @Column({ type: DataType.INTEGER, allowNull: true })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   amount: number;
 
   @ApiProperty({ example: '35', description: 'identifier of creator' })
-  @Column({ type: DataType.INTEGER, unique: true, allowNull: false })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   creatorID: number;
 
   @ApiProperty({ example: '2', description: 'inactive' })

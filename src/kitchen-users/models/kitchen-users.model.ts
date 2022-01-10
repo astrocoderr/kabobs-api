@@ -1,6 +1,7 @@
-import { Column, DataType, HasOne, Model, Table } from 'sequelize-typescript';
+import { BelongsToMany, Column, DataType, ForeignKey, HasOne, Model, Table } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
-import { Kitchen } from './kitchens.model';
+import { Kitchen } from '../../kitchens/models/kitchens.model';
+import { KitchenUserKitchensAssociations } from '../../kitchens/models/kitchen-user-kitchens-associations.model';
 
 
 // kitchens users creation attributes
@@ -12,8 +13,8 @@ interface KitchenUserFields {
   kitchen: number;
 }
 
-// kitchens users model
-@Table({ tableName: 'kitchens-users' })
+// kitchen_users model
+@Table({ tableName: 'kitchen_users' })
 export class KitchenUser extends Model<KitchenUser, KitchenUserFields>{
   @ApiProperty({ example: '1', description: 'unique identifier' })
   @Column({
@@ -66,8 +67,11 @@ export class KitchenUser extends Model<KitchenUser, KitchenUserFields>{
     },
     type: 'object'
   })
-  @HasOne(() => Kitchen)
+  @BelongsToMany(() => Kitchen, () => KitchenUserKitchensAssociations)
   kitchen: number;
+
+  @ForeignKey(() => Kitchen)
+  kitchenID: number;
 
   @ApiProperty({ example: true, description: 'is kitchens user is active' })
   @Column({ type: DataType.BOOLEAN, defaultValue: true })

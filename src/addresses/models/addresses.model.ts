@@ -1,11 +1,22 @@
-import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsToMany, Column, DataType, ForeignKey,
+  Model, Table
+} from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Customer } from '../../customers/models/customers.model';
-import { CustomerAddresses } from './customer-addresses.model';
+import {
+  CustomerAddressesAssociations
+} from './customer-addresses-associations.model';
 import { Order } from '../../orders/models/orders.model';
 import { Kitchen } from '../../kitchens/models/kitchens.model';
-import { OrderDays } from '../../order-days/models/order-days.model';
+import {
+  OrderAddressesAssociations
+} from './order-addresses-associations.model';
+import {
+  KitchenAddressesAssociations
+} from './kitchen-addresses-associations.model';
+
 
 // address creation attributes
 interface AddressesFields {
@@ -62,24 +73,18 @@ export class Addresses extends Model<Addresses, AddressesFields>{
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
   active: boolean;
 
-  @BelongsToMany(() => Customer, () => CustomerAddresses)
+  @BelongsToMany(() => Customer, () => CustomerAddressesAssociations)
   customer: Customer[]
 
-  @BelongsTo(() => Order)
-  order: Order
+  @BelongsToMany(() => Order, () => OrderAddressesAssociations)
+  order: Order[]
 
   @ForeignKey(() => Order)
   orderID: number
 
-  @BelongsTo(() => Kitchen)
-  kitchen: Kitchen
+  @BelongsToMany(() => Kitchen, () => KitchenAddressesAssociations)
+  kitchen: Kitchen[]
 
   @ForeignKey(() => Kitchen)
   kitchenID: number
-
-  @BelongsTo(() => OrderDays)
-  orderDays: OrderDays
-
-  @ForeignKey(() => OrderDays)
-  orderDaysID: number
 }

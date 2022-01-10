@@ -1,7 +1,13 @@
-import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasOne, Model, Table } from "sequelize-typescript";
-import { ApiProperty } from "@nestjs/swagger";
-import { Role } from "../../roles/models/roles.model";
-import { UserRoles } from "../../roles/models/user-roles.model";
+import {
+  BelongsToMany, Column, DataType, Model, Table
+} from 'sequelize-typescript';
+import { ApiProperty } from '@nestjs/swagger';
+
+import { Role } from '../../roles/models/roles.model';
+import {
+  UserRolesAssociations
+} from '../../roles/models/user-roles-associations.model';
+
 
 // user creation attributes
 interface UserFields {
@@ -62,7 +68,7 @@ export class User extends Model<User, UserFields>{
     type: 'object',
     description: 'role identifier'
   })
-  @BelongsToMany(() => Role, () => UserRoles)
+  @BelongsToMany(() => Role, () => UserRolesAssociations)
   role: number;
 
   @ApiProperty({ example: '5', description: 'privilege identifier' })

@@ -1,6 +1,6 @@
 import {
-  BelongsTo, BelongsToMany, Column,
-  DataType, ForeignKey, HasMany, HasOne, Model, Table
+  BelongsTo, Column,
+  DataType, ForeignKey, HasMany, Model, Table
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -8,7 +8,6 @@ import { Addresses } from '../../addresses/models/addresses.model';
 import { User } from '../../users/models/user.model';
 import { Promocode } from '../../promocodes/models/promocodes.model';
 import { Customer } from '../../customers/models/customers.model';
-import { OrderDays } from '../../order-days/models/order-days.model';
 
 
 // orders creation attributes
@@ -207,7 +206,7 @@ export class Order extends Model<Order, OrderFields>{
     type: 'object',
     description: 'role identifier'
   })
-  @HasOne(() => Addresses)
+  @HasMany(() => Addresses)
   address: number;
 
   @ForeignKey(() => Addresses)
@@ -269,34 +268,4 @@ export class Order extends Model<Order, OrderFields>{
   @ApiProperty({ example: 1, description: 'web' })
   @Column({ type: DataType.INTEGER, allowNull: false })
   source: number;
-
-  @ApiProperty({
-    example: {
-      "id": 2,
-      "text": "Delaware, St. Riston 1A-22",
-      "lat": 12.345678,
-      "lon": 23.456798,
-      "road": "Avenue, 1C",
-      "houseNumber": "42a BBC",
-      "neighbourhood": "smth",
-      "zipcode": 12345,
-      "active": true,
-      "createdAt": "2021-11-12T06:15:55.612Z",
-      "updatedAt": "2021-11-12T06:15:55.612Z",
-      "CustomerAddresses": {
-        "id": 2,
-        "addressID": 2,
-        "customerID": 7,
-        "createdAt": "2021-11-12T06:20:56.582Z",
-        "updatedAt": "2021-11-12T06:20:56.582Z"
-      }
-    },
-    type: 'object',
-    description: 'role identifier'
-  })
-  @HasMany(() => OrderDays)
-  orderDays: number;
-
-  @ForeignKey(() => OrderDays)
-  orderDaysID: number
 }

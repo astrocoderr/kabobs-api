@@ -1,10 +1,13 @@
 import {
-  BelongsTo, BelongsToMany, Column,
-  DataType, ForeignKey, HasOne, Model, Table
+  BelongsToMany, Column,
+  DataType, Model, Table
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
-import { Addresses } from "../../addresses/models/addresses.model";
-import { CustomerAddresses } from "../../addresses/models/customer-addresses.model";
+
+import { Addresses } from '../../addresses/models/addresses.model';
+import {
+  CustomerAddressesAssociations,
+} from '../../addresses/models/customer-addresses-associations.model';
 
 
 // customer creation attributes
@@ -90,7 +93,7 @@ export class Customer extends Model<Customer, CustomerFields>{
     type: 'object',
     description: 'role identifier'
   })
-  @BelongsToMany(() => Addresses, () => CustomerAddresses)
+  @BelongsToMany(() => Addresses, () => CustomerAddressesAssociations)
   address: number;
 
   @ApiProperty({ example: '44', description: 'factor identifier' })
