@@ -7,12 +7,14 @@ import { Logger } from 'winston';
 import { Ingredient } from '../models/ingredients.model';
 import { CreateIngerdientDto } from '../dto/create-ingerdient.dto';
 import { UpdateIngredientDto } from '../dto/update-ingredient.dto';
+import { GroupIngredientsService } from '../../group-ingredients/services/group-ingredients.service';
 
 
 @Injectable()
 export class IngredientsService {
   constructor(
     @InjectModel(Ingredient) private ingredientModel: typeof Ingredient,
+    private groupIngredientService: GroupIngredientsService,
     private configService: ConfigService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
@@ -22,7 +24,18 @@ export class IngredientsService {
     try{
       const ingredient = await this.ingredientModel.create(dto)
 
-      return await this.ingredientModel.findByPk(ingredient.id)
+      const groupIngredient = await this.groupIngredientService.getGroupIngredient(dto.group)
+
+      if(groupIngredient){
+        await ingredient.$set('group', [groupIngredient.id])
+      }else{
+        this.logger.error(
+          `Error in ingredient.service.ts - 'createIngredient'. createIngredient is not found`
+        );
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
+
+      return await this.ingredientModel.findByPk(ingredient.id, { include: { all: true } })
     }catch(ex){
       this.logger.error(`Error in ingredient.service.ts - '${ex}'`);
       throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
@@ -31,12 +44,12 @@ export class IngredientsService {
 
   // Getting ingredients
   async getIngredients(){
-    return await this.ingredientModel.findAll({ where: { active: true } });
+    return await this.ingredientModel.findAll({ where: { active: true }, include: { all: true } });
   }
 
   // Getting an ingredient
   async getIngredient(id: number){
-    return await this.ingredientModel.findByPk(id);
+    return await this.ingredientModel.findByPk(id, { include: { all: true }});
   }
 
   // Editing a ingredient
