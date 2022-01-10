@@ -1,18 +1,22 @@
 import {
-  BelongsTo, Column, DataType,
-  ForeignKey, Model, Table
+  BelongsToMany, Column, DataType,
+  Model, Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
+
 import { Ingredient } from '../../ingredients/models/ingredients.model';
+import {
+  IngredientGroupAssociations
+} from './ingredient-group-associations.model';
 
 
-// group-ingredients creation attributes
+// group ingredients creation attributes
 interface GroupIngredientFields {
   name: string;
 }
 
-// customer model
-@Table({ tableName: 'group-ingredients' })
+// group_ingredients model
+@Table({ tableName: 'group_ingredients' })
 export class GroupIngredient extends Model<GroupIngredient, GroupIngredientFields>{
   @ApiProperty({ example: '1', description: 'unique identifier' })
   @Column({
@@ -51,11 +55,8 @@ export class GroupIngredient extends Model<GroupIngredient, GroupIngredientField
     type: 'object',
     description: 'role identifier'
   })
-  @BelongsTo(() => Ingredient)
+  @BelongsToMany(() => Ingredient, () => IngredientGroupAssociations)
   ingredient: number;
-
-  @ForeignKey(() => Ingredient)
-  ingredientID: number
 
   @ApiProperty({ example: true, description: 'is group ingredient is active' })
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
