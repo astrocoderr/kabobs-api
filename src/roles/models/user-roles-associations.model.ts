@@ -6,9 +6,9 @@ import {
 import { User } from '../../users/models/user.model';
 import { Role } from './roles.model';
 
-// users_roles model
-@Table({ tableName: 'user_roles' })
-export class UserRoles extends Model<UserRoles>{
+// users_roles_associations model
+@Table({ tableName: 'user_roles_associations' })
+export class UserRolesAssociations extends Model<UserRolesAssociations>{
   @Column({
     type: DataType.INTEGER,
     unique: true,
