@@ -37,7 +37,9 @@ export class KitchensService {
 
       return await this.kitchenModel.findByPk(kitchen.id, { include: { all: true } })
     }catch(ex){
-      this.logger.error(`Error in kitchens.service.ts - '${ex}'`);
+      this.logger.error(
+        `Error in kitchens.service.ts - 'createKitchen()'. ${ex.name}. ${ex.message}
+      `);
       throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
     }
   }
@@ -96,6 +98,6 @@ export class KitchensService {
       throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
-    return kitchen
+    return this.kitchenModel.findByPk(kitchen.id, { include: { all: true } })
   }
 }

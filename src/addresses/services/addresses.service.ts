@@ -18,7 +18,14 @@ export class AddressesService {
   }
 
   async getAddresses(){
-    return await this.addressModel.findAll({ where: { active: true } })
+    try{
+      return await this.addressModel.findAll({ where: { active: true } })
+    }catch(ex){
+      this.logger.error(
+        `Error in addresses.service.ts - 'getAddresses()'. ${ex.name}. ${ex.message}
+      `);
+      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
+    }
   }
 
   async getAddress(id: number){

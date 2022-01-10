@@ -121,6 +121,6 @@ export class TechcardsService {
       throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
-    return techcard
+    return this.techcardModel.findByPk(techcard.id, { include: { all: true }})
   }
 }
