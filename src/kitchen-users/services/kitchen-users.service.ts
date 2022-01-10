@@ -1,12 +1,13 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcryptjs';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
+import { Logger } from 'winston'
 
 import { KitchenUser } from '../models/kitchen-users.model';
+import { KitchensService } from '../../kitchens/services/kitchens.service';
 import { CreateKitchenUserDto } from '../dto/create-kitchen-user.dto';
-import { KitchensService } from './kitchens.service';
 import { UpdateKitchenUserDto } from '../dto/update-kitchen-user.dto';
 
 
@@ -19,17 +20,18 @@ export class KitchenUsersService {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
-  // Creating a kitchens user
+  // Creating a kitchen user
   async createKitchenUser(dto: CreateKitchenUserDto){
     try{
       const kitchenUser = await this.kitchenUserModel.create({
-        ...dto
+        ...dto,
+        password: await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT')),
       })
 
       const kitchen = await this.kitchenService.getKitchen(dto.kitchen)
 
       if(kitchen){
-        // await kitchens.$set('kitchens', [kitchens.id])
+        await kitchenUser.$set('kitchen', [kitchen.id])
       }else{
         this.logger.error(`Error in kitchen-users.service.ts - 'kitchen' is not found`);
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
@@ -42,7 +44,7 @@ export class KitchenUsersService {
     }
   }
 
-  // Getting kitchens users
+  // Getting kitchen users
   async getKitchenUsers(){
     return await this.kitchenUserModel.findAll({
       where: { active: true },
@@ -50,12 +52,12 @@ export class KitchenUsersService {
     });
   }
 
-  // Getting a kitchens user
+  // Getting a kitchen user
   async getKitchenUser(id: number){
     return await this.kitchenUserModel.findByPk(id, { include: { all: true } });
   }
 
-  // Editing a kitchens user
+  // Editing a kitchen user
   async modifyKitchenUser(id: number, dto: UpdateKitchenUserDto){
     const kitchenUser = await this.kitchenUserModel.update(dto,{
       where: { id },
@@ -74,10 +76,16 @@ export class KitchenUsersService {
       throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
+    if(dto.password){
+      kitchenUser.password = await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT'))
+
+      await kitchenUser.save()
+    }
+
     return await this.kitchenUserModel.findByPk(kitchenUser.id, { include: { all: true } })
   }
 
-  // Removing a kitchens user
+  // Removing a kitchen user
   async removeKitchenUser(id: number){
     const kitchenUser = await this.kitchenUserModel.update({ active: false },{
       where: { id },
@@ -96,6 +104,6 @@ export class KitchenUsersService {
       throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
     }
 
-    return kitchenUser
+    return this.kitchenUserModel.findByPk(kitchenUser.id, { include: { all: true } })
   }
 }

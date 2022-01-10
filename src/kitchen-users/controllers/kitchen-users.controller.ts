@@ -1,19 +1,19 @@
 import {
-  Body, Controller, Delete, Get, Param, Post, Put,
-  UseGuards
+  Body, Controller, Delete, Get, Param,
+  Post, Put, UseGuards
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { KitchenUsersService } from '../services/kitchen-users.service';
 import { KitchenUser } from '../models/kitchen-users.model';
 import { CreateKitchenUserDto } from '../dto/create-kitchen-user.dto';
-import { KitchenUsersService } from '../services/kitchen-users.service';
 import { UpdateKitchenUserDto } from '../dto/update-kitchen-user.dto';
 
 
 @ApiTags('Kitchen Users')
 @UseGuards(JwtAuthGuard)
-@Controller('kitchens/users')
+@Controller('kitchen-users')
 export class KitchenUsersController {
   constructor(private kitchenUserService: KitchenUsersService) {}
 
