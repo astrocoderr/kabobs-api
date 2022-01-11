@@ -1,7 +1,12 @@
 import {
-  Column, DataType, Model, Table
+  BelongsToMany,
+  Column, DataType, Model, Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
+
+import { Customer } from '../../customers/models/customers.model';
+import { CustomerPromocodesAssociations } from './customer-promocodes-associations.model';
+
 
 // promocode creation attributes
 interface PromocodeFields {
@@ -52,4 +57,7 @@ export class Promocode extends Model<Promocode, PromocodeFields>{
   @ApiProperty({ example: true, description: 'is promocode is active' })
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
   active: boolean;
+
+  @BelongsToMany(() => Customer, () => CustomerPromocodesAssociations)
+  customer: Customer[]
 }
