@@ -32,60 +32,97 @@ export class OrdersService {
   // Creating an order
   async createOrder(dto: CreateOrderDto){
     try{
-      const order = await this.orderModel.create(dto)
-
       // managerID
-      const user = await this.userService.getUser(dto.userID)
+      const manager = await this.userService.getUser(dto.managerID)
 
-      if(user){
-        await order.$set('user', [user.id])
-      }else {
-        this.logger.error(`Error in orders.service.ts - 'user' is not found`);
+      if(!manager){
+        this.logger.error(`Error in orders.service.ts - 'manager' is not found`);
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
 
       // customerID
       const customer = await this.customerService.getCustomer(dto.customerID)
 
-      if(customer){
-        await order.$set('customer', [customer.id])
-      }else {
+      if(!customer){
         this.logger.error(`Error in orders.service.ts - 'customer' is not found`);
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
 
-      // promocodeID
-      const promocode = await this.promocodeService.getPromocode(dto.promocodeID)
+      // creatorID
+      const creator = await this.userService.getUser(dto.managerID)
 
-      if(promocode){
-        await order.$set('promocode', [promocode.id])
-      }else{
-        this.logger.error(`Error in orders.service.ts - 'promocode' is not found`);
+      if(!creator){
+        this.logger.error(`Error in orders.service.ts - 'creator' is not found`);
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
+
+      let promocode;
+
+      if(dto.promocodeID){
+        // promocodeID
+        promocode = await this.promocodeService.getPromocode(dto.promocodeID)
+
+        if(!promocode){
+          this.logger.error(`Error in orders.service.ts - 'promocode' is not found`);
+          throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        }
       }
 
       // addressID
       const address = await this.addressService.getAddress(dto.addressID)
 
-      if(address){
-        await order.$set('address', [address.id])
-      }else{
+      if(!address){
         this.logger.error(`Error in orders.service.ts - 'address' is not found`);
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
 
+
+      const order = await this.orderModel.create({
+        ...dto,
+        creatorID: creator.id
+      })
+
       // meals logic
       const orderDays = await this.orderDaysService.createOrderDay({
         ...dto,
+        creatorID: creator.id,
         orderID: order.id,
         date: order.startDate
       })
 
-      if(orderDays){
-        await order.$set('address', [orderDays.id])
-      }else{
+      if(!orderDays){
         this.logger.error(`Error in orders.service.ts - 'orderDays' is not found`);
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
+
+      try{
+        await order.$set('manager', [manager.id])
+      }catch(ex){
+
+      }
+
+      try{
+        await order.$set('customer', [customer.id])
+      }catch(ex){
+
+      }
+
+      try{
+        await order.$set('creator', [manager.id])
+      }catch(ex){
+
+      }
+
+      // try{
+      //   await order.$set('o', [orderDays.id])
+      // }catch(ex){
+      //
+      // }
+
+      try{
+        await order.$set('address', [address.id])
+      }catch(ex){
+
       }
 
       return await this.orderModel.findByPk(order.id, { include: { all: true } })
