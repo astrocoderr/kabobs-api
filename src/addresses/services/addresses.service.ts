@@ -14,42 +14,95 @@ export class AddressesService {
   ) {}
 
   async createAddress(dto: CreateAddressDto){
-    return await this.addressModel.create(dto);
+    try{
+      const address = await this.addressModel.create(dto);
+
+      return {
+        success: true,
+        message: 'Address created successfully',
+        data: {
+          address
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in addresses.service.ts - 'createAddress()'. ${ex.name}. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: `${ex.name}. ${ex.message}`,
+        data: {}
+      }, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async getAddresses(){
     try{
-      return await this.addressModel.findAll({ where: { active: true } })
+      const addresses = await this.addressModel.findAll({ where: { active: true } })
+
+      return {
+        success: true,
+        message: 'Addresses fetched successfully',
+        data: {
+          addresses
+        }
+      }
     }catch(ex){
       this.logger.error(
         `Error in addresses.service.ts - 'getAddresses()'. ${ex.name}. ${ex.message}
       `);
-      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
+      throw new HttpException({
+        success: false,
+        message: `${ex.name}. ${ex.message}`,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   async getAddress(id: number){
-    return await this.addressModel.findOne({ where: { id } })
+    try{
+      const address = await this.addressModel.findOne({ where: { id } })
+
+      return {
+        success: true,
+        message: 'Address fetched successfully',
+        data: {
+          address
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in addresses.service.ts - 'getAddress()'. ${ex.name}. ${ex.message}
+      `);
+      throw new HttpException({
+        success: false,
+        message: `${ex.name}. ${ex.message}`,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   async removeAddress(id: number){
-    const address = await this.addressModel.update({ active: false }, {
+    return await this.addressModel.update({ active: false }, {
       where: { id },
       returning: true
     })
       .then(newData => {
-        return newData[1][0]
+        return {
+          success: true,
+          message: 'Address removed successfully',
+          data: {
+            address: newData[1][0]
+          }
+        }
       })
       .catch(error => {
-        this.logger.error(`Error in addresses.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        this.logger.error(`Error in addresses.service.ts - 'removeAddress()'. ${error}`);
+        throw new HttpException({
+          success: false,
+          message: error,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
       })
-
-    if(!address){
-      this.logger.error(`Error in addresses.service.ts - 'address' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
-    }
-
-    return address
   }
 }
