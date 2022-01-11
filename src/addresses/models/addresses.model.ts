@@ -84,7 +84,4 @@ export class Addresses extends Model<Addresses, AddressesFields>{
 
   @BelongsToMany(() => Kitchen, () => KitchenAddressesAssociations)
   kitchen: Kitchen[]
-
-  @ForeignKey(() => Kitchen)
-  kitchenID: number
 }
