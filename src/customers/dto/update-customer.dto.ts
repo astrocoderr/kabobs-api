@@ -64,7 +64,7 @@ export class UpdateCustomerDto {
 
   @ApiProperty({ example: '1', description: 'manager identifier' })
   @IsNumber()
-  userID: number;
+  managerID: number;
 
   @ApiProperty({ example: 'qwerty1234', description: 'password' })
   @IsString()

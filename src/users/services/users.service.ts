@@ -35,6 +35,7 @@ export class UsersService {
         ...dto,
         password: await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT'))
       })
+
       const role = await this.roleService.getRole(dto.role)
 
       if(role){
