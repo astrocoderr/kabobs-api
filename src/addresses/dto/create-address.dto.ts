@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString, ValidateIf } from 'class-validator';
 
 export class CreateAddressDto{
   @ApiProperty({ example: 'Delaware, St. Riston 1A-22', description: 'full address' })
@@ -24,7 +24,8 @@ export class CreateAddressDto{
 
   @ApiProperty({ example: 'smth', description: 'smth' })
   @IsString()
-  readonly neighbourhood: string;
+  @ValidateIf((object, value) => value !== null)
+  readonly neighbourhood!: string | null;
 
   @ApiProperty({ example: '12345', description: "address's zipcode" })
   @IsNumber()
