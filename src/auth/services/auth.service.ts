@@ -21,8 +21,30 @@ export class AuthService {
 
   // Authorization
   async signin(dto: AuthDto) {
-    const user = await this.validateUser(dto)
-    return this.generateToken(user)
+    try{
+      const user = await this.validateUser(dto)
+
+      const token = await this.generateToken(user)
+      // const resfreshToken = await this.generateRefreshToken(token)
+
+      return {
+        success: true,
+        message: 'User authorized successfully',
+        data: {
+          token,
+          user
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in auth.service.ts - 'signin()'. ${ex.name}. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: `${ex.name}. ${ex.message}`,
+        data: {}
+      }, HttpStatus.BAD_REQUEST);
+    }
   }
 
 
@@ -31,30 +53,73 @@ export class AuthService {
     const user = await this.userService.getUserByEmail(dto.email)
 
     if(!user){
-      this.logger.error(`Error in auth.service.ts - 'user' is not found`);
-      throw new HttpException('Email is not correct', HttpStatus.BAD_REQUEST);
+      this.logger.error(
+        `Error in auth.service.ts - 'validateUser()'. User not found`
+      );
+      throw new HttpException({
+        success: false,
+        message: `User not found`,
+        data: {}
+      }, HttpStatus.BAD_REQUEST);
     }
 
     const password = await bcrypt.compare(dto.password, user.password)
 
     if(!password){
-      this.logger.error(`Error in auth.service.ts - 'password' is not found`);
-      throw new HttpException('Password is not correct', HttpStatus.BAD_REQUEST);
+      this.logger.error(
+        `Error in auth.service.ts - 'validateUser()'. Password not found`
+      );
+      throw new HttpException({
+        success: false,
+        message: `Password not found`,
+        data: {}
+      }, HttpStatus.BAD_REQUEST);
     }
 
     return user
   }
 
-  // Generate Token For User
+  // Generate token for user
   private async generateToken(user: User){
     const payload = { email: user.email, id: user.id }
 
-    const token = this.jwtService.sign(payload)
-    await this.redisService.set(token, { hello: 'world' })
+    try{
+      const token = this.jwtService.sign(payload)
+      await this.redisService.set(token, { user })
 
-    return {
-      token
+      return { token }
+    }catch(ex){
+      this.logger.error(
+        `Error in auth.service.ts - 'generateToken()'. ${ex.name}. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: `Token error`,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
   }
 
+  // Generate refresh token for user
+  private async generateRefreshToken(token: string){
+    const payload = { token }
+
+    try{
+      const refreshToken = this.jwtService.sign(payload)
+      await this.redisService.set(token, { token })
+
+      return {
+        refreshToken
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in auth.service.ts - 'generateRefreshToken()'. ${ex.name}. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: `Refresh token error`,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
+  }
 }
