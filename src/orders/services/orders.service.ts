@@ -71,7 +71,7 @@ export class OrdersService {
       // addressID
       const address = await this.addressService.getAddress(dto.addressID)
 
-      if(!address){
+      if(!address.success){
         this.logger.error(`Error in orders.service.ts - 'address' is not found`);
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
@@ -120,7 +120,7 @@ export class OrdersService {
       // }
 
       try{
-        await order.$set('address', [address.id])
+        await order.$set('address', [address.data.address.id])
       }catch(ex){
 
       }

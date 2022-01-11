@@ -28,8 +28,8 @@ export class KitchensService {
 
       const address = await this.addressService.getAddress(dto.address)
 
-      if(address){
-        await kitchen.$set('address', [address.id])
+      if(address.success){
+        await kitchen.$set('address', [address.data.address.id])
       }else{
         this.logger.error(`Error in kitchens.service.ts - 'address' is not found`);
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);

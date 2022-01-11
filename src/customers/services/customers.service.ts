@@ -34,8 +34,8 @@ export class CustomersService {
 
       const address = await this.addressService.getAddress(dto.address)
 
-      if(address){
-        await customer.$set('address', [address.id])
+      if(address.success){
+        await customer.$set('address', [address.data.address.id])
       }else{
         this.logger.error(`Error in customers.service.ts - 'address' is not found`);
         throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
