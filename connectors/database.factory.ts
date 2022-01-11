@@ -30,7 +30,22 @@ import {
 import {
   IngredientTechcardsAssociations,
 } from '../src/techcards/models/ingredient-techcards-associations.model';
-import { KitchenUserKitchensAssociations } from '../src/kitchens/models/kitchen-user-kitchens-associations.model';
+import {
+  KitchenUserKitchensAssociations
+} from '../src/kitchens/models/kitchen-user-kitchens-associations.model';
+import {
+  CustomerOrdersAssociations
+} from '../src/orders/models/customer-orders-associations';
+import {
+  ManagerOrdersAssociations
+} from '../src/orders/models/manager-orders-associations.model';
+import {
+  CreatorOrdersAssociations
+} from '../src/orders/models/creator-orders-associations.model';
+import {
+  CustomerPromocodesAssociations
+} from '../src/promocodes/models/customer-promocodes-associations.model';
+import { UserCustomersAssociations } from '../src/customers/models/user-customers-associations.model';
 
 
 export const databaseFactory = (configService) => ({
@@ -41,10 +56,13 @@ export const databaseFactory = (configService) => ({
   username: configService.get('DB.USER'),
   password: configService.get('DB.PASS'),
   models: [
-    User, Role, UserRolesAssociations, Customer, Addresses, CustomerAddressesAssociations,
-    Promocode, Order, OrderAddressesAssociations, Kitchen, KitchenAddressesAssociations,
-    KitchenUser, KitchenUserKitchensAssociations, OrderDays, GroupIngredient,
-    Ingredient, IngredientGroupAssociations, Techcard, IngredientTechcardsAssociations
+    User, Role, UserRolesAssociations, Customer, UserCustomersAssociations, Addresses,
+    CustomerAddressesAssociations, Promocode, CustomerPromocodesAssociations,
+    Order, CustomerOrdersAssociations,
+    ManagerOrdersAssociations, CreatorOrdersAssociations, OrderAddressesAssociations,
+    Kitchen, KitchenAddressesAssociations, KitchenUser, KitchenUserKitchensAssociations,
+    OrderDays, GroupIngredient, Ingredient, IngredientGroupAssociations, Techcard,
+    IngredientTechcardsAssociations
   ],
   autoLoadModels: configService.get('DB.AUTOLOADMODELS')
 })
