@@ -1,5 +1,5 @@
 import {
-  BelongsToMany, Column, DataType, Model, Table
+  BelongsToMany, Column, DataType, HasMany, Model, Table
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -7,6 +7,7 @@ import { Role } from '../../roles/models/roles.model';
 import {
   UserRolesAssociations
 } from '../../roles/models/user-roles-associations.model';
+import { Customer } from '../../customers/models/customers.model';
 
 
 // user creation attributes
@@ -109,4 +110,25 @@ export class User extends Model<User, UserFields>{
   @ApiProperty({ example: '1826', description: "user's identifier in bitrix system" })
   @Column({ type: DataType.INTEGER, unique: true, allowNull: true })
   bitrixID: number;
+
+  @ApiProperty({
+    example: {
+      id: 1,
+      name: "user",
+      description: "role for user",
+      createdAt: "2021-11-12T01:20:50.480Z",
+      updatedAt: "2021-11-12T01:20:50.480Z",
+      UserRoles: {
+        id: 15,
+        roleID: 1,
+        userID: 30,
+        createdAt: "2021-11-13T22:31:21.118Z",
+        updatedAt: "2021-11-13T22:31:21.118Z"
+      }
+    },
+    type: 'object',
+    description: 'role identifier'
+  })
+  @HasMany(() => Customer)
+  customer: number;
 }
