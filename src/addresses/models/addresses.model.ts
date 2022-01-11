@@ -54,7 +54,7 @@ export class Addresses extends Model<Addresses, AddressesFields>{
   lon: number;
 
   @ApiProperty({ example: 'Avenue, 1C', description: 'road address' })
-  @Column({ type: DataType.STRING, allowNull: true, defaultValue: null })
+  @Column({ type: DataType.STRING, allowNull: true })
   road: string;
 
   @ApiProperty({ example: '42a BBC', description: 'house number' })
@@ -62,7 +62,7 @@ export class Addresses extends Model<Addresses, AddressesFields>{
   houseNumber: string;
 
   @ApiProperty({ example: 'smth', description: 'smth' })
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: true })
   neighbourhood: string;
 
   @ApiProperty({ example: '12345', description: "address's zipcode" })
