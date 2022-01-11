@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean, IsDateString, IsEmail, IsNumber,
   IsPhoneNumber, IsString, Matches, MaxLength,
-  MinLength
+  MinLength, ValidateIf,
 } from 'class-validator';
 
 export class CreateCustomerDto {
@@ -56,15 +56,17 @@ export class CreateCustomerDto {
 
   @ApiProperty({ example: 'false', description: 'is customer is vip' })
   @IsBoolean()
-  isVIP: boolean;
+  @ValidateIf((object, value) => value !== null)
+  isVIP!: boolean | null;
 
   @ApiProperty({ example: 'cz', description: "customer's preferred system language" })
   @IsString()
-  language: string;
+  @ValidateIf((object, value) => value !== null)
+  language!: string | null;
 
   @ApiProperty({ example: '1', description: 'manager identifier' })
   @IsNumber()
-  userID: number;
+  managerID: number;
 
   @ApiProperty({ example: 'qwerty1234', description: 'password' })
   @IsString()

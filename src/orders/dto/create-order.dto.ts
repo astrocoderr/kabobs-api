@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsBoolean, IsDateString, IsNumber, IsString
+  IsDateString, IsNumber, IsString, ValidateIf,
 } from 'class-validator';
 
 export class CreateOrderDto {
@@ -10,15 +10,12 @@ export class CreateOrderDto {
 
   @ApiProperty({ example: '68', description: "manger's identifier" })
   @IsNumber()
-  userID: number;
-
-  @ApiProperty({ example: '55', description: "creator's identifier" })
-  @IsNumber()
-  creatorID: number;
+  managerID: number;
 
   @ApiProperty({ example: '4', description: "promocode's identifier" })
   @IsNumber()
-  promocodeID: number;
+  @ValidateIf((object, value) => value !== null)
+  promocodeID!: number | null;
 
   @ApiProperty({ example: '200', description: 'kcal' })
   @IsNumber()
@@ -42,11 +39,13 @@ export class CreateOrderDto {
 
   @ApiProperty({ example: 'new meal from spain', description: "kitchens's comment" })
   @IsString()
-  kitchenComment: string;
+  @ValidateIf((object, value) => value !== null)
+  kitchenComment!: string | null;
 
   @ApiProperty({ example: 'new address without roads', description: "delivery's comment" })
   @IsString()
-  deliveryComment: string;
+  @ValidateIf((object, value) => value !== null)
+  deliveryComment!: string | null;
 
   @ApiProperty({ example: '2021-11-11T10:00:00:000Z', description: 'start date' })
   @IsDateString()
@@ -79,15 +78,13 @@ export class CreateOrderDto {
 
   @ApiProperty({ example: '2,11,98', description: 'ignored meals identifiers' })
   @IsString()
-  ignoredMeals: string;
-
-  @ApiProperty({ example: true, description: 'is orders is active' })
-  @IsBoolean()
-  active: boolean;
+  @ValidateIf((object, value) => value !== null)
+  ignoredMeals!: string | null;
 
   @ApiProperty({ example: '2021-11-12T06:20:56.582Z', description: 'delivery time' })
   @IsDateString()
-  deliveryTime: Date;
+  @ValidateIf((object, value) => value !== null)
+  deliveryTime!: Date | null;
 
   @ApiProperty({ example: 1, description: 'new' })
   @IsNumber()

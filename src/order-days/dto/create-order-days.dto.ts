@@ -68,9 +68,24 @@ export class CreateOrderDayDto {
   @IsString()
   ignoredMeals: string;
 
-  @ApiProperty({ example: true, description: 'is orders is active' })
-  @IsBoolean()
-  active: boolean;
+  @ApiProperty({ example: '2021-11-11T10:00:00:000Z', description: 'start date' })
+  @IsDateString()
+  startDate: Date;
+
+  @ApiProperty({
+    example: '5',
+    description: 'how long will proceed orders. start date + 5 days'
+  })
+  @IsNumber()
+  length: number;
+
+  @ApiProperty({
+    example: '3',
+    description: 'week size, f.i. 3 means 3 days continuously, days starts from monday'
+  })
+  @IsNumber()
+  weekSize: number;
+  
 
   // @ApiProperty({ example: 1, description: "kitchen's identifier" })
   // @IsNumber()

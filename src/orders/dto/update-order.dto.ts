@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsBoolean, IsDateString, IsNumber, IsString
+  IsBoolean, IsDateString, IsNumber, IsString, ValidateIf,
 } from 'class-validator';
 
 export class UpdateOrderDto {
@@ -10,15 +10,12 @@ export class UpdateOrderDto {
 
   @ApiProperty({ example: '68', description: "manger's identifier" })
   @IsNumber()
-  userID: number;
-
-  @ApiProperty({ example: '55', description: "creator's identifier" })
-  @IsNumber()
-  creatorID: number;
+  managerID: number;
 
   @ApiProperty({ example: '4', description: "promocode's identifier" })
   @IsNumber()
-  promocodeID: number;
+  @ValidateIf((object, value) => value !== null)
+  promocodeID!: number | null;
 
   @ApiProperty({ example: '200', description: 'kcal' })
   @IsNumber()
@@ -35,6 +32,20 @@ export class UpdateOrderDto {
   @ApiProperty({ example: '68', description: 'carb' })
   @IsNumber()
   carb: number;
+
+  @ApiProperty({ example: '23', description: "address's identifier" })
+  @IsNumber()
+  addressID: number;
+
+  @ApiProperty({ example: 'new meal from spain', description: "kitchens's comment" })
+  @IsString()
+  @ValidateIf((object, value) => value !== null)
+  kitchenComment!: string | null;
+
+  @ApiProperty({ example: 'new address without roads', description: "delivery's comment" })
+  @IsString()
+  @ValidateIf((object, value) => value !== null)
+  deliveryComment!: string | null;
 
   @ApiProperty({ example: '2021-11-11T10:00:00:000Z', description: 'start date' })
   @IsDateString()
@@ -65,25 +76,15 @@ export class UpdateOrderDto {
   @IsNumber()
   price: number;
 
-  @ApiProperty({ example: true, description: 'is orders is active' })
-  @IsBoolean()
-  active: boolean;
-
   @ApiProperty({ example: '2,11,98', description: 'ignored meals identifiers' })
   @IsString()
-  ignoredMeals: string;
-
-  @ApiProperty({ example: 'new meal from spain', description: "kitchens's comment" })
-  @IsString()
-  kitchenComment: string;
-
-  @ApiProperty({ example: 'new address without roads', description: "delivery's comment" })
-  @IsString()
-  deliveryComment: string;
+  @ValidateIf((object, value) => value !== null)
+  ignoredMeals!: string | null;
 
   @ApiProperty({ example: '2021-11-12T06:20:56.582Z', description: 'delivery time' })
   @IsDateString()
-  deliveryTime: Date;
+  @ValidateIf((object, value) => value !== null)
+  deliveryTime!: Date | null;
 
   @ApiProperty({ example: 1, description: 'new' })
   @IsNumber()
@@ -92,4 +93,10 @@ export class UpdateOrderDto {
   @ApiProperty({ example: 1, description: 'web' })
   @IsNumber()
   source: number;
+
+
+  @ApiProperty({ example: true, description: 'is orders is active' })
+  @IsBoolean()
+  @ValidateIf((object, value) => value !== null)
+  active!: boolean | null;
 }
