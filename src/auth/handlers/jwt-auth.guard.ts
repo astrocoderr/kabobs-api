@@ -1,6 +1,6 @@
 import {
-  CanActivate, ExecutionContext, Inject, Injectable,
-  UnauthorizedException
+  CanActivate, ExecutionContext, HttpException, HttpStatus, Inject, Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -26,16 +26,24 @@ export class JwtAuthGuard implements CanActivate{
       const token = authHeader.split(' ')[1];
 
       if(bearer != this.configService.get('JWT.BEARER') || !token){
-        this.logger.error(`Error in jwt-auth.guard.ts - Bearer or Token is undefined`);
-        throw new UnauthorizedException({ message: 'User unauthorized' });
+        this.logger.error(`Error in jwt-auth.guard.ts - 'canActivate()'. Bearer or Token undefined`);
+        throw new UnauthorizedException({
+          success: false,
+          message: `User unauthorized`,
+          data: {}
+        });
       }
 
       req.user = this.jwtService.verify(token);
 
       return true;
     }catch(ex){
-      this.logger.error(`Error in jwt-auth.guard.ts - ${ex}`);
-      throw new UnauthorizedException({ message: 'User unauthorized' });
+      this.logger.error(`Error in jwt-auth.guard.ts - ${ex.message}`);
+      throw new UnauthorizedException({
+        success: false,
+        message: `User unauthorized`,
+        data: {}
+      });
     }
   }
 }

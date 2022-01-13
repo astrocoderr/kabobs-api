@@ -23,87 +23,222 @@ export class KitchenUsersService {
   // Creating a kitchen user
   async createKitchenUser(dto: CreateKitchenUserDto){
     try{
+      const kitchen = await this.kitchenService.getKitchen(dto.kitchen)
+
+      if(!kitchen.success){
+        this.logger.error(`Error in kitchen-users.service.ts - 'createkitchenUser()'. Kitchen user not found`);
+        throw new HttpException({
+          success: false,
+          message: `Kitchen user not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
       const kitchenUser = await this.kitchenUserModel.create({
         ...dto,
         password: await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT')),
       })
 
-      const kitchen = await this.kitchenService.getKitchen(dto.kitchen)
+      await kitchenUser.$set('kitchen', [kitchen.data.kitchen.id])
 
-      if(kitchen){
-        await kitchenUser.$set('kitchen', [kitchen.id])
-      }else{
-        this.logger.error(`Error in kitchen-users.service.ts - 'kitchen' is not found`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      const newKitchenUser = await this.kitchenUserModel.findByPk(kitchen.data.kitchen.id, {
+        include: { all: true }
+      })
+
+      return {
+        success: true,
+        message: 'Kitchen user created successfully',
+        data: {
+          kitchenUser: newKitchenUser
+        }
       }
-
-      return await this.kitchenUserModel.findByPk(kitchen.id, { include: { all: true } })
     }catch(ex){
-      this.logger.error(`Error in kitchens-users.service.ts - '${ex}'`);
-      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
+      this.logger.error(
+        `Error in kitchens-users.service.ts - 'createKitchenUser()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting kitchen users
   async getKitchenUsers(){
-    return await this.kitchenUserModel.findAll({
-      where: { active: true },
-      include: { all: true }
-    });
+    try{
+      const kitchenUsers = await this.kitchenUserModel.findAll({
+        where: { active: true },
+        include: { all: true }
+      });
+
+      return {
+        success: true,
+        message: 'Kitchen users fetched successfully',
+        data: {
+          kitchenUsers
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in kitchens-users.service.ts - 'getKitchenUsers()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Getting a kitchen user
   async getKitchenUser(id: number){
-    return await this.kitchenUserModel.findByPk(id, { include: { all: true } });
+    try{
+      const kitchenUser = await this.kitchenUserModel.findByPk(id, { include: { all: true } });
+
+      if(!kitchenUser){
+        this.logger.error(
+          `Error in kitchens-users.service.ts - 'getKitchenUser()'. Kitchen user not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Kitchen user not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Kitchen user fetched successfully',
+        data: {
+          kitchenUser
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in kitchens-users.service.ts - 'getKitchenUser()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Editing a kitchen user
   async modifyKitchenUser(id: number, dto: UpdateKitchenUserDto){
-    const kitchenUser = await this.kitchenUserModel.update(dto,{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const kitchenUser = await this.kitchenUserModel.update(dto,{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in kitchen-users.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in kitchens-users.service.ts - 'modifyKitchenUser()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
+
+      if(!kitchenUser){
+        this.logger.error(
+          `Error in kitchens-users.service.ts - 'modifyKitchenUser()'. Kitchen user not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Kitchen user not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      if(dto.password){
+        kitchenUser.password = await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT'))
+
+        await kitchenUser.save()
+      }
+
+      const newKitchenUser = await this.kitchenUserModel.findByPk(kitchenUser.id, {
+        include: { all: true }
       })
 
-    if(!kitchenUser){
-      this.logger.error(`Error in kitchen-users.service.ts - 'kitchenUser' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      return {
+        success: true,
+        message: 'Kitchen user modified successfully',
+        data: {
+          kitchenUser: newKitchenUser
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in kitchens-users.service.ts - 'modifyKitchenUser()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    if(dto.password){
-      kitchenUser.password = await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT'))
-
-      await kitchenUser.save()
-    }
-
-    return await this.kitchenUserModel.findByPk(kitchenUser.id, { include: { all: true } })
   }
 
   // Removing a kitchen user
   async removeKitchenUser(id: number){
-    const kitchenUser = await this.kitchenUserModel.update({ active: false },{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const kitchenUser = await this.kitchenUserModel.update({ active: false },{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in kitchen-users.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in kitchens-users.service.ts - 'removeKitchenUser()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
+
+      if(!kitchenUser){
+        this.logger.error(
+          `Error in kitchens-users.service.ts - 'removeKitchenUser()'. Kitchen user not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Kitchen user not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const newKitchenUser = await this.kitchenUserModel.findByPk(kitchenUser.id, {
+        include: { all: true }
       })
 
-    if(!kitchenUser){
-      this.logger.error(`Error in kitchen-users.service.ts - 'kitchenUsers' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      return {
+        success: true,
+        message: 'Kitchen user removed successfully',
+        data: {
+          kitchenUser: newKitchenUser
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in kitchens-users.service.ts - 'removeKitchenUser()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return this.kitchenUserModel.findByPk(kitchenUser.id, { include: { all: true } })
   }
 }

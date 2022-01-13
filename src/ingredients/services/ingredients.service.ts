@@ -22,77 +22,216 @@ export class IngredientsService {
   // Creating an ingredient
   async createIngredient(dto: CreateIngerdientDto){
     try{
-      const ingredient = await this.ingredientModel.create(dto)
 
       const groupIngredient = await this.groupIngredientService.getGroupIngredient(dto.group)
 
-      if(groupIngredient){
-        await ingredient.$set('group', [groupIngredient.id])
-      }else{
+      if(!groupIngredient.success){
         this.logger.error(
-          `Error in ingredient.service.ts - 'createIngredient'. createIngredient is not found`
+          `Error in ingredient.service.ts - 'craeteIngredient()'. Group ingredient not found`
         );
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        throw new HttpException({
+          success: false,
+          message: `Group ingredient not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
       }
 
-      return await this.ingredientModel.findByPk(ingredient.id, { include: { all: true } })
+      const ingredient = await this.ingredientModel.create(dto)
+
+      await ingredient.$set('group', [groupIngredient.data.groupIngredient.id])
+
+      const newIngredient = await this.ingredientModel.findByPk(ingredient.id, { include: { all: true } })
+
+      return {
+        success: true,
+        message: 'Ingredient created successfully',
+        data: {
+          ingredient: newIngredient
+        }
+      }
     }catch(ex){
-      this.logger.error(`Error in ingredient.service.ts - '${ex}'`);
-      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
+      this.logger.error(
+        `Error in ingredient.service.ts - 'craeteIngredient()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting ingredients
   async getIngredients(){
-    return await this.ingredientModel.findAll({ where: { active: true }, include: { all: true } });
+    try{
+      const ingredients = await this.ingredientModel.findAll(
+        {
+          where: { active: true },
+          include: { all: true }
+        }
+      );
+
+      return {
+        success: true,
+        message: 'Ingredients fetched successfully',
+        data: {
+          ingredients
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in ingredient.service.ts - 'getIngredients()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Getting an ingredient
   async getIngredient(id: number){
-    return await this.ingredientModel.findByPk(id, { include: { all: true }});
+    try{
+      const ingredient = await this.ingredientModel.findByPk(id, { include: { all: true }});
+
+      if(!ingredient){
+        this.logger.error(
+          `Error in ingredient.service.ts - 'getIngredient()'. Ingredient not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Ingredient not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Ingredient fetched successfully',
+        data: {
+          ingredient
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in ingredient.service.ts - 'getIngredient()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Editing a ingredient
   async modifyIngredient(id: number, dto: UpdateIngredientDto){
-    const ingredient = await this.ingredientModel.update(dto,{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const ingredient = await this.ingredientModel.update(dto,{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in ingredient.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in ingredient.service.ts - 'modifyIngredient()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
+
+      if(!ingredient){
+        this.logger.error(
+          `Error in ingredient.service.ts - 'modifyIngredient()'. Ingredient not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Ingredient not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const newIngredient = await this.ingredientModel.findByPk(ingredient.id, {
+        include: { all: true }
       })
 
-    if(!ingredient){
-      this.logger.error(`Error in ingredient.service.ts - 'ingredient' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      return {
+        success: true,
+        message: 'Ingredient modified successfully',
+        data: {
+          ingredient: newIngredient
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in ingredient.service.ts - 'modifyIngredient()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return await this.ingredientModel.findByPk(ingredient.id)
   }
 
   // Removing an ingredient
   async removeIngredient(id: number){
-    const ingredient = await this.ingredientModel.update({ active: false },{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const ingredient = await this.ingredientModel.update({ active: false },{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in ingredient.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in ingredient.service.ts - 'removeIngredient()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
+
+      if(!ingredient){
+        this.logger.error(
+          `Error in ingredient.service.ts - 'removeIngredient()'. Ingredient not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Ingredient not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const newIngredient = await this.ingredientModel.findByPk(ingredient.id, {
+        include: { all: true }
       })
 
-    if(!ingredient){
-      this.logger.error(`Error in ingredient.service.ts - 'ingredient' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      return {
+        success: true,
+        message: 'Ingredient removed successfully',
+        data: {
+          ingredient: newIngredient
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in ingredient.service.ts - 'removeIngredient()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return ingredient
   }
 }

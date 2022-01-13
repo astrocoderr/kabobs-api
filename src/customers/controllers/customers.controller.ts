@@ -25,21 +25,21 @@ export class CustomersController {
   @ApiResponse({ status: 200, type: Customer })
   @Post('/ban')
   ban(@Body() dto: BanCustomerDto){
-    return this.customerService.ban(dto)
+    return this.customerService.banCustomer(dto)
   }
 
   @ApiOperation({ summary: 'Getting banned customers' })
   @ApiResponse({ status: 200, type: [Customer] })
   @Get('/ban')
   getBanned(){
-    return this.customerService.getBanned()
+    return this.customerService.getBannedCustomers()
   }
 
   @ApiOperation({ summary: 'Unbanning a customer' })
   @ApiResponse({ status: 200, type: Customer })
   @Post('/unban')
   unban(@Body() dto: UnbanCustomerDto){
-    return this.customerService.unban(dto)
+    return this.customerService.unbanCustomer(dto)
   }
 
   // Customer CRUD

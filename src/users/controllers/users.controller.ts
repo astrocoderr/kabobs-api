@@ -32,35 +32,35 @@ export class UsersController {
   @ApiResponse({ status: 200, type: User })
   @Post('/roles')
   addRole(@Body() dto: AddRoleUserDto){
-    return this.userService.addRole(dto)
+    return this.userService.addUserRole(dto)
   }
 
   @ApiOperation({ summary: 'Removing employee roles' })
   @ApiResponse({ status: 200, type: User })
   @Delete('/:id/roles/:roleID')
   removeRole(@Param('id') id: number, @Param('roleID') roleID: number){
-    return this.userService.removeRole(id, roleID)
+    return this.userService.subtractUserRole(id, roleID)
   }
 
   @ApiOperation({ summary: 'Banning an employee' })
   @ApiResponse({ status: 200, type: User })
   @Post('/ban')
   ban(@Body() dto: BanUserDto){
-    return this.userService.ban(dto)
+    return this.userService.banUser(dto)
   }
 
   @ApiOperation({ summary: 'Getting banned employees' })
   @ApiResponse({ status: 200, type: [User] })
   @Get('/ban')
   getBanned(){
-    return this.userService.getBanned()
+    return this.userService.getBannedUsers()
   }
 
   @ApiOperation({ summary: 'Unbanning an employee' })
   @ApiResponse({ status: 200, type: User })
   @Post('/unban')
   unban(@Body() dto: UnbanUserDto){
-    return this.userService.unban(dto)
+    return this.userService.unbanUser(dto)
   }
 
   // User CRUD

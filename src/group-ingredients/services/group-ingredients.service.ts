@@ -22,64 +22,187 @@ export class GroupIngredientsService {
     try{
       const groupIngredient = await this.groupIngredientModel.create(dto)
 
-      return await this.groupIngredientModel.findByPk(groupIngredient.id)
+      // const newGroupIngredient = await this.groupIngredientModel.findByPk(groupIngredient.id)
+
+      return {
+        success: true,
+        message: 'Group ingredient created successfully',
+        data: {
+          groupIngredient
+        }
+      }
     }catch(ex){
-      this.logger.error(`Error in group-ingredient.service.ts - '${ex}'`);
-      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
+      this.logger.error(
+        `Error in group-ingredient.service.ts - 'createGroupIngredient()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting group ingredients
   async getGroupIngredients(){
-    return await this.groupIngredientModel.findAll({ where: { active: true } });
+    try{
+      const groupIngredients = await this.groupIngredientModel.findAll({ where: { active: true } });
+
+      return {
+        success: true,
+        message: 'Group ingredients fetched successfully',
+        data: {
+          groupIngredients
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in group-ingredient.service.ts - 'getGroupIngredients()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Getting a group ingredient
   async getGroupIngredient(id: number){
-    return await this.groupIngredientModel.findByPk(id);
+    try{
+      const groupIngredient = await this.groupIngredientModel.findByPk(id);
+
+      if(!groupIngredient){
+        this.logger.error(
+          `Error in group-ingredient.service.ts - 'getGroupIngredient()'. Group ingredient not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Group ingredient not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Group ingredient fetched successfully',
+        data: {
+          groupIngredient
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in group-ingredient.service.ts - 'getGroupIngredient()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Editing a group ingredient
   async modifyGroupIngredient(id: number, dto: UpdateGroupIngredientDto){
-    const groupIngredient = await this.groupIngredientModel.update(dto,{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const groupIngredient = await this.groupIngredientModel.update(dto,{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in group-ingredient.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
-      })
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in group-ingredient.service.ts - 'modifyGroupIngredient()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
 
-    if(!groupIngredient){
-      this.logger.error(`Error in group-ingredient.service.ts - 'groupIngredient' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!groupIngredient){
+        this.logger.error(
+          `Error in group-ingredient.service.ts - 'modifyGroupIngredient()'. Group ingredient not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Group ingredient not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const newGroupIngredient = await this.groupIngredientModel.findByPk(groupIngredient.id)
+
+      return {
+        success: true,
+        message: 'Group ingredient modified successfully',
+        data: {
+          groupIngredient: newGroupIngredient
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in group-ingredient.service.ts - 'modifyGroupIngredient()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return await this.groupIngredientModel.findByPk(groupIngredient.id)
   }
 
   // Removing a group ingredient
   async removeGroupIngredient(id: number){
-    const groupIngredient = await this.groupIngredientModel.update({ active: false },{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const groupIngredient = await this.groupIngredientModel.update({ active: false },{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in group-ingredient.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
-      })
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in group-ingredient.service.ts - 'removeGroupIngredient()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
 
-    if(!groupIngredient){
-      this.logger.error(`Error in group-ingredient.service.ts - 'groupIngredient' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!groupIngredient){
+        this.logger.error(
+          `Error in group-ingredient.service.ts - 'removeGroupIngredient()'. Group ingredient not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Group ingredient not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Group ingredient removed successfully',
+        data: {
+          groupIngredient
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in group-ingredient.service.ts - 'removeGroupIngredient()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return groupIngredient
   }
 }

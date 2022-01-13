@@ -26,11 +26,11 @@ export class AddressesService {
       }
     }catch(ex){
       this.logger.error(
-        `Error in addresses.service.ts - 'createAddress()'. ${ex.name}. ${ex.message}`
+        `Error in addresses.service.ts - 'createAddress()'. ${ex.message}`
       );
       throw new HttpException({
         success: false,
-        message: `${ex.name}. ${ex.message}`,
+        message: ex.message,
         data: {}
       }, HttpStatus.BAD_REQUEST);
     }
@@ -49,11 +49,11 @@ export class AddressesService {
       }
     }catch(ex){
       this.logger.error(
-        `Error in addresses.service.ts - 'getAddresses()'. ${ex.name}. ${ex.message}
+        `Error in addresses.service.ts - 'getAddresses()'. ${ex.message}
       `);
       throw new HttpException({
         success: false,
-        message: `${ex.name}. ${ex.message}`,
+        message: ex.message,
         data: {}
       }, HttpStatus.BAD_GATEWAY);
     }
@@ -62,6 +62,17 @@ export class AddressesService {
   async getAddress(id: number){
     try{
       const address = await this.addressModel.findOne({ where: { id } })
+
+      if(!address){
+        this.logger.error(
+          `Error in addresses.service.ts - 'getAddress()'. Address not found
+        `);
+        throw new HttpException({
+          success: false,
+          message: `Address not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
 
       return {
         success: true,
@@ -72,11 +83,11 @@ export class AddressesService {
       }
     }catch(ex){
       this.logger.error(
-        `Error in addresses.service.ts - 'getAddress()'. ${ex.name}. ${ex.message}
+        `Error in addresses.service.ts - 'getAddress()'. ${ex.message}
       `);
       throw new HttpException({
         success: false,
-        message: `${ex.name}. ${ex.message}`,
+        message: ex.message,
         data: {}
       }, HttpStatus.BAD_GATEWAY);
     }

@@ -22,67 +22,190 @@ export class OrderDaysService {
     try{
       const orderDay = await this.orderDayModel.create(dto)
 
-      return await this.orderDayModel.findByPk(orderDay.id, { include: { all: true } })
+      // const newOrderDay = await this.orderDayModel.findByPk(orderDay.id, {
+      //   include: { all: true }
+      // })
+
+      return {
+        success: true,
+        message: 'Order day created successfully',
+        data: {
+          orderDay
+        }
+      }
     }catch(ex){
-      this.logger.error(`Error in order-days.service.ts - '${ex}'`);
-      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
+      this.logger.error(
+        `Error in order-days.service.ts - 'createOrderDay()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting order-days
   async getOrderDays(){
-    return await this.orderDayModel.findAll({
-      where: { active: true },
-      include: { all: true }
-    });
+    try{
+      const orderDays = await this.orderDayModel.findAll({
+        where: { active: true },
+        include: { all: true }
+      });
+
+      return {
+        success: true,
+        message: 'Order days fetched successfully',
+        data: {
+          orderDays
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in order-days.service.ts - 'getOrderDays()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Getting an order-day
   async getOrderDay(id: number){
-    return await this.orderDayModel.findByPk(id, { include: { all: true } });
+    try{
+      const orderDay = await this.orderDayModel.findByPk(id, { include: { all: true } });
+
+      if(!orderDay){
+        this.logger.error(
+          `Error in order-days.service.ts - 'getOrderDay()'. Order day not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Order day not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Order day fetched successfully',
+        data: {
+          orderDay
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in order-days.service.ts - 'getOrderDay()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Editing an order-day
   async modifyOrderDay(id: number, dto: UpdateOrderDayDto){
-    const orderDay = await this.orderDayModel.update(dto,{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const orderDay = await this.orderDayModel.update(dto,{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in order-days.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
-      })
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in order-days.service.ts - 'modifyOrderDay()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
 
-    if(!orderDay){
-      this.logger.error(`Error in order-days.service.ts - 'orderDay' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!orderDay){
+        this.logger.error(
+          `Error in order-days.service.ts - 'modifyOrderDay()'. Order day not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Order day not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Order day modified successfully',
+        data: {
+          orderDay
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in order-days.service.ts - 'modifyOrderDay()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return await this.orderDayModel.findByPk(orderDay.id, { include: { all: true } })
   }
 
   // Removing an order-day
   async removeOrderDay(id: number){
-    const orderDay = await this.orderDayModel.update({ active: false },{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const orderDay = await this.orderDayModel.update({ active: false },{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in order-days.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
-      })
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in order-days.service.ts - 'removeOrderDay()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
 
-    if(!orderDay){
-      this.logger.error(`Error in order-days.service.ts - 'orderDay' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!orderDay){
+        this.logger.error(
+          `Error in order-days.service.ts - 'removeOrderDay()'. Order day not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Order day not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Order day removed successfully',
+        data: {
+          orderDay
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in order-days.service.ts - 'removeOrderDay()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return orderDay
   }
 }

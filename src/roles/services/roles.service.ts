@@ -14,35 +14,132 @@ export class RolesService {
   ) {}
 
   async createRole(dto: CreateRoleDto){
-    return await this.roleModel.create(dto);
+    try{
+      const role = await this.roleModel.create(dto);
+
+      return {
+        success: true,
+        message: 'Role created successfully',
+        data: {
+          role
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in roles.service.ts - 'createRole()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   async getRoles(){
-    return await this.roleModel.findAll({ where: { active: true } })
+    try{
+      const roles = await this.roleModel.findAll({ where: { active: true } })
+
+      return {
+        success: true,
+        message: 'Roles fetched successfully',
+        data: {
+          roles
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in roles.service.ts - 'getRoles()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   async getRole(id: number){
-    return await this.roleModel.findOne({ where: { id } })
+    try{
+      const role = await this.roleModel.findOne({ where: { id } })
+
+      if(!role){
+        this.logger.error(
+          `Error in roles.service.ts - 'getRole()'. Role not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Role not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Role fetched successfully',
+        data: {
+          role
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in roles.service.ts - 'getRole()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   async removeRole(id: number){
-    const role = await this.roleModel.update({ active: false }, {
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const role = await this.roleModel.update({ active: false }, {
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in roles.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
-      })
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in roles.service.ts - 'removeRole()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
 
-    if(!role){
-      this.logger.error(`Error in roles.service.ts - 'role' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!role){
+        this.logger.error(
+          `Error in roles.service.ts - 'removeRole()'. Role not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Role not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Role removed successfully',
+        data: {
+          role
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in roles.service.ts - 'removeRole()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return role
   }
 }

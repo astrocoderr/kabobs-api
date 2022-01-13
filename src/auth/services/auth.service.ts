@@ -37,11 +37,11 @@ export class AuthService {
       }
     }catch(ex){
       this.logger.error(
-        `Error in auth.service.ts - 'signin()'. ${ex.name}. ${ex.message}`
+        `Error in auth.service.ts - 'signin()'. ${ex.message}`
       );
       throw new HttpException({
         success: false,
-        message: `${ex.name}. ${ex.message}`,
+        message: ex.message,
         data: {}
       }, HttpStatus.BAD_REQUEST);
     }
@@ -52,7 +52,7 @@ export class AuthService {
   private async validateUser(dto: AuthDto){
     const user = await this.userService.getUserByEmail(dto.email)
 
-    if(!user){
+    if(!user.success){
       this.logger.error(
         `Error in auth.service.ts - 'validateUser()'. User not found`
       );
@@ -63,7 +63,7 @@ export class AuthService {
       }, HttpStatus.BAD_REQUEST);
     }
 
-    const password = await bcrypt.compare(dto.password, user.password)
+    const password = await bcrypt.compare(dto.password, user.data.user.password)
 
     if(!password){
       this.logger.error(
@@ -76,7 +76,7 @@ export class AuthService {
       }, HttpStatus.BAD_REQUEST);
     }
 
-    return user
+    return user.data.user
   }
 
   // Generate token for user
@@ -87,10 +87,21 @@ export class AuthService {
       const token = this.jwtService.sign(payload)
       await this.redisService.set(token, { user })
 
-      return { token }
+      if(!token){
+        this.logger.error(
+          `Error in auth.service.ts - 'generateToken()'. Token not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Token not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return token
     }catch(ex){
       this.logger.error(
-        `Error in auth.service.ts - 'generateToken()'. ${ex.name}. ${ex.message}`
+        `Error in auth.service.ts - 'generateToken()'. ${ex.message}`
       );
       throw new HttpException({
         success: false,
@@ -108,12 +119,23 @@ export class AuthService {
       const refreshToken = this.jwtService.sign(payload)
       await this.redisService.set(token, { token })
 
+      if(!refreshToken){
+        this.logger.error(
+          `Error in auth.service.ts - 'generateToken()'. Refresh token not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Refresh token not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
       return {
         refreshToken
       }
     }catch(ex){
       this.logger.error(
-        `Error in auth.service.ts - 'generateRefreshToken()'. ${ex.name}. ${ex.message}`
+        `Error in auth.service.ts - 'generateRefreshToken()'. ${ex.message}`
       );
       throw new HttpException({
         success: false,

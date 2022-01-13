@@ -25,66 +25,196 @@ export class PromocodesService {
         creatorID: 1
       })
 
-      return await this.promocodeModel.findByPk(promocode.id, { include: { all: true } })
+      // return await this.promocodeModel.findByPk(promocode.id, { include: { all: true } })
+
+      return {
+        success: true,
+        message: 'Promocode created successfully',
+        data: {
+          promocode
+        }
+      }
     }catch(ex){
-      this.logger.error(`Error in promocode.service.ts - '${ex}'`);
-      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
+      this.logger.error(
+        `Error in promocodes.service.ts - 'createPromocode()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting promocodes
   async getPromocodes(){
-    return await this.promocodeModel.findAll({
-      where: { active: true },
-      include: { all: true }
-    });
+    try{
+      const promocodes = await this.promocodeModel.findAll({
+        where: { active: true },
+        include: { all: true }
+      });
+
+      return {
+        success: true,
+        message: 'Promocodes fetched successfully',
+        data: {
+          promocodes
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in promocodes.service.ts - 'getPromocodes()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Getting a promocode
   async getPromocode(id: number){
-    return await this.promocodeModel.findByPk(id, { include: { all: true } });
+    try{
+      const promocode = await this.promocodeModel.findByPk(id, { include: { all: true } });
+
+      if(!promocode){
+        this.logger.error(
+          `Error in promocodes.service.ts - 'getPromocode()'. Promocode not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Promocode not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Promocode fetched successfully',
+        data: {
+          promocode
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in promocodes.service.ts - 'getPromocode()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Editing a promocode
   async modifyPromocode(id: number, dto: UpdatePromocodeDto){
-    const promocode = await this.promocodeModel.update(dto,{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const promocode = await this.promocodeModel.update(dto,{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in roles.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in promocodes.service.ts - 'modifyPromocode()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
+
+      if(!promocode) {
+        this.logger.error(
+          `Error in promocodes.service.ts - 'modifyPromocode()'. Promocode not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Promocode not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const newPromocode = await this.promocodeModel.findByPk(promocode.id, {
+        include: { all: true }
       })
 
-    if(!promocode) {
-      this.logger.error(`Error in promocodes.service.ts - 'promocode' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      return {
+        success: true,
+        message: 'Promocode modified successfully',
+        data: {
+          promocode: newPromocode
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in promocodes.service.ts - 'modifyPromocode()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return await this.promocodeModel.findByPk(promocode.id, { include: { all: true } })
   }
 
   // Removing a promocode
   async removePromocode(id: number){
-    const promocode = await this.promocodeModel.update({ active: false },{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const promocode = await this.promocodeModel.update({ active: false },{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in roles.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST); })
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in promocodes.service.ts - 'removePromocode()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            data: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
 
-    if(!promocode){
-      this.logger.error(`Error in promocodes.service.ts - 'promocode' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!promocode){
+        this.logger.error(
+          `Error in promocodes.service.ts - 'removePromocode()'. Promocode not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Promocode not found`,
+          data: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const newPromocode = await this.promocodeModel.findByPk(promocode.id, {
+        include: { all: true }
+      })
+
+      return {
+        success: true,
+        message: 'Promocode removed successfully',
+        data: {
+          promocode: newPromocode
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in promocodes.service.ts - 'removePromocode()'. ${ex.message}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return promocode
   }
 }
