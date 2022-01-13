@@ -1,5 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsEmail, IsNumber, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsDate,
+  IsDateString,
+  IsEmail,
+  IsNumber,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+  ValidateIf,
+} from 'class-validator';
 
 export class UpdateUserDto {
   @ApiProperty({ example: 'John', description: 'first name' })
@@ -15,8 +25,9 @@ export class UpdateUserDto {
   readonly lastName: string;
 
   @ApiProperty({ example: '2021-11-11T10:00:00:000Z', description: 'birthday' })
-  @IsDate()
-  readonly birthday: Date;
+  @IsDateString()
+  @ValidateIf((object, value) => value !== null)
+  readonly birthday!: Date | null;
 
   @ApiProperty({ example: 'john@mathew.com', description: 'email address' })
   @IsEmail()
