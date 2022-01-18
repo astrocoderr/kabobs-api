@@ -5,6 +5,7 @@ import { Addresses } from "../models/addresses.model";
 import { CreateAddressDto } from "../dto/create-address.dto";
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { GetAddressesDto } from '../dto/get-addresses.dto';
 
 @Injectable()
 export class AddressesService {
@@ -20,41 +21,45 @@ export class AddressesService {
       return {
         success: true,
         message: 'Address created successfully',
-        data: {
+        result: {
           address
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in addresses.service.ts - 'createAddress()'. ${ex.message}`
+        `Error in addresses.service.ts - 'createAddress()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async getAddresses(){
+  async getAddresses(dto: GetAddressesDto){
     try{
-      const addresses = await this.addressModel.findAll({ where: { active: true } })
+      const addresses = await this.addressModel.findAndCountAll({
+        where: { active: true },
+        offset: (dto.page - 1) * dto.limit,
+        limit: dto.limit
+      })
 
       return {
         success: true,
         message: 'Addresses fetched successfully',
-        data: {
+        result: {
           addresses
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in addresses.service.ts - 'getAddresses()'. ${ex.message}
-      `);
+        `Error in addresses.service.ts - 'getAddresses()'. ${ex.message}. ${ex.original}`
+      );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -70,25 +75,25 @@ export class AddressesService {
         throw new HttpException({
           success: false,
           message: `Address not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'Address fetched successfully',
-        data: {
+        result: {
           address
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in addresses.service.ts - 'getAddress()'. ${ex.message}
+        `Error in addresses.service.ts - 'getAddress()'. ${ex.message}. ${ex.original}
       `);
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -102,7 +107,7 @@ export class AddressesService {
         return {
           success: true,
           message: 'Address removed successfully',
-          data: {
+          result: {
             address: newData[1][0]
           }
         }
@@ -112,7 +117,7 @@ export class AddressesService {
         throw new HttpException({
           success: false,
           message: error,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       })
   }

@@ -17,6 +17,7 @@ import { BanUserDto } from '../dto/ban-user.dto';
 import { AddRoleUserDto } from '../dto/add-role-user.dto';
 import { UnbanUserDto } from '../dto/unban-user.dto';
 import { SearchUserDto } from '../dto/search-user.dto';
+import { GetUsersDto } from '../dto/get-users.dto';
 
 
 @Injectable()
@@ -31,7 +32,7 @@ export class UsersService {
   // Creating a user
   async createUser(dto: CreateUserDTO){
     try{
-      const role = await this.roleService.getRole(dto.role)
+      const role = await this.roleService.getRole(dto.role_id)
 
       if(!role.success){
         this.logger.error(
@@ -40,7 +41,7 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `Role not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
@@ -49,54 +50,56 @@ export class UsersService {
         password: await bcrypt.hash(dto.password, this.configService.get('BCRYPT_SALT'))
       })
 
-      await user.$set('role', [role.data.role.id])
+      await user.$set('role', [role.result.role.id])
 
-      const newUser = await this.userModel.findByPk(user.id,
+      const new_user = await this.userModel.findByPk(user.id,
         { include: { all: true }
       })
 
       return {
         success: true,
         message: 'User created successfully',
-        data: {
-          user: newUser
+        result: {
+          user: new_user
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'createUser()'. ${ex.message}`
+        `Error in users.service.ts - 'createUser()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting users
-  async getUsers(){
+  async getUsers(dto: GetUsersDto){
     try{
       const users = await this.userModel.findAll({
         where: { active: true },
-        include: { all: true }
+        include: { all: true },
+        offset: (dto.page - 1) * dto.limit,
+        limit: dto.limit
       });
 
       return {
         success: true,
         message: 'Users fetched successfully',
-        data: {
+        result: {
           users
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'getUsers()'. ${ex.message}`
+        `Error in users.service.ts - 'getUsers()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -113,25 +116,25 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `User not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'User fetched successfully',
-        data: {
+        result: {
           user
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'getUser()'. ${ex.message}`
+        `Error in users.service.ts - 'getUser()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -142,11 +145,11 @@ export class UsersService {
       const users = await this.userModel.findAll({
         where: {
           [Op.or]: [
-            { firstName: dto.search },
-            { lastName: dto.search },
+            { first_name: dto.search },
+            { last_name: dto.search },
             { email: dto.search },
-            { branchID: dto.search },
-            { bitrixID: dto.search }
+            { branch_id: dto.search },
+            { bitrix_id: dto.search }
           ]
         },
         include: { all: true }
@@ -155,18 +158,18 @@ export class UsersService {
       return {
         success: true,
         message: 'Users searched successfully',
-        data: {
+        result: {
           users
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'searchUsers()'. ${ex.message}`
+        `Error in users.service.ts - 'searchUsers()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -186,25 +189,25 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `User not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'User fetched successfully',
-        data: {
+        result: {
           user
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'getUserByEmail()'. ${ex.message}`
+        `Error in users.service.ts - 'getUserByEmail()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -226,7 +229,7 @@ export class UsersService {
           throw new HttpException({
             success: false,
             message: `${error.message}`,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -237,7 +240,7 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `User not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
@@ -247,8 +250,8 @@ export class UsersService {
         await user.save()
       }
 
-      if(dto.role){
-        const role = await this.roleService.getRole(dto.role)
+      if(dto.role_id){
+        const role = await this.roleService.getRole(dto.role_id)
 
         if(!role.success){
           this.logger.error(
@@ -257,32 +260,32 @@ export class UsersService {
           throw new HttpException({
             success: false,
             message: `Role not found`,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         }
 
-        await user.$set('role', [role.data.role.id])
+        await user.$set('role', [role.result.role.id])
       }
 
-      const newUser = await this.userModel.findByPk(user.id, {
+      const new_user = await this.userModel.findByPk(user.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'User modified successfully',
-        data: {
-          user: newUser
+        result: {
+          user: new_user
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'modifyUser()'. ${ex.message}`
+        `Error in users.service.ts - 'modifyUser()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -304,7 +307,7 @@ export class UsersService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -315,29 +318,29 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `User not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
-      const newUser = await this.userModel.findByPk(user.id, {
+      const new_user = await this.userModel.findByPk(user.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'User removed successfully',
-        data: {
-          user: newUser
+        result: {
+          user: new_user
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'removeUser()'. ${ex.message}`
+        `Error in users.service.ts - 'removeUser()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -346,7 +349,7 @@ export class UsersService {
   // Adding user roles
   async addUserRole(dto: AddRoleUserDto){
     try{
-      const user = await this.userModel.findByPk(dto.userID)
+      const user = await this.userModel.findByPk(dto.user_id)
 
       if(!user){
         this.logger.error(
@@ -355,11 +358,11 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `User not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
-      const role = await this.roleService.getRole(dto.roleID)
+      const role = await this.roleService.getRole(dto.role_id)
 
       if(!role.success){
         this.logger.error(
@@ -368,37 +371,37 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `Role not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
-      await user.$add('role', role.data.role.id)
+      await user.$add('role', role.result.role.id)
 
-      const newUser = await this.userModel.findByPk(user.id, {
+      const new_user = await this.userModel.findByPk(user.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'User role added successfully',
-        data: {
-          user: newUser
+        result: {
+          user: new_user
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'addUserRole()'. ${ex.message}`
+        `Error in users.service.ts - 'addUserRole()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Removing user roles
-  async subtractUserRole(id, roleID){
+  async subtractUserRole(id, role_id){
     try{
       const user = await this.userModel.findByPk(id)
 
@@ -409,11 +412,11 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `User not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
-      const role = await this.roleService.getRole(roleID)
+      const role = await this.roleService.getRole(role_id)
 
       if(!role){
         this.logger.error(
@@ -422,31 +425,31 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `Role not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
-      await user.$remove('role', role.data.role.id)
+      await user.$remove('role', role.result.role.id)
 
-      const newUser = await this.userModel.findByPk(user.id, {
+      const new_user = await this.userModel.findByPk(user.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'User role subtracted successfully',
-        data: {
-          user: newUser
+        result: {
+          user: new_user
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'subtractUserRole()'. ${ex.message}`
+        `Error in users.service.ts - 'subtractUserRole()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -455,7 +458,7 @@ export class UsersService {
   // Banning a user
   async banUser(dto: BanUserDto){
     try{
-      const user = await this.userModel.findByPk(dto.userID)
+      const user = await this.userModel.findByPk(dto.user_id)
 
       if(!user){
         this.logger.error(
@@ -464,34 +467,34 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `User not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       user.banned = true
-      user.banReason = dto.banReason
-      user.unbanReason = null
+      user.ban_reason = dto.ban_reason
+      user.unban_reason = null
       await user.save()
 
-      const newUser = await this.userModel.findByPk(user.id, {
+      const new_user = await this.userModel.findByPk(user.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'User banned successfully',
-        data: {
-          user: newUser
+        result: {
+          user: new_user
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'banUser()'. ${ex.message}`
+        `Error in users.service.ts - 'banUser()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -499,7 +502,7 @@ export class UsersService {
   // Unbanning a user
   async unbanUser(dto: UnbanUserDto){
     try{
-      const user = await this.userModel.findByPk(dto.userID)
+      const user = await this.userModel.findByPk(dto.user_id)
 
       if(!user){
         this.logger.error(
@@ -508,34 +511,34 @@ export class UsersService {
         throw new HttpException({
           success: false,
           message: `User not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       user.banned = false
-      user.banReason = null
-      user.unbanReason = dto.unbanReason
+      user.ban_reason = null
+      user.unban_reason = dto.unban_reason
       await user.save()
 
-      const newUser = await this.userModel.findByPk(user.id, {
+      const new_user = await this.userModel.findByPk(user.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'User unbanned successfully',
-        data: {
-          user: newUser
+        result: {
+          user: new_user
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'unbanUser()'. ${ex.message}`
+        `Error in users.service.ts - 'unbanUser()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -551,18 +554,18 @@ export class UsersService {
       return {
         success: true,
         message: 'Users fetched successfully',
-        data: {
+        result: {
           users
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in users.service.ts - 'getBannedUsers()'. ${ex.message}`
+        `Error in users.service.ts - 'getBannedUsers()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }

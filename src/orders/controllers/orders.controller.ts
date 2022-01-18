@@ -10,6 +10,7 @@ import { CreateOrderDto } from '../dto/create-order.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
 import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
 import { SearchOrderDto } from '../dto/search-order.dto';
+import { GetOrdersDto } from '../dto/get-orders.dto';
 
 
 @ApiTags('Orders')
@@ -36,8 +37,8 @@ export class OrdersController {
   @ApiOperation({ summary: 'Getting orders' })
   @ApiResponse({ status: 200, type: [Order] })
   @Get()
-  getOrders(){
-    return this.orderService.getOrders()
+  getOrders(@Query() dto: GetOrdersDto){
+    return this.orderService.getOrders(dto)
   }
 
   @ApiOperation({ summary:

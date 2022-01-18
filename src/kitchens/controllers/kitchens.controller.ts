@@ -1,5 +1,5 @@
 import {
-  Body, Controller, Delete, Get, Param, Post, Put,
+  Body, Controller, Delete, Get, Param, Post, Put, Query,
   UseGuards
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -9,6 +9,7 @@ import { KitchensService } from '../services/kitchens.service';
 import { Kitchen } from '../models/kitchens.model';
 import { CreateKitchenDto } from '../dto/create-kitchen.dto';
 import { UpdateKitchenDto } from '../dto/update-kitchen.dto';
+import { GetKitchensDto } from '../dto/get-kitchens.dto';
 
 
 @ApiTags('Kitchens')
@@ -35,21 +36,21 @@ export class KitchensController {
   @ApiOperation({ summary: 'Getting kitchens' })
   @ApiResponse({ status: 200, type: [Kitchen] })
   @Get()
-  getUsers(){
-    return this.kitchenService.getKitchens()
+  getKitchens(@Query() dto: GetKitchensDto){
+    return this.kitchenService.getKitchens(dto)
   }
 
   @ApiOperation({ summary: 'Modifying a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Put('/:id')
-  modifyUser(@Param('id') id: number, @Body() dto: UpdateKitchenDto){
+  modifyKitchen(@Param('id') id: number, @Body() dto: UpdateKitchenDto){
     return this.kitchenService.modifyKitchen(id, dto)
   }
 
   @ApiOperation({ summary: 'Removing a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Delete('/:id')
-  removeUser(@Param('id') id: number){
+  removeKitchen(@Param('id') id: number){
     return this.kitchenService.removeKitchen(id)
   }
 }

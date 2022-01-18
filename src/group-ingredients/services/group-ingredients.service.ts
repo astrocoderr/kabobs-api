@@ -7,6 +7,7 @@ import { Logger } from 'winston';
 import { GroupIngredient } from '../models/group-ingredients.model';
 import { CreateGroupIngredientDto } from '../dto/create-group-ingredient.dto';
 import { UpdateGroupIngredientDto } from '../dto/update-group-ingredient.dto';
+import { GetGroupIngredientsDto } from '../dto/get-group-ingredients.dto';
 
 
 @Injectable()
@@ -20,49 +21,53 @@ export class GroupIngredientsService {
   // Creating a group ingredient
   async createGroupIngredient(dto: CreateGroupIngredientDto){
     try{
-      const groupIngredient = await this.groupIngredientModel.create(dto)
+      const group_ingredient = await this.groupIngredientModel.create(dto)
 
       // const newGroupIngredient = await this.groupIngredientModel.findByPk(groupIngredient.id)
 
       return {
         success: true,
         message: 'Group ingredient created successfully',
-        data: {
-          groupIngredient
+        result: {
+          group_ingredient
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in group-ingredient.service.ts - 'createGroupIngredient()'. ${ex.message}`
+        `Error in group-ingredient.service.ts - 'createGroupIngredient()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting group ingredients
-  async getGroupIngredients(){
+  async getGroupIngredients(dto: GetGroupIngredientsDto){
     try{
-      const groupIngredients = await this.groupIngredientModel.findAll({ where: { active: true } });
+      const group_ingredients = await this.groupIngredientModel.findAll({
+        where: { active: true },
+        offset: (dto.page - 1) * dto.limit,
+        limit: dto.limit
+      });
 
       return {
         success: true,
         message: 'Group ingredients fetched successfully',
-        data: {
-          groupIngredients
+        result: {
+          group_ingredients
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in group-ingredient.service.ts - 'getGroupIngredients()'. ${ex.message}`
+        `Error in group-ingredient.service.ts - 'getGroupIngredients()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -70,34 +75,34 @@ export class GroupIngredientsService {
   // Getting a group ingredient
   async getGroupIngredient(id: number){
     try{
-      const groupIngredient = await this.groupIngredientModel.findByPk(id);
+      const group_ingredient = await this.groupIngredientModel.findByPk(id);
 
-      if(!groupIngredient){
+      if(!group_ingredient){
         this.logger.error(
           `Error in group-ingredient.service.ts - 'getGroupIngredient()'. Group ingredient not found`
         );
         throw new HttpException({
           success: false,
           message: `Group ingredient not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'Group ingredient fetched successfully',
-        data: {
-          groupIngredient
+        result: {
+          group_ingredient
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in group-ingredient.service.ts - 'getGroupIngredient()'. ${ex.message}`
+        `Error in group-ingredient.service.ts - 'getGroupIngredient()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -105,7 +110,7 @@ export class GroupIngredientsService {
   // Editing a group ingredient
   async modifyGroupIngredient(id: number, dto: UpdateGroupIngredientDto){
     try{
-      const groupIngredient = await this.groupIngredientModel.update(dto,{
+      const group_ingredient = await this.groupIngredientModel.update(dto,{
         where: { id },
         returning: true
       })
@@ -119,38 +124,38 @@ export class GroupIngredientsService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
-      if(!groupIngredient){
+      if(!group_ingredient){
         this.logger.error(
           `Error in group-ingredient.service.ts - 'modifyGroupIngredient()'. Group ingredient not found`
         );
         throw new HttpException({
           success: false,
           message: `Group ingredient not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
-      const newGroupIngredient = await this.groupIngredientModel.findByPk(groupIngredient.id)
+      const new_group_ingredient = await this.groupIngredientModel.findByPk(group_ingredient.id)
 
       return {
         success: true,
         message: 'Group ingredient modified successfully',
-        data: {
-          groupIngredient: newGroupIngredient
+        result: {
+          group_ingredient: new_group_ingredient
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in group-ingredient.service.ts - 'modifyGroupIngredient()'. ${ex.message}`
+        `Error in group-ingredient.service.ts - 'modifyGroupIngredient()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -158,7 +163,7 @@ export class GroupIngredientsService {
   // Removing a group ingredient
   async removeGroupIngredient(id: number){
     try{
-      const groupIngredient = await this.groupIngredientModel.update({ active: false },{
+      const group_ingredient = await this.groupIngredientModel.update({ active: false },{
         where: { id },
         returning: true
       })
@@ -176,32 +181,32 @@ export class GroupIngredientsService {
           }, HttpStatus.BAD_REQUEST);
         })
 
-      if(!groupIngredient){
+      if(!group_ingredient){
         this.logger.error(
           `Error in group-ingredient.service.ts - 'removeGroupIngredient()'. Group ingredient not found`
         );
         throw new HttpException({
           success: false,
           message: `Group ingredient not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'Group ingredient removed successfully',
-        data: {
-          groupIngredient
+        result: {
+          group_ingredient
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in group-ingredient.service.ts - 'removeGroupIngredient()'. ${ex.message}`
+        `Error in group-ingredient.service.ts - 'removeGroupIngredient()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }

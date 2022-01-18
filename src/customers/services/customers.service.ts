@@ -13,6 +13,8 @@ import { BanCustomerDto } from '../dto/ban-customer.dto';
 import { UnbanCustomerDto } from '../dto/unban-customer.dto';
 import { AddressesService } from '../../addresses/services/addresses.service';
 import { SearchCustomerDto } from '../dto/search-customer.dto';
+import { GetCustomersDto } from '../dto/get-customers.dto';
+import { UsersService } from '../../users/services/users.service';
 
 
 @Injectable()
@@ -20,6 +22,7 @@ export class CustomersService {
   constructor(
     @InjectModel(Customer) private customerModel: typeof Customer,
     private addressService: AddressesService,
+    private userService: UsersService,
     private configService: ConfigService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
@@ -27,14 +30,25 @@ export class CustomersService {
   // Creating a customer
   async createCustomer(dto: CreateCustomerDto){
     try{
-      const address = await this.addressService.getAddress(dto.address)
+      const address = await this.addressService.getAddress(dto.address_id)
 
       if(!address.success){
         this.logger.error(`Error in customers.service.ts - 'createCustomer()'. Address not found`);
         throw new HttpException({
           success: false,
           message: `Address not found`,
-          data: {}
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const manager = await this.userService.getUser(dto.manager_id)
+
+      if(!manager.success){
+        this.logger.error(`Error in customers.service.ts - 'createCustomer()'. Manager not found`);
+        throw new HttpException({
+          success: false,
+          message: `Manager not found`,
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
@@ -44,52 +58,56 @@ export class CustomersService {
         status: true
       })
 
-      await customer.$set('address', [address.data.address.id])
+      await customer.$set('address', [address.result.address.id])
 
-      const newCustomer = await this.customerModel.findByPk(customer.id, { include: { all: true } })
+      await customer.$set('manager', [manager.result.user.id])
+
+      const new_customer = await this.customerModel.findByPk(customer.id, { include: { all: true } })
 
       return {
         success: true,
         message: 'Customer created successfully',
-        data: {
-          customer: newCustomer
+        result: {
+          customer: new_customer
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in customers.service.ts - 'createCustomer()'. ${ex.message}`
+        `Error in customers.service.ts - 'createCustomer()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting customers
-  async getCustomers(){
+  async getCustomers(dto: GetCustomersDto){
     try{
       const customers = await this.customerModel.findAll({
         where: { active: true },
-        include: { all: true }
+        include: { all: true },
+        offset: (dto.page - 1) * dto.limit,
+        limit: dto.limit
       });
 
       return {
         success: true,
         message: 'Customers fetched successfully',
-        data: {
+        result: {
           customers
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in customers.service.ts - 'getCustomers()'. ${ex.message}`
+        `Error in customers.service.ts - 'getCustomers()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -100,14 +118,14 @@ export class CustomersService {
       const customers = await this.customerModel.findAll({
         where: {
           [Op.or]: [
-            { firstName: dto.search },
-            { lastName: dto.search },
+            { first_name: dto.search },
+            { last_name: dto.search },
             { phone: dto.search },
-            { additionalPhone: dto.search },
-            { factorID: dto.search },
-            { kitchenID: dto.search },
+            { additional_phone: dto.search },
+            { factor_id: dto.search },
+            { kitchen_id: dto.search },
             { language: dto.search },
-            { userID: dto.search },
+            { user_id: dto.search },
             { active: true }
           ]
         },
@@ -117,18 +135,18 @@ export class CustomersService {
       return {
         success: true,
         message: 'Customers fetched successfully',
-        data: {
+        result: {
           customers
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in customers.service.ts - 'searchCustomers()'. ${ex.message}`
+        `Error in customers.service.ts - 'searchCustomers()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -145,25 +163,25 @@ export class CustomersService {
         throw new HttpException({
           success: false,
           message: `Customer not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'Customer fetched successfully',
-        data: {
+        result: {
           customer
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in customers.service.ts - 'getCustomer()'. ${ex.message}`
+        `Error in customers.service.ts - 'getCustomer()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -185,7 +203,7 @@ export class CustomersService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -196,7 +214,7 @@ export class CustomersService {
         throw new HttpException({
           success: false,
           message: `Customer not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
@@ -206,23 +224,38 @@ export class CustomersService {
         await customer.save()
       }
 
-      const newCustomer = await this.customerModel.findByPk(customer.id, { include: { all: true } })
+      if(dto.address_id){
+        const address = await this.addressService.getAddress(dto.address_id)
+
+        if(!address.success){
+          this.logger.error(`Error in customers.service.ts - 'createCustomer()'. Address not found`);
+          throw new HttpException({
+            success: false,
+            message: `Address not found`,
+            result: {}
+          }, HttpStatus.BAD_REQUEST);
+        }
+
+        await customer.$set('address', [address.result.address.id])
+      }
+
+      const new_customer = await this.customerModel.findByPk(customer.id, { include: { all: true } })
 
       return {
         success: true,
         message: 'Customer modified successfully',
-        data: {
-          customer: newCustomer
+        result: {
+          customer: new_customer
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in customers.service.ts - 'modifyCustomer()'. ${ex.message}`
+        `Error in customers.service.ts - 'modifyCustomer()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -244,7 +277,7 @@ export class CustomersService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -255,25 +288,25 @@ export class CustomersService {
         throw new HttpException({
           success: false,
           message: `Customer not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'Customer removed successfully',
-        data: {
+        result: {
           customer
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in customers.service.ts - 'removeCustomer()'. ${ex.message}`
+        `Error in customers.service.ts - 'removeCustomer()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -282,7 +315,7 @@ export class CustomersService {
   // Banning a customer
   async banCustomer(dto: BanCustomerDto){
     try{
-      const customer = await this.customerModel.findByPk(dto.customerID)
+      const customer = await this.customerModel.findByPk(dto.customer_id)
 
       if(!customer){
         this.logger.error(
@@ -291,32 +324,32 @@ export class CustomersService {
         throw new HttpException({
           success: false,
           message: `Customer not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       customer.banned = true
-      customer.banReason = dto.banReason
-      customer.unbanReason = null
+      customer.ban_reason = dto.ban_reason
+      customer.unban_reason = null
       await customer.save()
 
-      const newCustomer = await this.customerModel.findByPk(customer.id, { include: { all: true } })
+      const new_customer = await this.customerModel.findByPk(customer.id, { include: { all: true } })
 
       return {
         success: true,
         message: 'Customer banned successfully',
-        data: {
-          customer: newCustomer
+        result: {
+          customer: new_customer
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in customers.service.ts - 'banCustomer()'. ${ex.message}`
+        `Error in customers.service.ts - 'banCustomer()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -324,7 +357,7 @@ export class CustomersService {
   // Unbanning a customer
   async unbanCustomer(dto: UnbanCustomerDto){
     try{
-      const customer = await this.customerModel.findByPk(dto.customerID)
+      const customer = await this.customerModel.findByPk(dto.customer_id)
 
       if(!customer){
         this.logger.error(
@@ -333,32 +366,32 @@ export class CustomersService {
         throw new HttpException({
           success: false,
           message: `Customer not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       customer.banned = false
-      customer.banReason = null
-      customer.unbanReason = dto.unbanReason
+      customer.ban_reason = null
+      customer.unban_reason = dto.unban_reason
       await customer.save()
 
-      const newCustomer = await this.customerModel.findByPk(customer.id, { include: { all: true } })
+      const new_customer = await this.customerModel.findByPk(customer.id, { include: { all: true } })
 
       return {
         success: true,
         message: 'Customer unbanned successfully',
-        data: {
-          customer: newCustomer
+        result: {
+          customer: new_customer
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in customers.service.ts - 'unbanCustomer()'. ${ex.message}`
+        `Error in customers.service.ts - 'unbanCustomer()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -374,18 +407,18 @@ export class CustomersService {
       return {
         success: true,
         message: 'Banned customers fetched successfully',
-        data: {
+        result: {
           customers
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in customers.service.ts - 'getBannedCustomers()'. ${ex.message}`
+        `Error in customers.service.ts - 'getBannedCustomers()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }

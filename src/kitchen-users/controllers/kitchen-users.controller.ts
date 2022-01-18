@@ -1,6 +1,6 @@
 import {
   Body, Controller, Delete, Get, Param,
-  Post, Put, UseGuards
+  Post, Put, Query, UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -9,6 +9,7 @@ import { KitchenUsersService } from '../services/kitchen-users.service';
 import { KitchenUser } from '../models/kitchen-users.model';
 import { CreateKitchenUserDto } from '../dto/create-kitchen-user.dto';
 import { UpdateKitchenUserDto } from '../dto/update-kitchen-user.dto';
+import { GetKitchenUsersDto } from '../dto/get-kitchen-users.dto';
 
 
 @ApiTags('Kitchen Users')
@@ -21,35 +22,35 @@ export class KitchenUsersController {
   @ApiOperation({ summary: 'Creating a kitchens user' })
   @ApiResponse({ status: 200, type: KitchenUser })
   @Post()
-  createUser(@Body()  dto: CreateKitchenUserDto){
+  createKitchenUser(@Body()  dto: CreateKitchenUserDto){
     return this.kitchenUserService.createKitchenUser(dto)
   }
 
   @ApiOperation({ summary: 'Getting a kitchens user' })
   @ApiResponse({ status: 200, type: KitchenUser })
   @Get('/:id')
-  getUser(@Param('id') id: number){
+  getKitchenUser(@Param('id') id: number){
     return this.kitchenUserService.getKitchenUser(id)
   }
 
   @ApiOperation({ summary: 'Getting kitchens users' })
   @ApiResponse({ status: 200, type: [KitchenUser] })
   @Get()
-  getUsers(){
-    return this.kitchenUserService.getKitchenUsers()
+  getKitchenUsers(@Query() dto: GetKitchenUsersDto){
+    return this.kitchenUserService.getKitchenUsers(dto)
   }
 
   @ApiOperation({ summary: 'Modifying a kitchens user' })
   @ApiResponse({ status: 200, type: KitchenUser })
   @Put('/:id')
-  modifyUser(@Param('id') id: number, @Body() dto: UpdateKitchenUserDto){
+  modifyKitchenUser(@Param('id') id: number, @Body() dto: UpdateKitchenUserDto){
     return this.kitchenUserService.modifyKitchenUser(id, dto)
   }
 
   @ApiOperation({ summary: 'Removing a kitchens user' })
   @ApiResponse({ status: 200, type: KitchenUser })
   @Delete('/:id')
-  removeUser(@Param('id') id: number){
+  removeKitchenUser(@Param('id') id: number){
     return this.kitchenUserService.removeKitchenUser(id)
   }
 }

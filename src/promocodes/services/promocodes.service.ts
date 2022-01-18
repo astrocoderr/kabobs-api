@@ -7,6 +7,7 @@ import { CreatePromocodeDto } from '../dto/create-promocode.dto';
 import { UpdatePromocodeDto } from '../dto/update-promocode.dto';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { GetPromocodesDto } from '../dto/get-promocodes.dto';
 
 
 @Injectable()
@@ -22,7 +23,7 @@ export class PromocodesService {
     try{
       const promocode = await this.promocodeModel.create({
         ...dto,
-        creatorID: 1
+        creator_id: 1
       })
 
       // return await this.promocodeModel.findByPk(promocode.id, { include: { all: true } })
@@ -30,45 +31,47 @@ export class PromocodesService {
       return {
         success: true,
         message: 'Promocode created successfully',
-        data: {
+        result: {
           promocode
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in promocodes.service.ts - 'createPromocode()'. ${ex.message}`
+        `Error in promocodes.service.ts - 'createPromocode()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting promocodes
-  async getPromocodes(){
+  async getPromocodes(dto: GetPromocodesDto){
     try{
       const promocodes = await this.promocodeModel.findAll({
         where: { active: true },
-        include: { all: true }
+        include: { all: true },
+        offset: (dto.page - 1) * dto.limit,
+        limit: dto.limit
       });
 
       return {
         success: true,
         message: 'Promocodes fetched successfully',
-        data: {
+        result: {
           promocodes
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in promocodes.service.ts - 'getPromocodes()'. ${ex.message}`
+        `Error in promocodes.service.ts - 'getPromocodes()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -85,25 +88,25 @@ export class PromocodesService {
         throw new HttpException({
           success: false,
           message: `Promocode not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'Promocode fetched successfully',
-        data: {
+        result: {
           promocode
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in promocodes.service.ts - 'getPromocode()'. ${ex.message}`
+        `Error in promocodes.service.ts - 'getPromocode()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -125,7 +128,7 @@ export class PromocodesService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -136,29 +139,29 @@ export class PromocodesService {
         throw new HttpException({
           success: false,
           message: `Promocode not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
-      const newPromocode = await this.promocodeModel.findByPk(promocode.id, {
+      const new_promocode = await this.promocodeModel.findByPk(promocode.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'Promocode modified successfully',
-        data: {
-          promocode: newPromocode
+        result: {
+          promocode: new_promocode
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in promocodes.service.ts - 'modifyPromocode()'. ${ex.message}`
+        `Error in promocodes.service.ts - 'modifyPromocode()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -180,7 +183,7 @@ export class PromocodesService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -191,29 +194,29 @@ export class PromocodesService {
         throw new HttpException({
           success: false,
           message: `Promocode not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
-      const newPromocode = await this.promocodeModel.findByPk(promocode.id, {
+      const new_promocode = await this.promocodeModel.findByPk(promocode.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'Promocode removed successfully',
-        data: {
-          promocode: newPromocode
+        result: {
+          promocode: new_promocode
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in promocodes.service.ts - 'removePromocode()'. ${ex.message}`
+        `Error in promocodes.service.ts - 'removePromocode()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }

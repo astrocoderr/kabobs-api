@@ -5,6 +5,7 @@ import { CreateRoleDto } from '../dto/create-role.dto';
 import { Role } from '../models/roles.model';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { GetRolesDto } from '../dto/get-roles.dto';
 
 @Injectable()
 export class RolesService {
@@ -20,41 +21,45 @@ export class RolesService {
       return {
         success: true,
         message: 'Role created successfully',
-        data: {
+        result: {
           role
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in roles.service.ts - 'createRole()'. ${ex.message}`
+        `Error in roles.service.ts - 'createRole()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
 
-  async getRoles(){
+  async getRoles(dto: GetRolesDto){
     try{
-      const roles = await this.roleModel.findAll({ where: { active: true } })
+      const roles = await this.roleModel.findAll({
+        where: { active: true },
+        offset: (dto.page - 1) * dto.limit,
+        limit: dto.limit
+      })
 
       return {
         success: true,
         message: 'Roles fetched successfully',
-        data: {
+        result: {
           roles
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in roles.service.ts - 'getRoles()'. ${ex.message}`
+        `Error in roles.service.ts - 'getRoles()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -70,25 +75,25 @@ export class RolesService {
         throw new HttpException({
           success: false,
           message: `Role not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'Role fetched successfully',
-        data: {
+        result: {
           role
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in roles.service.ts - 'getRole()'. ${ex.message}`
+        `Error in roles.service.ts - 'getRole()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -109,7 +114,7 @@ export class RolesService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -120,25 +125,25 @@ export class RolesService {
         throw new HttpException({
           success: false,
           message: `Role not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'Role removed successfully',
-        data: {
+        result: {
           role
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in roles.service.ts - 'removeRole()'. ${ex.message}`
+        `Error in roles.service.ts - 'removeRole()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }

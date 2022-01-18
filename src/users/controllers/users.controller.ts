@@ -16,9 +16,10 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { SearchUserDto } from '../dto/search-user.dto';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { GetUsersDto } from '../dto/get-users.dto';
 
 
-@ApiTags('Employees' )
+@ApiTags('Employees')
 @UseGuards(JwtAuthGuard)
 @Controller('/users')
 export class UsersController {
@@ -93,8 +94,8 @@ export class UsersController {
   @ApiResponse({ status: 200, type: [User] })
   @Roles('admin')
   @Get()
-  getUsers(){
-    return this.userService.getUsers()
+  getUsers(@Query() dto: GetUsersDto){
+    return this.userService.getUsers(dto)
   }
 
 

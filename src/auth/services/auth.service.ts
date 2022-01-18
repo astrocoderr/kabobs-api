@@ -30,7 +30,7 @@ export class AuthService {
       return {
         success: true,
         message: 'User authorized successfully',
-        data: {
+        result: {
           token,
           user
         }
@@ -42,7 +42,7 @@ export class AuthService {
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_REQUEST);
     }
   }
@@ -59,11 +59,11 @@ export class AuthService {
       throw new HttpException({
         success: false,
         message: `User not found`,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_REQUEST);
     }
 
-    const password = await bcrypt.compare(dto.password, user.data.user.password)
+    const password = await bcrypt.compare(dto.password, user.result.user.password)
 
     if(!password){
       this.logger.error(
@@ -72,11 +72,11 @@ export class AuthService {
       throw new HttpException({
         success: false,
         message: `Password not found`,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_REQUEST);
     }
 
-    return user.data.user
+    return user.result.user
   }
 
   // Generate token for user
@@ -94,19 +94,19 @@ export class AuthService {
         throw new HttpException({
           success: false,
           message: `Token not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return token
     }catch(ex){
       this.logger.error(
-        `Error in auth.service.ts - 'generateToken()'. ${ex.message}`
+        `Error in auth.service.ts - 'generateToken()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: `Token error`,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -126,7 +126,7 @@ export class AuthService {
         throw new HttpException({
           success: false,
           message: `Refresh token not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
@@ -135,12 +135,12 @@ export class AuthService {
       }
     }catch(ex){
       this.logger.error(
-        `Error in auth.service.ts - 'generateRefreshToken()'. ${ex.message}`
+        `Error in auth.service.ts - 'generateRefreshToken()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: `Refresh token error`,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }

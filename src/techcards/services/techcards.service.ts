@@ -10,6 +10,7 @@ import { IngredientsService } from '../../ingredients/services/ingredients.servi
 import { CreateTechcardsDto } from '../dto/create-techcards.dto';
 import { SearchTechcardDto } from '../dto/search-techcard.dto';
 import { UpdateTechcardDto } from '../dto/update-techcard-dto';
+import { GetTechcardsDto } from '../dto/get-techcards.dto';
 
 
 @Injectable()
@@ -25,7 +26,7 @@ export class TechcardsService {
   async createTechcard(dto: CreateTechcardsDto){
     try{
       // ingredientID
-      const ingredient = await this.ingredientService.getIngredient(dto.ingredient)
+      const ingredient = await this.ingredientService.getIngredient(dto.ingredient_id)
 
       if(!ingredient.success){
         this.logger.error(
@@ -34,60 +35,62 @@ export class TechcardsService {
         throw new HttpException({
           success: false,
           message: `Ingredient not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       const techcard = await this.techcardModel.create(dto)
 
-      await techcard.$set('ingredient', [ingredient.data.ingredient.id])
+      await techcard.$set('ingredient', [ingredient.result.ingredient.id])
 
-      const newTechcard = await this.techcardModel.findByPk(techcard.id, {
+      const new_techcard = await this.techcardModel.findByPk(techcard.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'Techcard created successfully',
-        data: {
-          techcard: newTechcard
+        result: {
+          techcard: new_techcard
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in techcards.service.ts - 'createTechcard()'. ${ex.message}`
+        `Error in techcards.service.ts - 'createTechcard()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting techcards
-  async getTechcards(){
+  async getTechcards(dto: GetTechcardsDto){
     try{
       const techcards = await this.techcardModel.findAll({
         where: { active: true },
-        include: { all: true }
+        include: { all: true },
+        offset: (dto.page - 1) * dto.limit,
+        limit: dto.limit
       });
 
       return {
         success: true,
         message: 'Techcards fetched successfully',
-        data: {
+        result: {
           techcards
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in techcards.service.ts - 'getTechcards()'. ${ex.message}`
+        `Error in techcards.service.ts - 'getTechcards()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -104,25 +107,25 @@ export class TechcardsService {
         throw new HttpException({
           success: false,
           message: `Techcard not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'Techcard fetched successfully',
-        data: {
+        result: {
           techcard
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in techcards.service.ts - 'getTechcard()'. ${ex.message}`
+        `Error in techcards.service.ts - 'getTechcard()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -135,16 +138,16 @@ export class TechcardsService {
           [Op.or]: [
             { type: dto.search },
             { title: dto.search },
-            { marketingTitle: dto.search },
+            { marketing_title: dto.search },
             { description: dto.search },
-            { ingredientsAmount: dto.search },
+            { ingredients_amount: dto.search },
             { amount: dto.search },
             { brutto: dto.search },
             { kcal: dto.search },
             { prot: dto.search },
             { fat: dto.search },
             { carb: dto.search },
-            { amountPiece: dto.search },
+            { amount_piece: dto.search },
             { percent: dto.search }
           ]
         },
@@ -154,18 +157,18 @@ export class TechcardsService {
       return {
         success: true,
         message: 'Techcards searched successfully',
-        data: {
+        result: {
           techcards
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in techcards.service.ts - 'searchTechcard()'. ${ex.message}`
+        `Error in techcards.service.ts - 'searchTechcard()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -187,7 +190,7 @@ export class TechcardsService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -198,29 +201,29 @@ export class TechcardsService {
         throw new HttpException({
           success: false,
           message: `Techcard not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
-      const newTechcard = await this.techcardModel.findByPk(techcard.id, {
+      const new_techcard = await this.techcardModel.findByPk(techcard.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'Techcard modified successfully',
-        data: {
-          techcard: newTechcard
+        result: {
+          techcard: new_techcard
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in techcards.service.ts - 'modifyTechcard()'. ${ex.message}`
+        `Error in techcards.service.ts - 'modifyTechcard()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -242,7 +245,7 @@ export class TechcardsService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -253,29 +256,29 @@ export class TechcardsService {
         throw new HttpException({
           success: false,
           message: `Techcard not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
-      const newTechcard = await this.techcardModel.findByPk(techcard.id, {
+      const new_techcard = await this.techcardModel.findByPk(techcard.id, {
         include: { all: true }
       })
 
       return {
         success: true,
         message: 'Techcard removed successfully',
-        data: {
-          techcard: newTechcard
+        result: {
+          techcard: new_techcard
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in techcards.service.ts - 'removeTechcard()'. ${ex.message}`
+        `Error in techcards.service.ts - 'removeTechcard()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }

@@ -10,6 +10,7 @@ import { Techcard } from '../models/techcards.model';
 import { CreateTechcardsDto } from '../dto/create-techcards.dto';
 import { SearchTechcardDto } from '../dto/search-techcard.dto';
 import { UpdateTechcardDto } from '../dto/update-techcard-dto';
+import { GetTechcardsDto } from '../dto/get-techcards.dto';
 
 
 @ApiTags('Techcards')
@@ -36,8 +37,8 @@ export class TechcardsController {
   @ApiOperation({ summary: 'Getting techcards' })
   @ApiResponse({ status: 200, type: [Techcard] })
   @Get()
-  getTechcards(){
-    return this.techcardsService.getTechcards()
+  getTechcards(@Query() dto: GetTechcardsDto){
+    return this.techcardsService.getTechcards(dto)
   }
 
   @ApiOperation({ summary:

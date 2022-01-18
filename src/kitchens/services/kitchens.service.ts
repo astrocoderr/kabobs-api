@@ -8,6 +8,7 @@ import { AddressesService } from '../../addresses/services/addresses.service';
 import { CreateKitchenDto } from '../dto/create-kitchen.dto';
 import { Kitchen } from '../models/kitchens.model';
 import { UpdateKitchenDto } from '../dto/update-kitchen.dto';
+import { GetKitchensDto } from '../dto/get-kitchens.dto';
 
 
 @Injectable()
@@ -22,14 +23,14 @@ export class KitchensService {
   // Creating a kitchens
   async createKitchen(dto: CreateKitchenDto){
     try{
-      const address = await this.addressService.getAddress(dto.address)
+      const address = await this.addressService.getAddress(dto.address_id)
 
       if(!address.success){
         this.logger.error(`Error in kitchens.service.ts - 'createKitchen()'. Address not found`);
         throw new HttpException({
           success: false,
           message: `Address not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
@@ -37,7 +38,7 @@ export class KitchensService {
         ...dto
       })
 
-      await kitchen.$set('address', [address.data.address.id])
+      await kitchen.$set('address', [address.result.address.id])
 
       const newKitchen = await this.kitchenModel.findByPk(kitchen.id, {
         include: { all: true }
@@ -46,45 +47,47 @@ export class KitchensService {
       return {
         success: true,
         message: 'Kitchen created successfully',
-        data: {
+        result: {
           kitchen: newKitchen
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in kitchens.service.ts - 'createKitchen()'. ${ex.message}`
+        `Error in kitchens.service.ts - 'createKitchen()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting kitchens
-  async getKitchens(){
+  async getKitchens(dto: GetKitchensDto){
     try{
       const kitchens = await this.kitchenModel.findAll({
         where: { active: true },
-        include: { all: true }
+        include: { all: true },
+        offset: (dto.page - 1) * dto.limit,
+        limit: dto.limit
       });
 
       return {
         success: true,
         message: 'Kitchens fetched successfully',
-        data: {
+        result: {
           kitchens
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in kitchens.service.ts - 'getKitchens()'. ${ex.message}`
+        `Error in kitchens.service.ts - 'getKitchens()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -101,25 +104,25 @@ export class KitchensService {
         throw new HttpException({
           success: false,
           message: `Kitchen not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
       return {
         success: true,
         message: 'Kitchen fetched successfully',
-        data: {
+        result: {
           kitchen
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in kitchens.service.ts - 'getKitchen()'. ${ex.message}`
+        `Error in kitchens.service.ts - 'getKitchen()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -141,7 +144,7 @@ export class KitchensService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -152,7 +155,7 @@ export class KitchensService {
         throw new HttpException({
           success: false,
           message: `Kitchen not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
@@ -163,18 +166,18 @@ export class KitchensService {
       return {
         success: true,
         message: 'Kitchen modified successfully',
-        data: {
+        result: {
           kitchen: newKitchen
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in kitchens.service.ts - 'modifyKitchen()'. ${ex.message}`
+        `Error in kitchens.service.ts - 'modifyKitchen()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
@@ -196,7 +199,7 @@ export class KitchensService {
           throw new HttpException({
             success: false,
             message: error,
-            data: {}
+            result: {}
           }, HttpStatus.BAD_REQUEST);
         })
 
@@ -207,7 +210,7 @@ export class KitchensService {
         throw new HttpException({
           success: false,
           message: `Kitchen not found`,
-          data: {}
+          result: {}
         }, HttpStatus.BAD_REQUEST);
       }
 
@@ -216,18 +219,18 @@ export class KitchensService {
       return {
         success: true,
         message: 'Kitchen removed successfully',
-        data: {
+        result: {
           kitchen: newKitchen
         }
       }
     }catch(ex){
       this.logger.error(
-        `Error in kitchens.service.ts - 'removeKitchen()'. ${ex.message}`
+        `Error in kitchens.service.ts - 'removeKitchen()'. ${ex.message}. ${ex.original}`
       );
       throw new HttpException({
         success: false,
         message: ex.message,
-        data: {}
+        result: {}
       }, HttpStatus.BAD_GATEWAY);
     }
   }
