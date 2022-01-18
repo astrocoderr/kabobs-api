@@ -65,7 +65,7 @@ export class IngredientsService {
   // Getting ingredients
   async getIngredients(dto: GetIngredientsDto){
     try{
-      const ingredients = await this.ingredientModel.findAll(
+      const ingredients = await this.ingredientModel.findAndCountAll(
         {
           where: { active: true },
           include: { all: true },

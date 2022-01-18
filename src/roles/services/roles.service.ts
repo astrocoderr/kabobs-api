@@ -39,7 +39,7 @@ export class RolesService {
 
   async getRoles(dto: GetRolesDto){
     try{
-      const roles = await this.roleModel.findAll({
+      const roles = await this.roleModel.findAndCountAll({
         where: { active: true },
         offset: (dto.page - 1) * dto.limit,
         limit: dto.limit

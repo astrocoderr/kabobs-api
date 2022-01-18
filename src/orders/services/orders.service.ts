@@ -166,7 +166,7 @@ export class OrdersService {
   // Getting orders
   async getOrders(dto: GetOrdersDto){
     try{
-      const orders = await this.orderModel.findAll({
+      const orders = await this.orderModel.findAndCountAll({
         where: { active: true },
         include: { all: true },
         offset: (dto.page - 1) * dto.limit,
@@ -233,15 +233,15 @@ export class OrdersService {
       const orders = await this.orderModel.findAll({
         where: {
           [Op.or]: [
-            { customer_id: dto.search },
-            { manager_id: dto.search },
-            { creator_id: dto.search },
-            { promocode_id: dto.search },
-            { kcal: dto.search },
-            { prot: dto.search },
-            { fat: dto.search },
-            { carb: dto.search },
-            { price: dto.search },
+            // { customer_id: dto.search },
+            // { manager_id: dto.search },
+            // { creator_id: dto.search },
+            // { promocode_id: dto.search },
+            // { kcal: dto.search },
+            // { prot: dto.search },
+            // { fat: dto.search },
+            // { carb: dto.search },
+            // { price: dto.search },
             { kitchen_comment: dto.search },
             { delivery_comment: dto.search }
           ]

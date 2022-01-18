@@ -50,7 +50,7 @@ export class PromocodesService {
   // Getting promocodes
   async getPromocodes(dto: GetPromocodesDto){
     try{
-      const promocodes = await this.promocodeModel.findAll({
+      const promocodes = await this.promocodeModel.findAndCountAll({
         where: { active: true },
         include: { all: true },
         offset: (dto.page - 1) * dto.limit,

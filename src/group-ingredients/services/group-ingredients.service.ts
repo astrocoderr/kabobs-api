@@ -47,7 +47,7 @@ export class GroupIngredientsService {
   // Getting group ingredients
   async getGroupIngredients(dto: GetGroupIngredientsDto){
     try{
-      const group_ingredients = await this.groupIngredientModel.findAll({
+      const group_ingredients = await this.groupIngredientModel.findAndCountAll({
         where: { active: true },
         offset: (dto.page - 1) * dto.limit,
         limit: dto.limit

@@ -20,7 +20,7 @@ import { GetUsersDto } from '../dto/get-users.dto';
 
 
 @ApiTags('Employees')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('/users')
 export class UsersController {
   constructor(
@@ -32,35 +32,35 @@ export class UsersController {
   @ApiOperation({ summary: 'Adding employee roles' })
   @ApiResponse({ status: 200, type: User })
   @Post('/roles')
-  addRole(@Body() dto: AddRoleUserDto){
+  addUserRole(@Body() dto: AddRoleUserDto){
     return this.userService.addUserRole(dto)
   }
 
   @ApiOperation({ summary: 'Removing employee roles' })
   @ApiResponse({ status: 200, type: User })
   @Delete('/:id/roles/:roleID')
-  removeRole(@Param('id') id: number, @Param('roleID') roleID: number){
+  subtractUserRole(@Param('id') id: number, @Param('roleID') roleID: number){
     return this.userService.subtractUserRole(id, roleID)
   }
 
   @ApiOperation({ summary: 'Banning an employee' })
   @ApiResponse({ status: 200, type: User })
   @Post('/ban')
-  ban(@Body() dto: BanUserDto){
+  banUser(@Body() dto: BanUserDto){
     return this.userService.banUser(dto)
   }
 
   @ApiOperation({ summary: 'Getting banned employees' })
   @ApiResponse({ status: 200, type: [User] })
   @Get('/ban')
-  getBanned(){
+  getBannedUsers(){
     return this.userService.getBannedUsers()
   }
 
   @ApiOperation({ summary: 'Unbanning an employee' })
   @ApiResponse({ status: 200, type: User })
   @Post('/unban')
-  unban(@Body() dto: UnbanUserDto){
+  unbanUser(@Body() dto: UnbanUserDto){
     return this.userService.unbanUser(dto)
   }
 
@@ -72,24 +72,6 @@ export class UsersController {
     return this.userService.createUser(dto)
   }
 
-  @ApiOperation({ summary: "Searching employees by 'firstName', " +
-      "'lastName', 'email', 'branchID', 'bitrixID'"
-  })
-  @ApiResponse({ status: 200, type: [User] })
-  @Roles('admin')
-  @Get()
-  searchUsers(@Query() search: SearchUserDto){
-    return this.userService.searchUsers(search)
-  }
-
-
-  @ApiOperation({ summary: 'Getting an employee' })
-  @ApiResponse({ status: 200, type: User })
-  @Get('/:id')
-  getUser(@Param('id') id: number){
-    return this.userService.getUser(id)
-  }
-
   @ApiOperation({ summary: 'Getting employees' })
   @ApiResponse({ status: 200, type: [User] })
   @Roles('admin')
@@ -98,6 +80,22 @@ export class UsersController {
     return this.userService.getUsers(dto)
   }
 
+  @ApiOperation({ summary: "Searching employees by 'firstName', " +
+      "'lastName', 'email', 'branchID', 'bitrixID'"
+  })
+  @ApiResponse({ status: 200, type: [User] })
+  @Roles('admin')
+  @Get('/search')
+  searchUsers(@Query() dto: SearchUserDto){
+    return this.userService.searchUsers(dto)
+  }
+
+  @ApiOperation({ summary: 'Getting an employee' })
+  @ApiResponse({ status: 200, type: User })
+  @Get('/:id')
+  getUser(@Param('id') id: number){
+    return this.userService.getUser(id)
+  }
 
 
   @ApiOperation({ summary: 'Modifying an employee' })

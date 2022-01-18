@@ -86,7 +86,7 @@ export class CustomersService {
   // Getting customers
   async getCustomers(dto: GetCustomersDto){
     try{
-      const customers = await this.customerModel.findAll({
+      const customers = await this.customerModel.findAndCountAll({
         where: { active: true },
         include: { all: true },
         offset: (dto.page - 1) * dto.limit,
@@ -122,10 +122,9 @@ export class CustomersService {
             { last_name: dto.search },
             { phone: dto.search },
             { additional_phone: dto.search },
-            { factor_id: dto.search },
-            { kitchen_id: dto.search },
             { language: dto.search },
-            { user_id: dto.search },
+          ],
+          [Op.and]: [
             { active: true }
           ]
         },

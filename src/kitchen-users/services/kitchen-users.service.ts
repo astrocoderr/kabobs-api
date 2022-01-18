@@ -42,7 +42,7 @@ export class KitchenUsersService {
 
       await kitchen_user.$set('kitchen', [kitchen.result.kitchen.id])
 
-      const new_kitchen_user = await this.kitchenUserModel.findByPk(kitchen.result.kitchen.id, {
+      const new_kitchen_user = await this.kitchenUserModel.findByPk(kitchen_user.id, {
         include: { all: true }
       })
 
@@ -68,7 +68,7 @@ export class KitchenUsersService {
   // Getting kitchen users
   async getKitchenUsers(dto: GetKitchenUsersDto){
     try{
-      const kitchen_users = await this.kitchenUserModel.findAll({
+      const kitchen_users = await this.kitchenUserModel.findAndCountAll({
         where: { active: true },
         include: { all: true },
         offset: (dto.page - 1) * dto.limit,

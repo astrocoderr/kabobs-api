@@ -27,13 +27,6 @@ export class TechcardsController {
     return this.techcardsService.createTechcard(dto)
   }
 
-  @ApiOperation({ summary: 'Getting a techcard' })
-  @ApiResponse({ status: 200, type: Techcard })
-  @Get('/:id')
-  getTechcard(@Param('id') id: number){
-    return this.techcardsService.getTechcard(id)
-  }
-
   @ApiOperation({ summary: 'Getting techcards' })
   @ApiResponse({ status: 200, type: [Techcard] })
   @Get()
@@ -47,9 +40,16 @@ export class TechcardsController {
       "'amountPiece' and 'percent'"
   })
   @ApiResponse({ status: 200, type: [Techcard] })
-  @Get()
+  @Get('/search')
   searchTechcards(@Query() search: SearchTechcardDto){
     return this.techcardsService.searchTechcard(search)
+  }
+
+  @ApiOperation({ summary: 'Getting a techcard' })
+  @ApiResponse({ status: 200, type: Techcard })
+  @Get('/:id')
+  getTechcard(@Param('id') id: number){
+    return this.techcardsService.getTechcard(id)
   }
 
   @ApiOperation({ summary: 'Modifying a techcard' })

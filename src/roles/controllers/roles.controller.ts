@@ -11,7 +11,7 @@ import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
 import { GetRolesDto } from '../dto/get-roles.dto';
 
 @ApiTags('Roles' )
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('/roles')
 export class RolesController {
   constructor(private roleService: RolesService) {

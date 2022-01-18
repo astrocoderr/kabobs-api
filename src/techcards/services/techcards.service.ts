@@ -69,7 +69,7 @@ export class TechcardsService {
   // Getting techcards
   async getTechcards(dto: GetTechcardsDto){
     try{
-      const techcards = await this.techcardModel.findAll({
+      const techcards = await this.techcardModel.findAndCountAll({
         where: { active: true },
         include: { all: true },
         offset: (dto.page - 1) * dto.limit,
@@ -136,19 +136,19 @@ export class TechcardsService {
       const techcards = await this.techcardModel.findAll({
         where: {
           [Op.or]: [
-            { type: dto.search },
+            // { type: dto.search },
             { title: dto.search },
             { marketing_title: dto.search },
             { description: dto.search },
-            { ingredients_amount: dto.search },
-            { amount: dto.search },
-            { brutto: dto.search },
-            { kcal: dto.search },
-            { prot: dto.search },
-            { fat: dto.search },
-            { carb: dto.search },
-            { amount_piece: dto.search },
-            { percent: dto.search }
+            // { ingredients_amount: dto.search },
+            // { amount: dto.search },
+            // { brutto: dto.search },
+            // { kcal: dto.search },
+            // { prot: dto.search },
+            // { fat: dto.search },
+            // { carb: dto.search },
+            // { amount_piece: dto.search },
+            // { percent: dto.search }
           ]
         },
         include: { all: true }

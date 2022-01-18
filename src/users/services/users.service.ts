@@ -78,7 +78,7 @@ export class UsersService {
   // Getting users
   async getUsers(dto: GetUsersDto){
     try{
-      const users = await this.userModel.findAll({
+      const users = await this.userModel.findAndCountAll({
         where: { active: true },
         include: { all: true },
         offset: (dto.page - 1) * dto.limit,
@@ -148,8 +148,8 @@ export class UsersService {
             { first_name: dto.search },
             { last_name: dto.search },
             { email: dto.search },
-            { branch_id: dto.search },
-            { bitrix_id: dto.search }
+            // { branch_id: JSON.parse(dto.search) },
+            // { bitrix_id: JSON.parse(dto.search) }
           ]
         },
         include: { all: true }

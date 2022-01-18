@@ -27,13 +27,6 @@ export class OrdersController {
     return this.orderService.createOrder(dto)
   }
 
-  @ApiOperation({ summary: 'Getting an order' })
-  @ApiResponse({ status: 200, type: Order })
-  @Get('/:id')
-  getOrder(@Param('id') id: number){
-    return this.orderService.getOrder(id)
-  }
-
   @ApiOperation({ summary: 'Getting orders' })
   @ApiResponse({ status: 200, type: [Order] })
   @Get()
@@ -46,9 +39,16 @@ export class OrdersController {
       "'kcal', 'prot', 'fat', 'carb', 'price', 'kitchenComment', 'deliveryComment'"
   })
   @ApiResponse({ status: 200, type: [Order] })
-  @Get()
+  @Get('/search')
   searchOrders(@Query() search: SearchOrderDto){
     return this.orderService.searchOrders(search)
+  }
+
+  @ApiOperation({ summary: 'Getting an order' })
+  @ApiResponse({ status: 200, type: Order })
+  @Get('/:id')
+  getOrder(@Param('id') id: number){
+    return this.orderService.getOrder(id)
   }
 
   @ApiOperation({ summary: 'Modifying an order' })

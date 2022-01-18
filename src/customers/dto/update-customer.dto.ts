@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
-  IsDate, IsEmail, IsNumber, IsPhoneNumber, IsString, Matches,
-  MaxLength, MinLength
+  IsDateString, IsEmail, IsNumber, IsPhoneNumber, IsString, Matches,
+  MaxLength, MinLength, ValidateIf,
 } from 'class-validator';
 
 export class UpdateCustomerDto {
@@ -19,7 +19,7 @@ export class UpdateCustomerDto {
   readonly last_name: string;
 
   @ApiProperty({ example: '2021-11-11T10:00:00:000Z', description: 'birthday' })
-  @IsDate()
+  @IsDateString()
   readonly birthday: Date;
 
   @ApiProperty({ example: 'john@mathew.com', description: 'email address' })
@@ -56,11 +56,13 @@ export class UpdateCustomerDto {
 
   @ApiProperty({ example: 'false', description: 'is customer is vip' })
   @IsBoolean()
-  readonly is_vip: boolean;
+  @ValidateIf((object, value) => value !== null)
+  readonly is_vip!: boolean | null;
 
   @ApiProperty({ example: 'cz', description: "customer's preferred system language" })
   @IsString()
-  readonly language: string;
+  @ValidateIf((object, value) => value !== null)
+  readonly language!: string | null;
 
   @ApiProperty({ example: '1', description: 'manager identifier' })
   @IsNumber()
@@ -75,8 +77,4 @@ export class UpdateCustomerDto {
     { message: 'password too weak' }
   )
   readonly password: string;
-
-  @ApiProperty({ example: true, description: 'is 2 factor authentication switched on' })
-  @IsBoolean()
-  readonly two_fa: boolean;
 }

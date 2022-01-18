@@ -66,7 +66,7 @@ export class KitchensService {
   // Getting kitchens
   async getKitchens(dto: GetKitchensDto){
     try{
-      const kitchens = await this.kitchenModel.findAll({
+      const kitchens = await this.kitchenModel.findAndCountAll({
         where: { active: true },
         include: { all: true },
         offset: (dto.page - 1) * dto.limit,

@@ -51,14 +51,6 @@ export class CustomersController {
     return this.customerService.createCustomer(dto)
   }
 
-  @ApiOperation({ summary: 'Getting a customer' })
-  @ApiResponse({ status: 200, type: Customer })
-  @Get('/:id')
-  getCustomer(@Param('id') id: number){
-    return this.customerService.getCustomer(id)
-  }
-
-
   @ApiOperation({ summary: 'Getting customers' })
   @ApiResponse({ status: 200, type: [Customer] })
   @Get()
@@ -71,9 +63,16 @@ export class CustomersController {
       `'phone', 'additionalPhone', 'factorID', 'kitchenID', 'language', 'userID'`
   })
   @ApiResponse({ status: 200, type: [Customer] })
-  @Get()
+  @Get('/search')
   searchCustomers(@Query() dto: SearchCustomerDto){
     return this.customerService.searchCustomers(dto)
+  }
+
+  @ApiOperation({ summary: 'Getting a customer' })
+  @ApiResponse({ status: 200, type: Customer })
+  @Get('/:id')
+  getCustomer(@Param('id') id: number){
+    return this.customerService.getCustomer(id)
   }
 
   @ApiOperation({ summary: 'Modifying a customer' })
