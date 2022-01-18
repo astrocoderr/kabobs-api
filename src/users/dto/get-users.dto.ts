@@ -4,7 +4,7 @@ import {
 } from 'class-validator';
 
 export class GetUsersDto {
-  @ApiProperty({ example: '10', description: 'offset' })
+  @ApiProperty({ example: '10', description: 'page' })
   @IsString()
   readonly page: number;
 
