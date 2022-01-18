@@ -25,6 +25,7 @@ import { GroupIngredientsModule } from './group-ingredients/group-ingredients.mo
 import { IngredientsModule } from './ingredients/ingredients.module';
 import { TechcardsModule } from './techcards/techcards.module';
 import { KitchenUsersModule } from './kitchen-users/kitchen-users.module';
+import { RequestDurationInterceptor } from '../interceptors/request-duration.interceptor';
 
 
 @Module({
@@ -33,6 +34,10 @@ import { KitchenUsersModule } from './kitchen-users/kitchen-users.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggerInterceptor
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestDurationInterceptor
     }
   ],
   imports: [
