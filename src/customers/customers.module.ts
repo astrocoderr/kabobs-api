@@ -7,6 +7,7 @@ import { Customer } from './models/customers.model';
 import { AddressesModule } from '../addresses/addresses.module';
 import { AuthModule } from '../auth/auth.module';
 import { UserCustomersAssociations } from './models/user-customers-associations.model';
+import { UsersModule } from '../users/users.module';
 
 
 @Module({
@@ -17,7 +18,8 @@ import { UserCustomersAssociations } from './models/user-customers-associations.
       Customer, UserCustomersAssociations
     ]),
     AddressesModule,
-    AuthModule
+    AuthModule,
+    UsersModule
   ],
   exports: [
     CustomersService
