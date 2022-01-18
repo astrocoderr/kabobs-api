@@ -19,7 +19,7 @@ interface IngredientFields {
   fat: number;
   carb: number;
   name: string;
-  group: number;
+  group_id: number;
   unit: string;
   brutto: number;
   netto: number;
@@ -67,7 +67,7 @@ export class Ingredient extends Model<Ingredient, IngredientFields>{
   group: number;
 
   @ForeignKey(() => GroupIngredient)
-  groupID: number
+  group_id: number
 
   @ApiProperty({
     example: {
@@ -97,7 +97,7 @@ export class Ingredient extends Model<Ingredient, IngredientFields>{
   creator: number;
 
   @ForeignKey(() => User)
-  creatorID: number
+  creator_id: number
 
   @ApiProperty({ example: '230', description: 'kcal' })
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -151,5 +151,5 @@ export class Ingredient extends Model<Ingredient, IngredientFields>{
   techcard: number;
 
   @ForeignKey(() => Techcard)
-  techcardID: number
+  techcard_id: number
 }
