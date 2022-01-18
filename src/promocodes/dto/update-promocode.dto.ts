@@ -8,21 +8,21 @@ export class UpdatePromocodeDto {
   @IsString()
   @MinLength(1)
   @MaxLength(50)
-  code: string;
+  readonly code: string;
 
   @ApiProperty({ example: '1', description: 'percentage' })
   @IsNumber()
-  type: number;
+  readonly type: number;
 
   @ApiProperty({ example: '500', description: 'price amount' })
   @IsNumber()
-  amount: number;
+  readonly amount: number;
 
   @ApiProperty({ example: '2', description: 'inactive' })
   @IsNumber()
-  status: number;
+  readonly status: number;
 
   @ApiProperty({ example: '1', description: 'single usage' })
   @IsNumber()
-  usage: number;
+  readonly usage: number;
 }

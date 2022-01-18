@@ -9,17 +9,17 @@ export class UpdateKitchenUserDto {
   @IsString()
   @MinLength(1)
   @MaxLength(50)
-  firstName: string;
+  readonly first_name: string;
 
   @ApiProperty({ example: 'Mathew', description: 'last name' })
   @IsString()
   @MinLength(1)
   @MaxLength(50)
-  lastName: string;
+  readonly last_name: string;
 
   @ApiProperty({ example: 'jackandjones@gmail.com', description: 'email address' })
   @IsEmail()
-  email: string;
+  readonly email: string;
 
   @ApiProperty({ example: 'qwerty1234', description: 'password' })
   @IsString()
@@ -29,9 +29,9 @@ export class UpdateKitchenUserDto {
     /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
     { message: 'password too weak' }
   )
-  password: string;
+  readonly password: string;
 
   @ApiProperty({ example: '68', description: 'kitchens identifier' })
   @IsNumber()
-  kitchen: number;
+  readonly kitchen_id: number;
 }

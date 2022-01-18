@@ -8,5 +8,5 @@ export class UpdateGroupIngredientDto {
   @IsString()
   @MinLength(1)
   @MaxLength(50)
-  name: string;
+  readonly name: string;
 }

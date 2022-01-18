@@ -9,49 +9,49 @@ export class UpdateIngredientDto {
   @IsString()
   @MinLength(1)
   @MaxLength(50)
-  name: string;
+  readonly name: string;
 
   @ApiProperty({ example: '200', description: 'kcal' })
   @IsNumber()
-  kcal: number;
+  readonly kcal: number;
 
   @ApiProperty({ example: '100', description: 'protein' })
   @IsNumber()
-  prot: number;
+  readonly prot: number;
 
   @ApiProperty({ example: '40', description: 'fat' })
   @IsNumber()
-  fat: number;
+  readonly fat: number;
 
   @ApiProperty({ example: '68', description: 'carb' })
   @IsNumber()
-  carb: number;
+  readonly carb: number;
 
   @ApiProperty({ example: '33', description: "group's identifier" })
   @IsNumber()
-  group: number;
+  readonly group_id: number;
 
   @ApiProperty({ example: 'unit', description: 'unit' })
   @IsString()
-  unit: string;
+  readonly unit: string;
 
   @ApiProperty({ example: '500', description: 'brutto' })
   @IsNumber()
-  brutto: number;
+  readonly brutto: number;
 
   @ApiProperty({ example: '250', description: 'netto' })
   @IsNumber()
-  netto: number;
+  readonly netto: number;
 
   @ApiProperty({ example: '5', description: 'percent' })
   @IsNumber()
-  percent: number;
+  readonly percent: number;
 
   @ApiProperty({ example: 'apple, pineapple', description: 'tags; (apple, pineaplle)' })
   @IsString()
-  tags: string;
+  readonly tags: string;
 
   @ApiProperty({ example: true, description: 'is orders is active' })
   @IsBoolean()
-  active: boolean;
+  readonly active: boolean;
 }

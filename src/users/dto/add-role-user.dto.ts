@@ -4,9 +4,9 @@ import { IsNumber } from 'class-validator';
 export class AddRoleUserDto{
   @ApiProperty({ example: '23', description: "user's identifier" })
   @IsNumber()
-  readonly userID: number;
+  readonly user_id: number;
 
   @ApiProperty({ example: '1', description: 'role for user' })
   @IsNumber()
-  readonly roleID: number;
+  readonly role_id: number;
 }

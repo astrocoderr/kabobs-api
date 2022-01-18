@@ -9,13 +9,13 @@ export class CreateKitchenDto {
   @IsString()
   @MinLength(1)
   @MaxLength(60)
-  name: string;
+  readonly name: string;
 
   @ApiProperty({ example: 'jackandjones@gmail.com', description: 'email address' })
   @IsEmail()
-  email: string;
+  readonly email: string;
 
   @ApiProperty({ example: '68', description: 'address identifier' })
   @IsNumber()
-  address: number;
+  readonly address_id: number;
 }

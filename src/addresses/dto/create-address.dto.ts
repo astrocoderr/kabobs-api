@@ -20,7 +20,7 @@ export class CreateAddressDto{
 
   @ApiProperty({ example: '42a BBC', description: 'house number' })
   @IsString()
-  readonly houseNumber: string;
+  readonly house_number: string;
 
   @ApiProperty({ example: 'smth', description: 'smth' })
   @IsString()

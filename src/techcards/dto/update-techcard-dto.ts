@@ -5,77 +5,77 @@ import { IsBoolean, IsNumber, IsString } from 'class-validator';
 export class UpdateTechcardDto {
   @ApiProperty({ example: 'type', description: 'type' })
   @IsString()
-  type: string;
+  readonly type: string;
 
   @ApiProperty({ example: 'title', description: 'title' })
   @IsString()
-  title: string;
+  readonly title: string;
 
   @ApiProperty({ example: 'marketing title', description: 'marketing title' })
   @IsString()
-  marketingTitle: string;
+  readonly marketing_title: string;
 
   @ApiProperty({ example: 'description', description: 'description' })
   @IsString()
-  description: string;
+  readonly description: string;
 
   @ApiProperty({ example: '200', description: 'kcal' })
   @IsNumber()
-  kcal: number;
+  readonly kcal: number;
 
   @ApiProperty({ example: '100', description: 'protein' })
   @IsNumber()
-  prot: number;
+  readonly prot: number;
 
   @ApiProperty({ example: '40', description: 'fat' })
   @IsNumber()
-  fat: number;
+  readonly fat: number;
 
   @ApiProperty({ example: '68', description: 'carb' })
   @IsNumber()
-  carb: number;
+  readonly carb: number;
 
   @ApiProperty({ example: '23', description: "ingredient's identifier" })
   @IsNumber()
-  ingredient: number;
+  readonly ingredient_id: number;
 
   @ApiProperty({ example: '20', description: 'amount' })
   @IsNumber()
-  amount: number;
+  readonly amount: number;
 
   @ApiProperty({ example: '200', description: 'brutto' })
   @IsNumber()
-  brutto: number;
+  readonly brutto: number;
 
   @ApiProperty({ example: '0', description: 'unit' })
   @IsNumber()
-  unit: number;
+  readonly unit: number;
 
   @ApiProperty({ example: '2', description: 'amount piece' })
   @IsNumber()
-  amountPiece: number;
+  readonly amount_piece: number;
 
   @ApiProperty({ example: '3', description: 'percent' })
   @IsNumber()
-  percent: number;
+  readonly percent: number;
 
   @ApiProperty({ example: 'apple, pineapple', description: 'tags; (apple, pineapple)' })
   @IsString()
-  tags: string;
+  readonly tags: string;
 
   @ApiProperty({ example: '3', description: '3 small boxes' })
   @IsNumber()
-  boxesSmall: number;
+  readonly boxes_small: number;
 
   @ApiProperty({ example: '2', description: '2 medium boxes' })
   @IsNumber()
-  boxesMedium: number;
+  readonly boxes_medium: number;
 
   @ApiProperty({ example: '1', description: '1 big box' })
   @IsNumber()
-  boxesBig: number;
+  readonly boxes_big: number;
 
   @ApiProperty({ example: '2', description: 'ingredients amount' })
   @IsNumber()
-  ingredientsAmount: number;
+  readonly ingredients_amount: number;
 }
