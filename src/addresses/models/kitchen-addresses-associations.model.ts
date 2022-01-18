@@ -19,9 +19,9 @@ export class KitchenAddressesAssociations extends Model<KitchenAddressesAssociat
 
   @ForeignKey(() => Addresses)
   @Column({ type: DataType.INTEGER })
-  addressID: number;
+  address_id: number;
 
   @ForeignKey(() => Kitchen)
   @Column({ type: DataType.INTEGER })
-  kitchenID: number;
+  kitchen_id: number;
 }

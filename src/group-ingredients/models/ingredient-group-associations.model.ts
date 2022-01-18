@@ -19,9 +19,9 @@ export class IngredientGroupAssociations extends Model<IngredientGroupAssociatio
 
   @ForeignKey(() => GroupIngredient)
   @Column({ type: DataType.INTEGER })
-  groupIngredientID: number;
+  group_ingredient_id: number;
 
   @ForeignKey(() => Ingredient)
   @Column({ type: DataType.INTEGER })
-  ingredientID: number;
+  ingredient_id: number;
 }

@@ -24,7 +24,7 @@ interface AddressesFields {
   lat: number;
   lon: number;
   road: string;
-  houseNumber: string;
+  house_number: string;
   neighbourhood: string;
   zipcode: number;
 }
@@ -59,7 +59,7 @@ export class Addresses extends Model<Addresses, AddressesFields>{
 
   @ApiProperty({ example: '42a BBC', description: 'house number' })
   @Column({ type: DataType.STRING, allowNull: false })
-  houseNumber: string;
+  house_number: string;
 
   @ApiProperty({ example: 'smth', description: 'smth' })
   @Column({ type: DataType.STRING, allowNull: true })
@@ -80,7 +80,7 @@ export class Addresses extends Model<Addresses, AddressesFields>{
   order: Order[]
 
   @ForeignKey(() => Order)
-  orderID: number
+  order_id: number
 
   @BelongsToMany(() => Kitchen, () => KitchenAddressesAssociations)
   kitchen: Kitchen[]

@@ -6,11 +6,11 @@ import { KitchenUserKitchensAssociations } from '../../kitchens/models/kitchen-u
 
 // kitchens users creation attributes
 interface KitchenUserFields {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string
-  kitchen: number;
+  kitchen_id: number;
 }
 
 // kitchen_users model
@@ -27,11 +27,11 @@ export class KitchenUser extends Model<KitchenUser, KitchenUserFields>{
 
   @ApiProperty({ example: 'John', description: 'first name' })
   @Column({ type: DataType.STRING, allowNull: false })
-  firstName: string;
+  first_name: string;
 
   @ApiProperty({ example: 'Mathew', description: 'last name' })
   @Column({ type: DataType.STRING, allowNull: false })
-  lastName: string;
+  last_name: string;
 
   @ApiProperty({ example: 'jackandjones@gmail.com', description: 'email address' })
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
@@ -71,7 +71,7 @@ export class KitchenUser extends Model<KitchenUser, KitchenUserFields>{
   kitchen: number;
 
   @ForeignKey(() => Kitchen)
-  kitchenID: number;
+  kitchen_id: number;
 
   @ApiProperty({ example: true, description: 'is kitchens user is active' })
   @Column({ type: DataType.BOOLEAN, defaultValue: true })

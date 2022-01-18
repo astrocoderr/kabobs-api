@@ -19,9 +19,9 @@ export class CustomerOrdersAssociations extends Model<CustomerOrdersAssociations
 
   @ForeignKey(() => Customer)
   @Column({ type: DataType.INTEGER })
-  customerID: number;
+  customer_id: number;
 
   @ForeignKey(() => Order)
   @Column({ type: DataType.INTEGER })
-  orderID: number;
+  order_id: number;
 }

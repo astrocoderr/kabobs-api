@@ -19,9 +19,9 @@ export class CreatorOrdersAssociations extends Model<CreatorOrdersAssociations>{
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER })
-  creatorID: number;
+  creator_id: number;
 
   @ForeignKey(() => Order)
   @Column({ type: DataType.INTEGER })
-  orderID: number;
+  order_id: number;
 }

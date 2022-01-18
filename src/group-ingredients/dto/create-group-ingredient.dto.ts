@@ -8,5 +8,5 @@ export class CreateGroupIngredientDto {
   @IsString()
   @MinLength(1)
   @MaxLength(50)
-  name: string;
+  readonly name: string;
 }

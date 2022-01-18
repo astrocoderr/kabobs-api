@@ -19,9 +19,9 @@ export class IngredientTechcardsAssociations extends Model<IngredientTechcardsAs
 
   @ForeignKey(() => Techcard)
   @Column({ type: DataType.INTEGER })
-  techcardID: number;
+  techcard_id: number;
 
   @ForeignKey(() => Ingredient)
   @Column({ type: DataType.INTEGER })
-  ingredientID: number;
+  ingredient_id: number;
 }

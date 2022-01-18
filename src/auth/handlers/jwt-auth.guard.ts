@@ -21,16 +21,16 @@ export class JwtAuthGuard implements CanActivate{
     const req = context.switchToHttp().getRequest();
 
     try{
-      const authHeader = req.headers.authorization;
-      const bearer = authHeader.split(' ')[0];
-      const token = authHeader.split(' ')[1];
+      const auth_header = req.headers.authorization;
+      const bearer = auth_header.split(' ')[0];
+      const token = auth_header.split(' ')[1];
 
       if(bearer != this.configService.get('JWT.BEARER') || !token){
         this.logger.error(`Error in jwt-auth.guard.ts - 'canActivate()'. Bearer or Token undefined`);
         throw new UnauthorizedException({
           success: false,
           message: `User unauthorized`,
-          data: {}
+          result: {}
         });
       }
 
@@ -38,11 +38,11 @@ export class JwtAuthGuard implements CanActivate{
 
       return true;
     }catch(ex){
-      this.logger.error(`Error in jwt-auth.guard.ts - ${ex.message}`);
+      this.logger.error(`Error in jwt-auth.guard.ts - 'canActivate()'. ${ex.message}. ${ex.original}`);
       throw new UnauthorizedException({
         success: false,
         message: `User unauthorized`,
-        data: {}
+        result: {}
       });
     }
   }

@@ -15,7 +15,7 @@ import {
 interface KitchenFields {
   name: string;
   email: string;
-  address: number;
+  address_id: number;
 }
 
 // kitchens model
@@ -69,8 +69,8 @@ export class Kitchen extends Model<Kitchen, KitchenFields>{
   active: boolean;
 
   @HasMany(() => KitchenUser)
-  kitchenUser: number;
+  kitchen_user: number;
 
   @ForeignKey(() => KitchenUser)
-  kitchenUserID: number;
+  kitchen_user_id: number;
 }

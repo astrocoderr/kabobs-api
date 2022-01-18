@@ -15,10 +15,10 @@ import {
 interface TechcardFields {
   type: string;
   title: string;
-  marketingTitle: string;
+  marketing_title: string;
   description: string;
-  ingredient: number;
-  ingredientsAmount: number;
+  ingredient_id: number;
+  ingredients_amount: number;
   amount: number;
   brutto: number;
   kcal: number;
@@ -26,12 +26,12 @@ interface TechcardFields {
   fat: number;
   carb: number;
   unit: number;
-  amountPiece: number;
+  amount_piece: number;
   percent: number;
   tags: string;
-  boxesSmall: number;
-  boxesMedium: number;
-  boxesBig: number;
+  boxes_small: number;
+  boxes_medium: number;
+  boxes_big: number;
 }
 
 // techcard model
@@ -74,7 +74,7 @@ export class Techcard extends Model<Techcard, TechcardFields>{
   ingredient: number;
 
   @ForeignKey(() => Ingredient)
-  ingredientID: number
+  ingredient_id: number
 
   @ApiProperty({
     example: {
@@ -104,7 +104,7 @@ export class Techcard extends Model<Techcard, TechcardFields>{
   creator: number;
 
   @ForeignKey(() => User)
-  creatorID: number
+  creator_id: number
 
   @ApiProperty({ example: '230', description: 'kcal' })
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -132,11 +132,11 @@ export class Techcard extends Model<Techcard, TechcardFields>{
 
   @ApiProperty({ example: 'marketing title', description: 'marketing title' })
   @Column({ type: DataType.STRING, allowNull: true })
-  marketingTitle: string;
+  marketing_title: string;
 
   @ApiProperty({ example: '3', description: 'ingredients amount' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  ingredientsAmount: number;
+  ingredients_amount: number;
 
   @ApiProperty({ example: '500', description: 'amount' })
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -156,7 +156,7 @@ export class Techcard extends Model<Techcard, TechcardFields>{
 
   @ApiProperty({ example: '2', description: 'amount piece' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  amountPiece: number;
+  amount_piece: number;
 
   @ApiProperty({ example: '5', description: 'percent' })
   @Column({ type: DataType.INTEGER, allowNull: true })
@@ -168,15 +168,15 @@ export class Techcard extends Model<Techcard, TechcardFields>{
 
   @ApiProperty({ example: 3, description: '3 small boxes' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  boxesSmall: number;
+  boxes_small: number;
 
   @ApiProperty({ example: 2, description: '2 medium boxes' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  boxesMedium: number;
+  boxes_medium: number;
 
   @ApiProperty({ example: 1, description: '1 big box' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  boxesBig: number;
+  boxes_big: number;
 
   @ApiProperty({ example: 'description', description: 'description' })
   @Column({ type: DataType.STRING, allowNull: true })

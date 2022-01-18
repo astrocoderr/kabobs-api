@@ -19,9 +19,9 @@ export class CustomerPromocodesAssociations extends Model<CustomerPromocodesAsso
 
   @ForeignKey(() => Promocode)
   @Column({ type: DataType.INTEGER })
-  promocodeID: number;
+  promocode_id: number;
 
   @ForeignKey(() => Customer)
   @Column({ type: DataType.INTEGER })
-  customerID: number;
+  customer_id: number;
 }

@@ -14,24 +14,24 @@ import { CustomerOrdersAssociations } from './customer-orders-associations';
 
 // orders creation attributes
 interface OrderFields {
-  customerID: number;
-  managerID: number;
-  creatorID: number;
-  promocodeID: number;
+  customer_id: number;
+  manager_id: number;
+  creator_id: number;
+  promocode_id: number;
   kcal: number;
   prot: number;
   fat: number;
   carb: number;
-  startDate: Date;
+  start_date: Date;
   length: number;
-  mealsPerDay: number;
-  weekSize: number;
+  meals_per_day: number;
+  week_size: number;
   price: number;
-  ignoredMeals: string;
-  addressID: number;
-  kitchenComment: string;
-  deliveryComment: string;
-  deliveryTime: Date;
+  ignored_meals: string;
+  address_id: number;
+  kitchen_comment: string;
+  delivery_comment: string;
+  delivery_time: Date;
   status: number;
   source: number;
 }
@@ -76,7 +76,7 @@ export class Order extends Model<Order, OrderFields>{
   customer: number;
 
   @ForeignKey(() => Customer)
-  customerID: number
+  customer_id: number
 
   @ApiProperty({
     example: {
@@ -106,7 +106,7 @@ export class Order extends Model<Order, OrderFields>{
   manager: number;
 
   @ForeignKey(() => User)
-  managerID: number
+  manager_id: number
 
   @ApiProperty({
     example: {
@@ -136,11 +136,11 @@ export class Order extends Model<Order, OrderFields>{
   creator: number;
 
   @ForeignKey(() => User)
-  creatorID: number
+  creator_id: number
 
   @ApiProperty({ example: '230', description: 'kcal' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  promocodeID: number;
+  promocode_id: number;
 
   @ApiProperty({ example: '230', description: 'kcal' })
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -186,11 +186,11 @@ export class Order extends Model<Order, OrderFields>{
   address: number;
 
   @ForeignKey(() => Addresses)
-  addressID: number
+  address_id: number
 
   @ApiProperty({ example: '2021-11-12T06:20:56.582Z', description: "start date" })
   @Column({ type: DataType.DATE, allowNull: false })
-  startDate: Date;
+  start_date: Date;
 
   @ApiProperty({
     example: '5',
@@ -204,14 +204,14 @@ export class Order extends Model<Order, OrderFields>{
     description: 'meals per day, f.i. 2 means in the morning and in the evening'
   })
   @Column({ type: DataType.INTEGER, allowNull: false })
-  mealsPerDay: number;
+  meals_per_day: number;
 
   @ApiProperty({
     example: '3',
     description: 'week size, f.i. 3 means 3 days continuously, days starts from monday'
   })
   @Column({ type: DataType.INTEGER, allowNull: false })
-  weekSize: number;
+  week_size: number;
 
   @ApiProperty({ example: '500', description: '500 czech koruna' })
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -223,19 +223,19 @@ export class Order extends Model<Order, OrderFields>{
 
   @ApiProperty({ example: '2,11,98', description: 'ignored meals identifiers' })
   @Column({ type: DataType.STRING, allowNull: true })
-  ignoredMeals: string;
+  ignored_meals: string;
 
   @ApiProperty({ example: 'new meal from spain', description: "kitchens's comment" })
   @Column({ type: DataType.STRING, allowNull: true  })
-  kitchenComment: string;
+  kitchen_comment: string;
 
   @ApiProperty({ example: 'new address without roads', description: "delivery's comment" })
   @Column({ type: DataType.STRING, allowNull: true })
-  deliveryComment: string;
+  delivery_comment: string;
 
   @ApiProperty({ example: '2021-11-12T06:20:56.582Z', description: 'delivery time' })
   @Column({ type: DataType.DATE, allowNull: true })
-  deliveryTime: Date;
+  delivery_time: Date;
 
   @ApiProperty({ example: 1, description: 'new' })
   @Column({ type: DataType.INTEGER, defaultValue: 1 })

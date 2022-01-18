@@ -20,9 +20,9 @@ export class CustomerAddressesAssociations extends Model<CustomerAddressesAssoci
 
   @ForeignKey(() => Addresses)
   @Column({ type: DataType.INTEGER })
-  addressID: number;
+  address_id: number;
 
   @ForeignKey(() => Customer)
   @Column({ type: DataType.INTEGER })
-  customerID: number;
+  customer_id: number;
 }

@@ -19,9 +19,9 @@ export class OrderAddressesAssociations extends Model<OrderAddressesAssociations
 
   @ForeignKey(() => Addresses)
   @Column({ type: DataType.INTEGER })
-  addressID: number;
+  address_id: number;
 
   @ForeignKey(() => Order)
   @Column({ type: DataType.INTEGER })
-  orderID: number;
+  order_id: number;
 }

@@ -20,9 +20,9 @@ export class UserCustomersAssociations extends Model<UserCustomersAssociations>{
 
   @ForeignKey(() => Customer)
   @Column({ type: DataType.INTEGER })
-  customerID: number;
+  customer_id: number;
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER })
-  userID: number;
+  user_id: number;
 }

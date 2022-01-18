@@ -15,7 +15,7 @@ interface PromocodeFields {
   amount: number;
   status: number;
   usage: number;
-  creatorID: number;
+  creator_id: number;
 }
 
 // promocode model
@@ -44,7 +44,7 @@ export class Promocode extends Model<Promocode, PromocodeFields>{
 
   @ApiProperty({ example: '35', description: 'identifier of creator' })
   @Column({ type: DataType.INTEGER, allowNull: false })
-  creatorID: number;
+  creator_id: number;
 
   @ApiProperty({ example: '2', description: 'inactive' })
   @Column({ type: DataType.INTEGER, allowNull: true })

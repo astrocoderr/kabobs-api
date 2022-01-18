@@ -19,9 +19,9 @@ export class ManagerOrdersAssociations extends Model<ManagerOrdersAssociations>{
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER })
-  managerID: number;
+  manager_id: number;
 
   @ForeignKey(() => Order)
   @Column({ type: DataType.INTEGER })
-  orderID: number;
+  order_id: number;
 }

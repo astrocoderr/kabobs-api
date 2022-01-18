@@ -19,10 +19,10 @@ export class UserRolesAssociations extends Model<UserRolesAssociations>{
 
   @ForeignKey(() => Role)
   @Column({ type: DataType.INTEGER })
-  roleID: number;
+  role_id: number;
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER })
-  userID: number;
+  user_id: number;
 
 }
