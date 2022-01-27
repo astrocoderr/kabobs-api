@@ -117,19 +117,24 @@ export class CustomersService {
     try{
       const customers = await this.customerModel.findAll({
         where: {
-          [Op.or]: [
-            { first_name: dto.search },
-            { last_name: dto.search },
-            { phone: dto.search },
-            { additional_phone: dto.search },
-            { language: dto.search },
-          ],
-          [Op.and]: [
-            { active: true }
-          ]
+          [Op.or]: {
+            first_name: { [Op.substring]: dto.search },
+            last_name: { [Op.substring]: dto.search },
+            phone: { [Op.substring]: dto.search },
+            additional_phone: { [Op.substring]: dto.search },
+            email: { [Op.substring]: dto.search }
+          },
+          active: true,
         },
+        order: [['id', dto.sort.toUpperCase()]],
         include: { all: true }
       });
+
+
+    // { last_name: dto.search },
+    // { phone: dto.search },
+    // { additional_phone: dto.search },
+    // { language: dto.search },
 
       return {
         success: true,

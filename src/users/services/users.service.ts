@@ -144,14 +144,14 @@ export class UsersService {
     try{
       const users = await this.userModel.findAll({
         where: {
-          [Op.or]: [
-            { first_name: dto.search },
-            { last_name: dto.search },
-            { email: dto.search },
-            // { branch_id: JSON.parse(dto.search) },
-            // { bitrix_id: JSON.parse(dto.search) }
-          ]
+          [Op.or]: {
+            first_name: { [Op.substring]: dto.search },
+            last_name: { [Op.substring]: dto.search },
+            email: { [Op.substring]: dto.search },
+          },
+          active: true,
         },
+        order: [['id', dto.sort.toUpperCase()]],
         include: { all: true }
       });
 

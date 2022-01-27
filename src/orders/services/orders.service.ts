@@ -233,19 +233,11 @@ export class OrdersService {
       const orders = await this.orderModel.findAll({
         where: {
           [Op.or]: [
-            // { customer_id: dto.search },
-            // { manager_id: dto.search },
-            // { creator_id: dto.search },
-            // { promocode_id: dto.search },
-            // { kcal: dto.search },
-            // { prot: dto.search },
-            // { fat: dto.search },
-            // { carb: dto.search },
-            // { price: dto.search },
             { kitchen_comment: dto.search },
             { delivery_comment: dto.search }
           ]
         },
+        order: [['id', dto.sort.toUpperCase()]],
         include: { all: true }
       })
 
