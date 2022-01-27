@@ -34,6 +34,7 @@ interface CustomerFields {
   manager_id: number;
   status: boolean;
   password: string;
+  bitrix_id: number;
 }
 
 // customer model
