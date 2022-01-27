@@ -29,9 +29,6 @@ interface TechcardFields {
   amount_piece: number;
   percent: number;
   tags: string;
-  boxes_small: number;
-  boxes_medium: number;
-  boxes_big: number;
 }
 
 // techcard model
@@ -165,18 +162,6 @@ export class Techcard extends Model<Techcard, TechcardFields>{
   @ApiProperty({ example: 'apple, pineapple', description: 'apple, pineapple' })
   @Column({ type: DataType.STRING, allowNull: true })
   tags: string;
-
-  @ApiProperty({ example: 3, description: '3 small boxes' })
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  boxes_small: number;
-
-  @ApiProperty({ example: 2, description: '2 medium boxes' })
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  boxes_medium: number;
-
-  @ApiProperty({ example: 1, description: '1 big box' })
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  boxes_big: number;
 
   @ApiProperty({ example: 'description', description: 'description' })
   @Column({ type: DataType.STRING, allowNull: true })
