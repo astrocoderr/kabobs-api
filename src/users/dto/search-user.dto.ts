@@ -6,5 +6,9 @@ import {
 export class SearchUserDto {
   @ApiProperty({ example: "'45'", description: 'parameter that goes on searching' })
   @IsString()
-  readonly search: string;
+  readonly search_str: string;
+
+  @ApiProperty({ example: '45', description: 'parameter that goes on searching' })
+  @IsString()
+  readonly search_num: string;
 }
