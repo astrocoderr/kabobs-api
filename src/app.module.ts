@@ -26,6 +26,7 @@ import { IngredientsModule } from './ingredients/ingredients.module';
 import { TechcardsModule } from './techcards/techcards.module';
 import { KitchenUsersModule } from './kitchen-users/kitchen-users.module';
 import { RequestDurationInterceptor } from '../interceptors/request-duration.interceptor';
+import { PermissionsModule } from './permissions/permissions.module';
 
 
 @Module({
@@ -71,6 +72,7 @@ import { RequestDurationInterceptor } from '../interceptors/request-duration.int
     IngredientsModule,
     TechcardsModule,
     KitchenUsersModule,
+    PermissionsModule,
   ],
 })
 
