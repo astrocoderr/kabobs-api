@@ -4,7 +4,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { TechcardsService } from '../services/techcards.service';
 import { Techcard } from '../models/techcards.model';
 import { CreateTechcardsDto } from '../dto/create-techcards.dto';

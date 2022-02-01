@@ -4,7 +4,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { KitchensService } from '../services/kitchens.service';
 import { Kitchen } from '../models/kitchens.model';
 import { CreateKitchenDto } from '../dto/create-kitchen.dto';

@@ -8,7 +8,7 @@ import { OrdersService } from '../services/orders.service';
 import { Order } from '../models/orders.model';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { SearchOrderDto } from '../dto/search-order.dto';
 import { GetOrdersDto } from '../dto/get-orders.dto';
 

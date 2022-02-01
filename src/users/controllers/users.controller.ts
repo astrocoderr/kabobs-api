@@ -11,7 +11,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { BanUserDto } from '../dto/ban-user.dto';
 import { AddRoleUserDto } from '../dto/add-role-user.dto';
 import { UnbanUserDto } from '../dto/unban-user.dto';
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { SearchUserDto } from '../dto/search-user.dto';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -20,7 +20,7 @@ import { GetUsersDto } from '../dto/get-users.dto';
 
 
 @ApiTags('Employees')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('/users')
 export class UsersController {
   constructor(

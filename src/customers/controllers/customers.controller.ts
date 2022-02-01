@@ -10,7 +10,7 @@ import { UnbanCustomerDto } from '../dto/unban-customer.dto';
 import { Customer } from '../models/customers.model';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { SearchCustomerDto } from '../dto/search-customer.dto';
 import { GetCustomersDto } from '../dto/get-customers.dto';
 

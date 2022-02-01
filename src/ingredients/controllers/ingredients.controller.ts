@@ -4,7 +4,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { IngredientsService } from '../services/ingredients.service';
 import { Ingredient } from '../models/ingredients.model';
 import { CreateIngerdientDto } from '../dto/create-ingerdient.dto';

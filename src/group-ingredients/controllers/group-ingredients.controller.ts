@@ -4,7 +4,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { GroupIngredient } from '../models/group-ingredients.model';
 import { CreateGroupIngredientDto } from '../dto/create-group-ingredient.dto';
 import { GroupIngredientsService } from '../services/group-ingredients.service';

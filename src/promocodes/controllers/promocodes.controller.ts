@@ -5,7 +5,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { Promocode } from '../models/promocodes.model';
 import { PromocodesService } from '../services/promocodes.service';
 import { CreatePromocodeDto } from '../dto/create-promocode.dto';
