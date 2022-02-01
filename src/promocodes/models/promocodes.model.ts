@@ -34,7 +34,7 @@ export class Promocode extends Model<Promocode, PromocodeFields>{
   @Column({ type: DataType.STRING, allowNull: false })
   code: string;
 
-  @ApiProperty({ example: '1', description: 'percentage' })
+  @ApiProperty({ example: '1', description: '1 - percentage, 2 - fixed' })
   @Column({ type: DataType.INTEGER, allowNull: false })
   type: number;
 
