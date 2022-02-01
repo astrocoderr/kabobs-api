@@ -62,6 +62,11 @@ export const configuration = () => {
       ADMIN: process.env.ROLES_ADMIN
     },
 
+    // permissions
+    PERMISSIONS: {
+      FILE_PATH: process.env.PERMISSIONS_FILE_PATH
+    },
+
     // other params
     PROD_ENV: process.env.PROD_ENV
   }

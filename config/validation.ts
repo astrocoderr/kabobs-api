@@ -27,5 +27,6 @@ export const validationSchema = Joi.object({
   LOGGER_APPNAME: Joi.string().default('api'),
   ROLES_KEY: Joi.string().default('roles'),
   ROLES_ADMIN: Joi.string().default('admin'),
+  PERMISSIONS_FILE_PATH: Joi.string(),
   PROD_ENV: Joi.string().default('.production.env')
 })
