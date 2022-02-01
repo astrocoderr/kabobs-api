@@ -18,7 +18,7 @@ interface OrderDaysFields {
   prot: number;
   fat: number;
   carb: number;
-  price: number;
+  original_price: number;
   address_id: number;
   kitchen_comment: string;
   delivery_comment: string;
