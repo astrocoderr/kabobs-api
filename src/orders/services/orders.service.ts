@@ -75,7 +75,7 @@ export class OrdersService {
         }, HttpStatus.BAD_REQUEST);
       }
 
-      let promocode;
+      let promocode, total_price = dto.original_price
 
       if(dto.promocode_id){
         // promocodeID
@@ -91,6 +91,10 @@ export class OrdersService {
             result: {}
           }, HttpStatus.BAD_REQUEST);
         }
+
+        promocode.type === 1 ?
+          total_price = dto.original_price - ((promocode.amount/100)*dto.original_price) :
+          total_price = dto.original_price - promocode.amount
       }
 
       // addressID
@@ -110,6 +114,7 @@ export class OrdersService {
 
       const order = await this.orderModel.create({
         ...dto,
+        total_price,
         creator_id: creator.result.user.id
       })
 
