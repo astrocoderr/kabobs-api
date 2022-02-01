@@ -26,7 +26,8 @@ interface OrderFields {
   length: number;
   meals_per_day: number;
   week_size: number;
-  price: number;
+  original_price: number;
+  total_price: number;
   ignored_meals: string;
   address_id: number;
   kitchen_comment: string;
@@ -215,7 +216,11 @@ export class Order extends Model<Order, OrderFields>{
 
   @ApiProperty({ example: '500', description: '500 czech koruna' })
   @Column({ type: DataType.INTEGER, allowNull: false })
-  price: number;
+  original_price: number;
+
+  @ApiProperty({ example: '500', description: '500 czech koruna' })
+  @Column({ type: DataType.INTEGER, allowNull: false })
+  total_price: number;
 
   @ApiProperty({ example: true, description: 'is orders is active' })
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
