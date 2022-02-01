@@ -1,6 +1,6 @@
 import {
-  CanActivate, ExecutionContext, HttpException, HttpStatus, Inject, Injectable,
-  UnauthorizedException
+  CanActivate, ExecutionContext, HttpException, HttpStatus,
+  Inject, Injectable, UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
