@@ -39,7 +39,7 @@ export class CreateOrderDayDto {
 
   @ApiProperty({ example: '200', description: 'czech koruna' })
   @IsNumber()
-  readonly price: number;
+  readonly original_price: number;
 
   @ApiProperty({ example: '23', description: "address's identifier" })
   @IsNumber()

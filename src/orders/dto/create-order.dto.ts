@@ -74,7 +74,7 @@ export class CreateOrderDto {
 
   @ApiProperty({ example: '500', description: '500 czech koruna' })
   @IsNumber()
-  readonly price: number;
+  readonly original_price: number;
 
   @ApiProperty({ example: '2,11,98', description: 'ignored meals identifiers' })
   @IsString()
