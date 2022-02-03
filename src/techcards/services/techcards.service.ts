@@ -11,6 +11,7 @@ import { CreateTechcardsDto } from '../dto/create-techcards.dto';
 import { SearchTechcardDto } from '../dto/search-techcard.dto';
 import { UpdateTechcardDto } from '../dto/update-techcard-dto';
 import { GetTechcardsDto } from '../dto/get-techcards.dto';
+import { TagsService } from '../../tags/services/tags.service';
 
 
 @Injectable()
@@ -19,6 +20,7 @@ export class TechcardsService {
     @InjectModel(Techcard) private techcardModel: typeof Techcard,
     private configService: ConfigService,
     private ingredientService: IngredientsService,
+    private tagsService: TagsService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
@@ -39,9 +41,25 @@ export class TechcardsService {
         }, HttpStatus.BAD_REQUEST);
       }
 
+      // techcardTagID
+      const tag = await this.tagsService.getTag(dto.tag_id)
+
+      if(!tag.success){
+        this.logger.error(
+          `Error in techcards.service.ts - 'createTechcard()'. Tag not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Tag not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
       const techcard = await this.techcardModel.create(dto)
 
       await techcard.$set('ingredient', [ingredient.result.ingredient.id])
+
+      await techcard.$set('tag', [tag.result.tag.id])
 
       const new_techcard = await this.techcardModel.findByPk(techcard.id, {
         include: { all: true }
@@ -203,6 +221,12 @@ export class TechcardsService {
           message: `Techcard not found`,
           result: {}
         }, HttpStatus.BAD_REQUEST);
+      }
+
+      if(dto.tag_id){
+        // tag
+
+
       }
 
       const new_techcard = await this.techcardModel.findByPk(techcard.id, {
