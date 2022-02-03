@@ -126,6 +126,16 @@ export class OrdersService {
         date: order.start_date
       })
 
+
+      await order.$set('manager', [manager.result.user.id])
+
+      await order.$set('customer', [customer.result.customer.id])
+
+      await order.$set('creator', [manager.result.user.id])
+
+      await order.$set('address', [address.result.address.id])
+
+
       if(!order_days.success){
         this.logger.error(
           `Error in orders.service.ts - 'createOrder()'. Order days not found`
@@ -136,14 +146,6 @@ export class OrdersService {
           result: {}
         }, HttpStatus.BAD_REQUEST);
       }
-
-      await order.$set('manager', [manager.result.user.id])
-
-      await order.$set('customer', [customer.result.customer.id])
-
-      await order.$set('creator', [manager.result.user.id])
-
-      await order.$set('address', [address.result.address.id])
 
       const new_order = await this.orderModel.findByPk(order.id, {
         include: { all: true }
