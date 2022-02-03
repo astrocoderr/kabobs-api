@@ -30,9 +30,9 @@ export class CreateUserDTO {
   @IsNumber()
   readonly role_id: number;
 
-  @ApiProperty({ example: '5', description: 'privilege identifier' })
-  @IsNumber()
-  readonly privilege_id: number;
+  @ApiProperty({ example: 'ADMIN', description: 'unique permission' })
+  @IsString()
+  readonly permission: string;
 
   @ApiProperty({ example: '12345678', description: 'password' })
   @IsString()
