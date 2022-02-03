@@ -27,6 +27,7 @@ import { TechcardsModule } from './techcards/techcards.module';
 import { KitchenUsersModule } from './kitchen-users/kitchen-users.module';
 import { RequestDurationInterceptor } from '../interceptors/request-duration.interceptor';
 import { PermissionsModule } from './permissions/permissions.module';
+import { TagsModule } from './tags/tags.module';
 
 
 @Module({
@@ -73,6 +74,7 @@ import { PermissionsModule } from './permissions/permissions.module';
     TechcardsModule,
     KitchenUsersModule,
     PermissionsModule,
+    TagsModule,
   ],
 })
 
