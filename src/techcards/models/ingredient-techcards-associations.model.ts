@@ -6,6 +6,7 @@ import {
 import { Techcard } from './techcards.model';
 import { Ingredient } from '../../ingredients/models/ingredients.model';
 
+
 // ingredient_techcards_associations model
 @Table({ tableName: 'ingredient_techcards_associations' })
 export class IngredientTechcardsAssociations extends Model<IngredientTechcardsAssociations>{
