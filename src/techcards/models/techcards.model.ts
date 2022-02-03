@@ -1,5 +1,5 @@
 import {
-  BelongsTo, BelongsToMany, Column, DataType, ForeignKey,
+  BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany,
   Model, Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
@@ -9,6 +9,7 @@ import { Ingredient } from '../../ingredients/models/ingredients.model';
 import {
   IngredientTechcardsAssociations
 } from './ingredient-techcards-associations.model';
+import { Tag } from '../../tags/models/tags.model';
 
 
 // techcards creation attributes
@@ -28,7 +29,7 @@ interface TechcardFields {
   unit: number;
   amount_piece: number;
   percent: number;
-  tags: string;
+  tag_id: number;
 }
 
 // techcard model
@@ -159,9 +160,35 @@ export class Techcard extends Model<Techcard, TechcardFields>{
   @Column({ type: DataType.INTEGER, allowNull: true })
   percent: number;
 
-  @ApiProperty({ example: 'apple, pineapple', description: 'apple, pineapple' })
-  @Column({ type: DataType.STRING, allowNull: true })
-  tags: string;
+  @ApiProperty({
+    example: {
+      "id": 2,
+      "text": "Delaware, St. Riston 1A-22",
+      "lat": 12.345678,
+      "lon": 23.456798,
+      "road": "Avenue, 1C",
+      "houseNumber": "42a BBC",
+      "neighbourhood": "smth",
+      "zipcode": 12345,
+      "active": true,
+      "createdAt": "2021-11-12T06:15:55.612Z",
+      "updatedAt": "2021-11-12T06:15:55.612Z",
+      "CustomerAddresses": {
+        "id": 2,
+        "addressID": 2,
+        "customerID": 7,
+        "createdAt": "2021-11-12T06:20:56.582Z",
+        "updatedAt": "2021-11-12T06:20:56.582Z"
+      }
+    },
+    type: 'object',
+    description: 'role identifier'
+  })
+  @HasMany(() => Tag)
+  tag: number;
+
+  @ForeignKey(() => Tag)
+  tag_id: number
 
   @ApiProperty({ example: 'description', description: 'description' })
   @Column({ type: DataType.STRING, allowNull: true })
