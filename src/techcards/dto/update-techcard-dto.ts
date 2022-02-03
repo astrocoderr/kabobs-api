@@ -59,9 +59,9 @@ export class UpdateTechcardDto {
   @IsNumber()
   readonly percent: number;
 
-  @ApiProperty({ example: 'apple, pineapple', description: 'tags; (apple, pineapple)' })
-  @IsString()
-  readonly tags: string;
+  @ApiProperty({ example: '20', description: 'unique identifier' })
+  @IsNumber()
+  readonly tag_id: number;
 
   @ApiProperty({ example: '3', description: '3 small boxes' })
   @IsNumber()
