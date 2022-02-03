@@ -17,7 +17,7 @@ interface UserFields {
   birthday: Date;
   email: string;
   role_id: number;
-  privilege_id: number;
+  permission: string;
   password: string;
   branch_id: number;
   bitrix_id: number;
@@ -72,9 +72,9 @@ export class User extends Model<User, UserFields>{
   @BelongsToMany(() => Role, () => UserRolesAssociations)
   role: number;
 
-  @ApiProperty({ example: '5', description: 'privilege identifier' })
-  @Column({ type: DataType.INTEGER, allowNull: false, onDelete: 'CASCADE' })
-  privilege_id: number;
+  @ApiProperty({ example: 'ADMIN', description: 'unique permission' })
+  @Column({ type: DataType.STRING, allowNull: false, onDelete: 'CASCADE' })
+  permission: string;
 
   @ApiProperty({
     example: '$2a$10$.DLLyE6GOFk2reMZml751eutkcrNawX2lCgqz0bXda55WYDZrLOcC',
