@@ -9,6 +9,10 @@ import { IngredientsModule } from '../ingredients/ingredients.module';
 import {
   IngredientTechcardsAssociations
 } from './models/ingredient-techcards-associations.model';
+import { TagsModule } from '../tags/tags.module';
+import {
+  TagsTechcardsAssociations
+} from './models/tags-techcards-associations.model';
 
 
 @Module({
@@ -16,10 +20,12 @@ import {
   providers: [TechcardsService],
   imports: [
     SequelizeModule.forFeature([
-      Techcard, IngredientTechcardsAssociations
+      Techcard, IngredientTechcardsAssociations,
+      TagsTechcardsAssociations
     ]),
     AuthModule,
-    IngredientsModule
+    IngredientsModule,
+    TagsModule
   ],
   exports: [
     TechcardsModule
