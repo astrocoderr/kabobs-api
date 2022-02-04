@@ -45,7 +45,13 @@ import {
 import {
   CustomerPromocodesAssociations
 } from '../src/promocodes/models/customer-promocodes-associations.model';
-import { UserCustomersAssociations } from '../src/customers/models/user-customers-associations.model';
+import {
+  UserCustomersAssociations
+} from '../src/customers/models/user-customers-associations.model';
+import { Tag } from '../src/tags/models/tags.model';
+import {
+  TagsTechcardsAssociations
+} from '../src/techcards/models/tags-techcards-associations.model';
 
 
 export const databaseFactory = (configService) => ({
@@ -62,7 +68,7 @@ export const databaseFactory = (configService) => ({
     ManagerOrdersAssociations, CreatorOrdersAssociations, OrderAddressesAssociations,
     Kitchen, KitchenAddressesAssociations, KitchenUser, KitchenUserKitchensAssociations,
     OrderDays, GroupIngredient, Ingredient, IngredientGroupAssociations, Techcard,
-    IngredientTechcardsAssociations
+    IngredientTechcardsAssociations, Tag, TagsTechcardsAssociations
   ],
   autoLoadModels: configService.get('DB.AUTOLOADMODELS')
 })
