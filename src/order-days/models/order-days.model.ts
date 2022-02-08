@@ -174,6 +174,10 @@ export class OrderDays extends Model<OrderDays, OrderDaysFields>{
   @Column({ type: DataType.STRING, allowNull: true, defaultValue: null })
   ignored_meals: string;
 
+  @ApiProperty({ example: '2021-11-12T06:20:56.582Z', description: 'date' })
+  @Column({ type: DataType.DATE, allowNull: false })
+  date: Date;
+
   // @ApiProperty({
   //   example: {
   //     "id": 2,
