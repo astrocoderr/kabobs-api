@@ -23,10 +23,6 @@ export class OrderDaysService {
     try{
       const order_day = await this.orderDayModel.create(dto)
 
-      // const newOrderDay = await this.orderDayModel.findByPk(orderDay.id, {
-      //   include: { all: true }
-      // })
-
       return {
         success: true,
         message: 'Order day created successfully',
