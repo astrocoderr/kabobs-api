@@ -111,21 +111,42 @@ export class OrdersService {
         }, HttpStatus.BAD_REQUEST);
       }
 
-
       const order = await this.orderModel.create({
         ...dto,
         total_price,
         creator_id: creator.result.user.id
       })
 
-      // meals logic
-      const order_days = await this.orderDaysService.createOrderDay({
-        ...dto,
-        creator_id: creator.result.user.id,
-        order_id: order.id,
-        date: order.start_date
-      })
+      // calculate and create an order-day
+      const start_date = new Date(dto.start_date)
 
+      for(let i = 0; i < dto.length; i++){
+        if(start_date.getDay() == 6 || start_date.getDay() == 0){
+          start_date.setDate(start_date.getDate() + 1)
+          continue
+        }
+
+        // meals logic
+        const order_day = await this.orderDaysService.createOrderDay({
+          ...dto,
+          creator_id: creator.result.user.id,
+          order_id: order.id,
+          date: start_date
+        })
+
+        if(!order_day.success){
+          this.logger.error(
+            `Error in orders.service.ts - 'createOrder()'. Order day not found`
+          );
+          throw new HttpException({
+            success: false,
+            message: `Order day not found`,
+            result: {}
+          }, HttpStatus.BAD_REQUEST);
+        }
+
+        start_date.setDate(start_date.getDate() + 1)
+      }
 
       await order.$set('manager', [manager.result.user.id])
 
@@ -134,18 +155,6 @@ export class OrdersService {
       await order.$set('creator', [manager.result.user.id])
 
       await order.$set('address', [address.result.address.id])
-
-
-      if(!order_days.success){
-        this.logger.error(
-          `Error in orders.service.ts - 'createOrder()'. Order days not found`
-        );
-        throw new HttpException({
-          success: false,
-          message: `Order days not found`,
-          result: {}
-        }, HttpStatus.BAD_REQUEST);
-      }
 
       const new_order = await this.orderModel.findByPk(order.id, {
         include: { all: true }
