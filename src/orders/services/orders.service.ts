@@ -121,10 +121,18 @@ export class OrdersService {
       const start_date = new Date(dto.start_date)
 
       for(let i = 0; i < dto.length; i++){
-        if(start_date.getDay() == 6 || start_date.getDay() == 0){
-          start_date.setDate(start_date.getDate() + 1)
-          continue
+        if(dto.week_size == 5){
+          if(start_date.getDay() == 6 || start_date.getDay() == 0){
+            start_date.setDate(start_date.getDate() + 1)
+            continue
+          }
+        }else if(dto.week_size == 6){
+          if(start_date.getDay() == 0){
+            start_date.setDate(start_date.getDate() + 1)
+            continue
+          }
         }
+
 
         // meals logic
         const order_day = await this.orderDaysService.createOrderDay({
@@ -307,6 +315,8 @@ export class OrdersService {
           result: {}
         }, HttpStatus.BAD_REQUEST);
       }
+
+
 
       const new_order = await this.orderModel.findByPk(order.id, {
         include: { all: true }
