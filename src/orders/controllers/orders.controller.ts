@@ -8,8 +8,9 @@ import { OrdersService } from '../services/orders.service';
 import { Order } from '../models/orders.model';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { SearchOrderDto } from '../dto/search-order.dto';
+import { GetOrdersDto } from '../dto/get-orders.dto';
 
 
 @ApiTags('Orders')
@@ -26,18 +27,11 @@ export class OrdersController {
     return this.orderService.createOrder(dto)
   }
 
-  @ApiOperation({ summary: 'Getting an order' })
-  @ApiResponse({ status: 200, type: Order })
-  @Get('/:id')
-  getOrder(@Param('id') id: number){
-    return this.orderService.getOrder(id)
-  }
-
   @ApiOperation({ summary: 'Getting orders' })
   @ApiResponse({ status: 200, type: [Order] })
   @Get()
-  getOrders(){
-    return this.orderService.getOrders()
+  getOrders(@Query() dto: GetOrdersDto){
+    return this.orderService.getOrders(dto)
   }
 
   @ApiOperation({ summary:
@@ -45,9 +39,16 @@ export class OrdersController {
       "'kcal', 'prot', 'fat', 'carb', 'price', 'kitchenComment', 'deliveryComment'"
   })
   @ApiResponse({ status: 200, type: [Order] })
-  @Get()
+  @Get('/search')
   searchOrders(@Query() search: SearchOrderDto){
     return this.orderService.searchOrders(search)
+  }
+
+  @ApiOperation({ summary: 'Getting an order' })
+  @ApiResponse({ status: 200, type: Order })
+  @Get('/:id')
+  getOrder(@Param('id') id: number){
+    return this.orderService.getOrder(id)
   }
 
   @ApiOperation({ summary: 'Modifying an order' })

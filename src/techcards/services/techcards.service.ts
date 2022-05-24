@@ -10,6 +10,8 @@ import { IngredientsService } from '../../ingredients/services/ingredients.servi
 import { CreateTechcardsDto } from '../dto/create-techcards.dto';
 import { SearchTechcardDto } from '../dto/search-techcard.dto';
 import { UpdateTechcardDto } from '../dto/update-techcard-dto';
+import { GetTechcardsDto } from '../dto/get-techcards.dto';
+import { TagsService } from '../../tags/services/tags.service';
 
 
 @Injectable()
@@ -18,109 +20,290 @@ export class TechcardsService {
     @InjectModel(Techcard) private techcardModel: typeof Techcard,
     private configService: ConfigService,
     private ingredientService: IngredientsService,
+    private tagsService: TagsService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
   // Creating a techcard
   async createTechcard(dto: CreateTechcardsDto){
     try{
-      const techcard = await this.techcardModel.create(dto)
-
       // ingredientID
-      const ingredient = await this.ingredientService.getIngredient(dto.ingredient)
+      const ingredient = await this.ingredientService.getIngredient(dto.ingredient_id)
 
-      if(ingredient){
-        await techcard.$set('ingredient', [ingredient.id])
-      }else {
-        this.logger.error(`Error in techcard.service.ts - 'ingredient' is not found`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!ingredient.success){
+        this.logger.error(
+          `Error in techcards.service.ts - 'createTechcard()'. Ingredient not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Ingredient not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
       }
 
-      return await this.techcardModel.findByPk(techcard.id, { include: { all: true } })
+      // techcardTagID
+      const tag = await this.tagsService.getTag(dto.tag_id)
+
+      if(!tag.success){
+        this.logger.error(
+          `Error in techcards.service.ts - 'createTechcard()'. Tag not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Tag not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const techcard = await this.techcardModel.create(dto)
+
+      await techcard.$set('ingredient', [ingredient.result.ingredient.id])
+
+      await techcard.$set('tag', [tag.result.tag.id])
+
+      const new_techcard = await this.techcardModel.findByPk(techcard.id, {
+        include: { all: true }
+      })
+
+      return {
+        success: true,
+        message: 'Techcard created successfully',
+        result: {
+          techcard: new_techcard
+        }
+      }
     }catch(ex){
-      this.logger.error(`Error in techcard.service.ts - '${ex}'`);
-      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
+      this.logger.error(
+        `Error in techcards.service.ts - 'createTechcard()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting techcards
-  async getTechcards(){
-    return await this.techcardModel.findAll({
-      where: { active: true },
-      include: { all: true }
-    });
+  async getTechcards(dto: GetTechcardsDto){
+    try{
+      const techcards = await this.techcardModel.findAndCountAll({
+        where: { active: true },
+        include: { all: true },
+        offset: (dto.page - 1) * dto.limit,
+        limit: dto.limit
+      });
+
+      return {
+        success: true,
+        message: 'Techcards fetched successfully',
+        result: {
+          techcards
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in techcards.service.ts - 'getTechcards()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Getting a techcard
   async getTechcard(id: number){
-    return await this.techcardModel.findByPk(id, { include: { all: true } });
+    try{
+      const techcard = await this.techcardModel.findByPk(id, { include: { all: true } });
+
+      if(!techcard){
+        this.logger.error(
+          `Error in techcards.service.ts - 'getTechcard()'. Techcard not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Techcard not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Techcard fetched successfully',
+        result: {
+          techcard
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in techcards.service.ts - 'getTechcard()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Searching a techcard(s)
   async searchTechcard(dto: SearchTechcardDto){
-    return await this.techcardModel.findAll({
-      where: {
-        [Op.or]: [
-          { type: dto.search },
-          { title: dto.search },
-          { marketingTitle: dto.search },
-          { description: dto.search },
-          { ingredientsAmount: dto.search },
-          { amount: dto.search },
-          { brutto: dto.search },
-          { kcal: dto.search },
-          { prot: dto.search },
-          { fat: dto.search },
-          { carb: dto.search },
-          { amountPiece: dto.search },
-          { percent: dto.search }
-        ]
-      },
-      include: { all: true }
-    })
+    try{
+      const techcards = await this.techcardModel.findAll({
+        where: {
+          [Op.or]: [
+            // { type: dto.search },
+            { title: dto.search },
+            { marketing_title: dto.search },
+            { description: dto.search },
+            // { ingredients_amount: dto.search },
+            // { amount: dto.search },
+            // { brutto: dto.search },
+            // { kcal: dto.search },
+            // { prot: dto.search },
+            // { fat: dto.search },
+            // { carb: dto.search },
+            // { amount_piece: dto.search },
+            // { percent: dto.search }
+          ]
+        },
+        include: { all: true }
+      })
+
+      return {
+        success: true,
+        message: 'Techcards searched successfully',
+        result: {
+          techcards
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in techcards.service.ts - 'searchTechcard()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Editing a techcard
   async modifyTechcard(id: number, dto: UpdateTechcardDto){
-    const techcard = await this.techcardModel.update(dto,{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const techcard = await this.techcardModel.update(dto,{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in techcard.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in techcards.service.ts - 'modifyTechcard()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            result: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
+
+      if(!techcard){
+        this.logger.error(
+          `Error in techcards.service.ts - 'modifyTechcard()'. Techcard not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Techcard not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      if(dto.tag_id){
+        // tag
+
+
+      }
+
+      const new_techcard = await this.techcardModel.findByPk(techcard.id, {
+        include: { all: true }
       })
 
-    if(!techcard){
-      this.logger.error(`Error in techcard.service.ts - 'techcard' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      return {
+        success: true,
+        message: 'Techcard modified successfully',
+        result: {
+          techcard: new_techcard
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in techcards.service.ts - 'modifyTechcard()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return await this.techcardModel.findByPk(techcard.id, { include: { all: true } })
   }
 
   // Removing a techcard
   async removeTechcard(id: number){
-    const techcard = await this.techcardModel.update({ active: false },{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const techcard = await this.techcardModel.update({ active: false },{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in techcard.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in techcards.service.ts - 'removeTechcard()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            result: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
+
+      if(!techcard){
+        this.logger.error(
+          `Error in techcards.service.ts - 'removeTechcard()'. Techcard not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Techcard not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const new_techcard = await this.techcardModel.findByPk(techcard.id, {
+        include: { all: true }
       })
 
-    if(!techcard){
-      this.logger.error(`Error in techcard.service.ts - 'techcard' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      return {
+        success: true,
+        message: 'Techcard removed successfully',
+        result: {
+          techcard: new_techcard
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in techcards.service.ts - 'removeTechcard()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return techcard
   }
 }

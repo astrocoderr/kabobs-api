@@ -4,11 +4,11 @@ import {
 } from 'sequelize-typescript';
 
 import { Addresses } from './addresses.model';
-import { Customer } from '../../customers/models/customers.model';
+import { Order } from '../../orders/models/orders.model';
 
-// customer_addresses model
-@Table({ tableName: 'customer_addresses' })
-export class CustomerAddresses extends Model<CustomerAddresses>{
+// order_addresses_associations model
+@Table({ tableName: 'order_addresses_associations' })
+export class OrderAddressesAssociations extends Model<OrderAddressesAssociations>{
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -19,9 +19,9 @@ export class CustomerAddresses extends Model<CustomerAddresses>{
 
   @ForeignKey(() => Addresses)
   @Column({ type: DataType.INTEGER })
-  addressID: number;
+  address_id: number;
 
-  @ForeignKey(() => Customer)
+  @ForeignKey(() => Order)
   @Column({ type: DataType.INTEGER })
-  customerID: number;
+  order_id: number;
 }

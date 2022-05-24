@@ -1,21 +1,25 @@
 import {
-  BelongsTo, Column, DataType, ForeignKey,
-  HasMany, Model, Table
+  BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany,
+  Model, Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { User } from '../../users/models/user.model';
 import { Ingredient } from '../../ingredients/models/ingredients.model';
+import {
+  IngredientTechcardsAssociations
+} from './ingredient-techcards-associations.model';
+import { Tag } from '../../tags/models/tags.model';
 
 
 // techcards creation attributes
 interface TechcardFields {
   type: string;
   title: string;
-  marketingTitle: string;
+  marketing_title: string;
   description: string;
-  ingredient: number;
-  ingredientsAmount: number;
+  ingredient_id: number;
+  ingredients_amount: number;
   amount: number;
   brutto: number;
   kcal: number;
@@ -23,12 +27,9 @@ interface TechcardFields {
   fat: number;
   carb: number;
   unit: number;
-  amountPiece: number;
+  amount_piece: number;
   percent: number;
-  tags: string;
-  boxes_small: number;
-  boxes_medium: number;
-  boxes_big: number;
+  tag_id: number;
 }
 
 // techcard model
@@ -67,11 +68,11 @@ export class Techcard extends Model<Techcard, TechcardFields>{
     type: 'object',
     description: 'role identifier'
   })
-  @HasMany(() => Ingredient)
+  @BelongsToMany(() => Ingredient, () => IngredientTechcardsAssociations)
   ingredient: number;
 
   @ForeignKey(() => Ingredient)
-  ingredientID: number
+  ingredient_id: number
 
   @ApiProperty({
     example: {
@@ -101,7 +102,7 @@ export class Techcard extends Model<Techcard, TechcardFields>{
   creator: number;
 
   @ForeignKey(() => User)
-  creatorID: number
+  creator_id: number
 
   @ApiProperty({ example: '230', description: 'kcal' })
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -129,11 +130,11 @@ export class Techcard extends Model<Techcard, TechcardFields>{
 
   @ApiProperty({ example: 'marketing title', description: 'marketing title' })
   @Column({ type: DataType.STRING, allowNull: true })
-  marketingTitle: string;
+  marketing_title: string;
 
   @ApiProperty({ example: '3', description: 'ingredients amount' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  ingredientsAmount: number;
+  ingredients_amount: number;
 
   @ApiProperty({ example: '500', description: 'amount' })
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -153,25 +154,43 @@ export class Techcard extends Model<Techcard, TechcardFields>{
 
   @ApiProperty({ example: '2', description: 'amount piece' })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  amountPiece: number;
+  amount_piece: number;
 
   @ApiProperty({ example: '5', description: 'percent' })
   @Column({ type: DataType.INTEGER, allowNull: true })
   percent: number;
 
-  @ApiProperty({ example: 'apple, pineapple', description: 'apple, pineapple' })
+  @ApiProperty({
+    example: {
+      "id": 2,
+      "text": "Delaware, St. Riston 1A-22",
+      "lat": 12.345678,
+      "lon": 23.456798,
+      "road": "Avenue, 1C",
+      "houseNumber": "42a BBC",
+      "neighbourhood": "smth",
+      "zipcode": 12345,
+      "active": true,
+      "createdAt": "2021-11-12T06:15:55.612Z",
+      "updatedAt": "2021-11-12T06:15:55.612Z",
+      "CustomerAddresses": {
+        "id": 2,
+        "addressID": 2,
+        "customerID": 7,
+        "createdAt": "2021-11-12T06:20:56.582Z",
+        "updatedAt": "2021-11-12T06:20:56.582Z"
+      }
+    },
+    type: 'object',
+    description: 'role identifier'
+  })
+  @HasMany(() => Tag)
+  tag: number;
+
+  @ForeignKey(() => Tag)
+  tag_id: number
+
+  @ApiProperty({ example: 'description', description: 'description' })
   @Column({ type: DataType.STRING, allowNull: true })
-  tags: string;
-
-  @ApiProperty({ example: 3, description: '3 small boxes' })
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  boxes_small: number;
-
-  @ApiProperty({ example: 2, description: '2 medium boxes' })
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  boxes_medium: number;
-
-  @ApiProperty({ example: 1, description: '1 big box' })
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  boxes_big: number;
+  description: string;
 }

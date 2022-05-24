@@ -1,12 +1,15 @@
 import {
-  BelongsTo, Column,
-  DataType, ForeignKey, HasMany, Model, Table
+  BelongsTo, BelongsToMany, Column,
+  DataType, ForeignKey, Model, Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { User } from '../../users/models/user.model';
 import { GroupIngredient } from '../../group-ingredients/models/group-ingredients.model';
 import { Techcard } from '../../techcards/models/techcards.model';
+import {
+  IngredientGroupAssociations,
+} from '../../group-ingredients/models/ingredient-group-associations.model';
 
 
 // ingredient creation attributes
@@ -16,7 +19,7 @@ interface IngredientFields {
   fat: number;
   carb: number;
   name: string;
-  group: number;
+  group_id: number;
   unit: string;
   brutto: number;
   netto: number;
@@ -60,11 +63,11 @@ export class Ingredient extends Model<Ingredient, IngredientFields>{
     type: 'object',
     description: 'role identifier'
   })
-  @HasMany(() => GroupIngredient)
+  @BelongsToMany(() => GroupIngredient, () => IngredientGroupAssociations)
   group: number;
 
   @ForeignKey(() => GroupIngredient)
-  groupID: number
+  group_id: number
 
   @ApiProperty({
     example: {
@@ -94,7 +97,7 @@ export class Ingredient extends Model<Ingredient, IngredientFields>{
   creator: number;
 
   @ForeignKey(() => User)
-  creatorID: number
+  creator_id: number
 
   @ApiProperty({ example: '230', description: 'kcal' })
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -128,6 +131,10 @@ export class Ingredient extends Model<Ingredient, IngredientFields>{
   @Column({ type: DataType.INTEGER, allowNull: true })
   percent: number;
 
+  @ApiProperty({ example: 'unit', description: 'unit' })
+  @Column({ type: DataType.STRING, allowNull: true })
+  unit: string;
+
   @ApiProperty({ example: 'apple, pineapple', description: 'apple, pineapple' })
   @Column({ type: DataType.STRING, allowNull: true })
   tags: string;
@@ -144,5 +151,5 @@ export class Ingredient extends Model<Ingredient, IngredientFields>{
   techcard: number;
 
   @ForeignKey(() => Techcard)
-  techcardID: number
+  techcard_id: number
 }

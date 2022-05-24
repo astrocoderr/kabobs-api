@@ -1,6 +1,6 @@
 import {
-  CanActivate, ExecutionContext, HttpException, HttpStatus, Inject, Injectable,
-  UnauthorizedException
+  CanActivate, ExecutionContext, HttpException, HttpStatus,
+  Inject, Injectable, UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -23,32 +23,44 @@ export class RolesGuard implements CanActivate{
     const req = context.switchToHttp().getRequest();
 
     try{
-      const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+      const required_roles = this.reflector.getAllAndOverride<string[]>(
         this.configService.get('ROLES.KEY'), [
           context.getHandler(),
           context.getClass()
         ]
       )
 
-      if(!requiredRoles){
+      if(!required_roles){
         return true
       }
 
-      const authHeader = req.headers.authorization;
-      const bearer = authHeader.split(' ')[0];
-      const token = authHeader.split(' ')[1];
+      const auth_header = req.headers.authorization;
+      const bearer = auth_header.split(' ')[0];
+      const token = auth_header.split(' ')[1];
 
       if(bearer != this.configService.get('JWT.BEARER') || !token){
-        this.logger.error(`Error in jwt-auth.guard.ts - Bearer or Token is undefined`);
-        throw new UnauthorizedException({ message: 'User unauthorized' });
+        this.logger.error(
+          `Error in roles.guard.ts - 'canActivate()'. Bearer or Token is undefined`
+        );
+        throw new UnauthorizedException({
+          success: false,
+          message: `User unauthorized`,
+          result: {}
+        });
       }
 
       req.user = this.jwtService.verify(token);
 
-      return req.user.role.some(role => requiredRoles.includes(role.name));
+      return req.user.role.some(role => required_roles.includes(role.name));
     }catch(ex){
-      this.logger.error(`Error in jwt-auth.guard.ts - ${ex}`);
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+      this.logger.error(
+        `Error in roles.guard.ts - 'canActivate()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: `Forbidden`,
+        result: {}
+      }, HttpStatus.FORBIDDEN);
     }
   }
 }

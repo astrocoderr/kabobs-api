@@ -1,11 +1,22 @@
-import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsToMany, Column, DataType, ForeignKey,
+  Model, Table
+} from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Customer } from '../../customers/models/customers.model';
-import { CustomerAddresses } from './customer-addresses.model';
+import {
+  CustomerAddressesAssociations
+} from './customer-addresses-associations.model';
 import { Order } from '../../orders/models/orders.model';
 import { Kitchen } from '../../kitchens/models/kitchens.model';
-import { OrderDays } from '../../order-days/models/order-days.model';
+import {
+  OrderAddressesAssociations
+} from './order-addresses-associations.model';
+import {
+  KitchenAddressesAssociations
+} from './kitchen-addresses-associations.model';
+
 
 // address creation attributes
 interface AddressesFields {
@@ -13,7 +24,7 @@ interface AddressesFields {
   lat: number;
   lon: number;
   road: string;
-  houseNumber: string;
+  house_number: string;
   neighbourhood: string;
   zipcode: number;
 }
@@ -43,15 +54,15 @@ export class Addresses extends Model<Addresses, AddressesFields>{
   lon: number;
 
   @ApiProperty({ example: 'Avenue, 1C', description: 'road address' })
-  @Column({ type: DataType.STRING, allowNull: true, defaultValue: null })
+  @Column({ type: DataType.STRING, allowNull: true })
   road: string;
 
   @ApiProperty({ example: '42a BBC', description: 'house number' })
   @Column({ type: DataType.STRING, allowNull: false })
-  houseNumber: string;
+  house_number: string;
 
   @ApiProperty({ example: 'smth', description: 'smth' })
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: true })
   neighbourhood: string;
 
   @ApiProperty({ example: '12345', description: "address's zipcode" })
@@ -62,24 +73,15 @@ export class Addresses extends Model<Addresses, AddressesFields>{
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
   active: boolean;
 
-  @BelongsToMany(() => Customer, () => CustomerAddresses)
+  @BelongsToMany(() => Customer, () => CustomerAddressesAssociations)
   customer: Customer[]
 
-  @BelongsTo(() => Order)
-  order: Order
+  @BelongsToMany(() => Order, () => OrderAddressesAssociations)
+  order: Order[]
 
   @ForeignKey(() => Order)
-  orderID: number
+  order_id: number
 
-  @BelongsTo(() => Kitchen)
-  kitchen: Kitchen
-
-  @ForeignKey(() => Kitchen)
-  kitchenID: number
-
-  @BelongsTo(() => OrderDays)
-  orderDays: OrderDays
-
-  @ForeignKey(() => OrderDays)
-  orderDaysID: number
+  @BelongsToMany(() => Kitchen, () => KitchenAddressesAssociations)
+  kitchen: Kitchen[]
 }

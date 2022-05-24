@@ -4,11 +4,11 @@ import {
 } from 'sequelize-typescript';
 
 import { User } from '../../users/models/user.model';
-import { Role } from './roles.model';
+import { Order } from './orders.model';
 
-// users_roles model
-@Table({ tableName: 'user_roles' })
-export class UserRoles extends Model<UserRoles>{
+// creator_orders_associations model
+@Table({ tableName: 'creator_orders_associations' })
+export class CreatorOrdersAssociations extends Model<CreatorOrdersAssociations>{
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -17,12 +17,11 @@ export class UserRoles extends Model<UserRoles>{
   })
   id: number;
 
-  @ForeignKey(() => Role)
-  @Column({ type: DataType.INTEGER })
-  roleID: number;
-
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER })
-  userID: number;
+  creator_id: number;
 
+  @ForeignKey(() => Order)
+  @Column({ type: DataType.INTEGER })
+  order_id: number;
 }

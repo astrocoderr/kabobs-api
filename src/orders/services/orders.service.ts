@@ -14,6 +14,7 @@ import { PromocodesService } from '../../promocodes/services/promocodes.service'
 import { CustomersService } from '../../customers/services/customers.service';
 import { OrderDaysService } from '../../order-days/services/order-days.service';
 import { SearchOrderDto } from '../dto/search-order.dto';
+import { GetOrdersDto } from '../dto/get-orders.dto';
 
 
 @Injectable()
@@ -32,145 +33,366 @@ export class OrdersService {
   // Creating an order
   async createOrder(dto: CreateOrderDto){
     try{
-      const order = await this.orderModel.create(dto)
-
       // managerID
-      const user = await this.userService.getUser(dto.userID)
+      const manager = await this.userService.getUser(dto.manager_id)
 
-      if(user){
-        await order.$set('user', [user.id])
-      }else {
-        this.logger.error(`Error in orders.service.ts - 'user' is not found`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!manager.success){
+        this.logger.error(
+          `Error in orders.service.ts - 'createOrder()'. Manager not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Manager not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
       }
 
       // customerID
-      const customer = await this.customerService.getCustomer(dto.customerID)
+      const customer = await this.customerService.getCustomer(dto.customer_id)
 
-      if(customer){
-        await order.$set('customer', [customer.id])
-      }else {
-        this.logger.error(`Error in orders.service.ts - 'customer' is not found`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!customer.success){
+        this.logger.error(
+          `Error in orders.service.ts - 'createOrder()'. Customer not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Customer not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
       }
 
-      // promocodeID
-      const promocode = await this.promocodeService.getPromocode(dto.promocodeID)
+      // creatorID
+      const creator = await this.userService.getUser(dto.manager_id)
 
-      if(promocode){
-        await order.$set('promocode', [promocode.id])
-      }else{
-        this.logger.error(`Error in orders.service.ts - 'promocode' is not found`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!creator.success){
+        this.logger.error(
+          `Error in orders.service.ts - 'createOrder()'. Creator not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Creator not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      let promocode, total_price = dto.original_price
+
+      if(dto.promocode_id){
+        // promocodeID
+        promocode = await this.promocodeService.getPromocode(dto.promocode_id)
+
+        if(!promocode.success){
+          this.logger.error(
+            `Error in orders.service.ts - 'createOrder()'. Promocode not found`
+          );
+          throw new HttpException({
+            success: false,
+            message: `Promocode not found`,
+            result: {}
+          }, HttpStatus.BAD_REQUEST);
+        }
+
+        promocode.type === 1 ?
+          total_price = dto.original_price - ((promocode.amount/100)*dto.original_price) :
+          total_price = dto.original_price - promocode.amount
       }
 
       // addressID
-      const address = await this.addressService.getAddress(dto.addressID)
+      const address = await this.addressService.getAddress(dto.address_id)
 
-      if(address){
-        await order.$set('address', [address.id])
-      }else{
-        this.logger.error(`Error in orders.service.ts - 'address' is not found`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      if(!address.success){
+        this.logger.error(
+          `Error in orders.service.ts - 'createOrder()'. Address not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Address not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
       }
 
-      // meals logic
-      const orderDays = await this.orderDaysService.createOrderDay({
+      const order = await this.orderModel.create({
         ...dto,
-        orderID: order.id,
-        date: order.startDate
+        total_price,
+        creator_id: creator.result.user.id
       })
 
-      if(orderDays){
-        await order.$set('address', [orderDays.id])
-      }else{
-        this.logger.error(`Error in orders.service.ts - 'orderDays' is not found`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      // calculate and create an order-day
+      const start_date = new Date(dto.start_date)
+
+      for(let i = 0; i < dto.length; i++){
+        if(dto.week_size == 5){
+          if(start_date.getDay() == 6 || start_date.getDay() == 0){
+            start_date.setDate(start_date.getDate() + 1)
+            continue
+          }
+        }else if(dto.week_size == 6){
+          if(start_date.getDay() == 0){
+            start_date.setDate(start_date.getDate() + 1)
+            continue
+          }
+        }
+
+
+        // meals logic
+        const order_day = await this.orderDaysService.createOrderDay({
+          ...dto,
+          creator_id: creator.result.user.id,
+          order_id: order.id,
+          date: start_date
+        })
+
+        if(!order_day.success){
+          this.logger.error(
+            `Error in orders.service.ts - 'createOrder()'. Order day not found`
+          );
+          throw new HttpException({
+            success: false,
+            message: `Order day not found`,
+            result: {}
+          }, HttpStatus.BAD_REQUEST);
+        }
+
+        start_date.setDate(start_date.getDate() + 1)
       }
 
-      return await this.orderModel.findByPk(order.id, { include: { all: true } })
+      await order.$set('manager', [manager.result.user.id])
+
+      await order.$set('customer', [customer.result.customer.id])
+
+      await order.$set('creator', [manager.result.user.id])
+
+      await order.$set('address', [address.result.address.id])
+
+      const new_order = await this.orderModel.findByPk(order.id, {
+        include: { all: true }
+      })
+
+      return {
+        success: true,
+        message: 'Order created successfully',
+        result: {
+          order: new_order
+        }
+      }
     }catch(ex){
-      this.logger.error(`Error in orders.service.ts - '${ex}'`);
-      throw new HttpException('BadGateway', HttpStatus.BAD_GATEWAY);
+      this.logger.error(
+        `Error in orders.service.ts - 'createOrder()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
   }
 
   // Getting orders
-  async getOrders(){
-    return await this.orderModel.findAll({
-      where: { active: true },
-      include: { all: true }
-    });
+  async getOrders(dto: GetOrdersDto){
+    try{
+      const orders = await this.orderModel.findAndCountAll({
+        where: { active: true },
+        include: { all: true },
+        offset: (dto.page - 1) * dto.limit,
+        limit: dto.limit
+      });
+
+      return {
+        success: true,
+        message: 'Orders fetched successfully',
+        result: {
+          orders
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in orders.service.ts - 'getOrders()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Getting an order
   async getOrder(id: number){
-    return await this.orderModel.findByPk(id, { include: { all: true } });
+    try{
+      const order = await this.orderModel.findByPk(id, { include: { all: true } });
+
+      if(!order){
+        this.logger.error(
+          `Error in orders.service.ts - 'getOrder()'. Order not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Order not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      return {
+        success: true,
+        message: 'Order fetched successfully',
+        result: {
+          order
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in orders.service.ts - 'getOrder()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Searching an order(s)
   async searchOrders(dto: SearchOrderDto){
-    return await this.orderModel.findAll({
-      where: {
-        [Op.or]: [
-          { customerID: dto.search },
-          { userID: dto.search },
-          { creatorID: dto.search },
-          { promocodeID: dto.search },
-          { kcal: dto.search },
-          { prot: dto.search },
-          { fat: dto.search },
-          { carb: dto.search },
-          { price: dto.search },
-          { kitchenComment: dto.search },
-          { deliveryComment: dto.search }
-        ]
-      },
-      include: { all: true }
-    })
+    try{
+      const orders = await this.orderModel.findAll({
+        where: {
+          [Op.or]: [
+            { kitchen_comment: dto.search },
+            { delivery_comment: dto.search }
+          ]
+        },
+        order: [['id', dto.sort.toUpperCase()]],
+        include: { all: true }
+      })
+
+      return {
+        success: true,
+        message: 'Orders searched successfully',
+        result: {
+          orders
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in orders.service.ts - 'searchOrders()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        data: {}
+      }, HttpStatus.BAD_GATEWAY);
+    }
   }
 
   // Editing an order
   async modifyOrder(id: number, dto: UpdateOrderDto){
-    const order = await this.orderModel.update(dto,{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const order = await this.orderModel.update(dto,{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in orders.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in orders.service.ts - 'modifyOrder()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            result: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
+
+      if(!order){
+        this.logger.error(
+          `Error in orders.service.ts - 'modifyOrder()'. Order not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Order not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+
+
+      const new_order = await this.orderModel.findByPk(order.id, {
+        include: { all: true }
       })
 
-    if(!order){
-      this.logger.error(`Error in orders.service.ts - 'order' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      return {
+        success: true,
+        message: 'Orders modified successfully',
+        result: {
+          order: new_order
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in orders.service.ts - 'modifyOrder()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return await this.orderModel.findByPk(order.id, { include: { all: true } })
   }
 
   // Removing an order
   async removeOrder(id: number){
-    const order = await this.orderModel.update({ active: false },{
-      where: { id },
-      returning: true
-    })
-      .then(newData => {
-        return newData[1][0]
+    try{
+      const order = await this.orderModel.update({ active: false },{
+        where: { id },
+        returning: true
       })
-      .catch(error => {
-        this.logger.error(`Error in orders.service.ts - '${error}'`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        .then(newData => {
+          return newData[1][0]
+        })
+        .catch(error => {
+          this.logger.error(
+            `Error in orders.service.ts - 'removeOrder()'. ${error}`
+          );
+          throw new HttpException({
+            success: false,
+            message: error,
+            result: {}
+          }, HttpStatus.BAD_REQUEST);
+        })
+
+      if(!order){
+        this.logger.error(
+          `Error in orders.service.ts - 'removeOrder()'. Order not found`
+        );
+        throw new HttpException({
+          success: false,
+          message: `Order not found`,
+          result: {}
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const new_order = await this.orderModel.findByPk(order.id, {
+        include: { all: true }
       })
 
-    if(!order){
-      this.logger.error(`Error in orders.service.ts - 'order' is not found`);
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      return {
+        success: true,
+        message: 'Orders removed successfully',
+        result: {
+          order: new_order
+        }
+      }
+    }catch(ex){
+      this.logger.error(
+        `Error in orders.service.ts - 'removeOrder()'. ${ex.message}. ${ex.original}`
+      );
+      throw new HttpException({
+        success: false,
+        message: ex.message,
+        result: {}
+      }, HttpStatus.BAD_GATEWAY);
     }
-
-    return order
   }
 }

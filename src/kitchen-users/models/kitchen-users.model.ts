@@ -1,19 +1,20 @@
-import { Column, DataType, HasOne, Model, Table } from 'sequelize-typescript';
+import { BelongsToMany, Column, DataType, ForeignKey, HasOne, Model, Table } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
-import { Kitchen } from './kitchens.model';
+import { Kitchen } from '../../kitchens/models/kitchens.model';
+import { KitchenUserKitchensAssociations } from '../../kitchens/models/kitchen-user-kitchens-associations.model';
 
 
 // kitchens users creation attributes
 interface KitchenUserFields {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string
-  kitchen: number;
+  kitchen_id: number;
 }
 
-// kitchens users model
-@Table({ tableName: 'kitchens-users' })
+// kitchen_users model
+@Table({ tableName: 'kitchen_users' })
 export class KitchenUser extends Model<KitchenUser, KitchenUserFields>{
   @ApiProperty({ example: '1', description: 'unique identifier' })
   @Column({
@@ -26,11 +27,11 @@ export class KitchenUser extends Model<KitchenUser, KitchenUserFields>{
 
   @ApiProperty({ example: 'John', description: 'first name' })
   @Column({ type: DataType.STRING, allowNull: false })
-  firstName: string;
+  first_name: string;
 
   @ApiProperty({ example: 'Mathew', description: 'last name' })
   @Column({ type: DataType.STRING, allowNull: false })
-  lastName: string;
+  last_name: string;
 
   @ApiProperty({ example: 'jackandjones@gmail.com', description: 'email address' })
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
@@ -66,8 +67,11 @@ export class KitchenUser extends Model<KitchenUser, KitchenUserFields>{
     },
     type: 'object'
   })
-  @HasOne(() => Kitchen)
+  @BelongsToMany(() => Kitchen, () => KitchenUserKitchensAssociations)
   kitchen: number;
+
+  @ForeignKey(() => Kitchen)
+  kitchen_id: number;
 
   @ApiProperty({ example: true, description: 'is kitchens user is active' })
   @Column({ type: DataType.BOOLEAN, defaultValue: true })

@@ -1,12 +1,25 @@
 version: '3.2'
 
 services:
+  nginx:
+    image: nginx
+    restart: always
+    volumes:
+      - ./nginx-prod/:/etc/nginx/conf.d/
+    networks:
+      - "nutrition-network"
+    ports:
+      - "3000:3111"
+    depends_on:
+      - api
   api:
     container_name: api
     build:
       context: .
     env_file:
       - .development.env
+    networks:
+      - "nutrition-network"
     volumes:
       - .:/api
       - /api/node_modules
@@ -16,6 +29,7 @@ services:
     command: yarn dev
     depends_on:
       - postgres
+      - redis
     restart: always
   postgres:
     container_name: postgres
@@ -24,11 +38,25 @@ services:
       - .development.env
     environment:
       PG_DATA: /var/lib/postgresql/data
+      POSTGRES_HOST_AUTH_METHOD: "trust"
     ports:
       - 5432:5432
+    networks:
+      - "nutrition-network"
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
+  redis:
+    image: redis:5.0.5-alpine
+    command: [ "redis-server", "--appendonly", "yes" ]
+    container_name: "redis"
+    networks:
+      - "nutrition-network"
+    volumes:
+      - ./redis-data:/data
+networks:
+  nutrition-network:
+    driver: bridge
 
 volumes:
   pgdata:

@@ -1,19 +1,20 @@
 import {
-  Body, Controller, Delete, Get, Param, Post, Put,
+  Body, Controller, Delete, Get, Param, Post, Put, Query,
   UseGuards
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { KitchensService } from '../services/kitchens.service';
 import { Kitchen } from '../models/kitchens.model';
 import { CreateKitchenDto } from '../dto/create-kitchen.dto';
 import { UpdateKitchenDto } from '../dto/update-kitchen.dto';
+import { GetKitchensDto } from '../dto/get-kitchens.dto';
 
 
 @ApiTags('Kitchens')
 @UseGuards(JwtAuthGuard)
-@Controller('kitchen')
+@Controller('kitchens')
 export class KitchensController {
   constructor(private kitchenService: KitchensService) {}
 
@@ -21,35 +22,35 @@ export class KitchensController {
   @ApiOperation({ summary: 'Creating a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Post()
-  createUser(@Body()  dto: CreateKitchenDto){
+  createKitchen(@Body()  dto: CreateKitchenDto){
     return this.kitchenService.createKitchen(dto)
   }
 
   @ApiOperation({ summary: 'Getting a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Get('/:id')
-  getUser(@Param('id') id: number){
+  getKitchen(@Param('id') id: number){
     return this.kitchenService.getKitchen(id)
   }
 
   @ApiOperation({ summary: 'Getting kitchens' })
   @ApiResponse({ status: 200, type: [Kitchen] })
   @Get()
-  getUsers(){
-    return this.kitchenService.getKitchens()
+  getKitchens(@Query() dto: GetKitchensDto){
+    return this.kitchenService.getKitchens(dto)
   }
 
   @ApiOperation({ summary: 'Modifying a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Put('/:id')
-  modifyUser(@Param('id') id: number, @Body() dto: UpdateKitchenDto){
+  modifyKitchen(@Param('id') id: number, @Body() dto: UpdateKitchenDto){
     return this.kitchenService.modifyKitchen(id, dto)
   }
 
   @ApiOperation({ summary: 'Removing a kitchen' })
   @ApiResponse({ status: 200, type: Kitchen })
   @Delete('/:id')
-  removeUser(@Param('id') id: number){
+  removeKitchen(@Param('id') id: number){
     return this.kitchenService.removeKitchen(id)
   }
 }

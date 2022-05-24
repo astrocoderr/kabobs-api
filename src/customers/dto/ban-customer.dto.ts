@@ -4,9 +4,9 @@ import { IsNumber, IsString } from 'class-validator';
 export class BanCustomerDto{
   @ApiProperty({ example: '23', description: "customer's identifier" })
   @IsNumber()
-  readonly customerID: number;
+  readonly customer_id: number;
 
   @ApiProperty({ example: 'for spam', description: 'user did some spams' })
   @IsString()
-  readonly banReason: string;
+  readonly ban_reason: string;
 }

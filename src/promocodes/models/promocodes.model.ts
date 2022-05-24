@@ -1,7 +1,12 @@
 import {
-  Column, DataType, Model, Table
+  BelongsToMany,
+  Column, DataType, Model, Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
+
+import { Customer } from '../../customers/models/customers.model';
+import { CustomerPromocodesAssociations } from './customer-promocodes-associations.model';
+
 
 // promocode creation attributes
 interface PromocodeFields {
@@ -10,7 +15,7 @@ interface PromocodeFields {
   amount: number;
   status: number;
   usage: number;
-  creatorID: number;
+  creator_id: number;
 }
 
 // promocode model
@@ -25,21 +30,21 @@ export class Promocode extends Model<Promocode, PromocodeFields>{
   })
   id: number;
 
-    @ApiProperty({ example: '1Ae78FlS@MPL3', description: 'code' })
+  @ApiProperty({ example: '1Ae78FlS@MPL3', description: 'code' })
   @Column({ type: DataType.STRING, allowNull: false })
   code: string;
 
-  @ApiProperty({ example: '1', description: 'percentage' })
+  @ApiProperty({ example: '1', description: '1 - percentage, 2 - fixed' })
   @Column({ type: DataType.INTEGER, allowNull: false })
   type: number;
 
   @ApiProperty({ example: '500', description: 'price amount' })
-  @Column({ type: DataType.INTEGER, allowNull: true })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   amount: number;
 
   @ApiProperty({ example: '35', description: 'identifier of creator' })
-  @Column({ type: DataType.INTEGER, unique: true, allowNull: false })
-  creatorID: number;
+  @Column({ type: DataType.INTEGER, allowNull: false })
+  creator_id: number;
 
   @ApiProperty({ example: '2', description: 'inactive' })
   @Column({ type: DataType.INTEGER, allowNull: true })
@@ -52,4 +57,7 @@ export class Promocode extends Model<Promocode, PromocodeFields>{
   @ApiProperty({ example: true, description: 'is promocode is active' })
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
   active: boolean;
+
+  @BelongsToMany(() => Customer, () => CustomerPromocodesAssociations)
+  customer: Customer[]
 }

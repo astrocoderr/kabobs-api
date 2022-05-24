@@ -11,14 +11,15 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { BanUserDto } from '../dto/ban-user.dto';
 import { AddRoleUserDto } from '../dto/add-role-user.dto';
 import { UnbanUserDto } from '../dto/unban-user.dto';
-import { JwtAuthGuard } from '../../auth/handlers/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { SearchUserDto } from '../dto/search-user.dto';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { GetUsersDto } from '../dto/get-users.dto';
 
 
-@ApiTags('Employees' )
+@ApiTags('Employees')
 @UseGuards(JwtAuthGuard)
 @Controller('/users')
 export class UsersController {
@@ -31,36 +32,36 @@ export class UsersController {
   @ApiOperation({ summary: 'Adding employee roles' })
   @ApiResponse({ status: 200, type: User })
   @Post('/roles')
-  addRole(@Body() dto: AddRoleUserDto){
-    return this.userService.addRole(dto)
+  addUserRole(@Body() dto: AddRoleUserDto){
+    return this.userService.addUserRole(dto)
   }
 
   @ApiOperation({ summary: 'Removing employee roles' })
   @ApiResponse({ status: 200, type: User })
   @Delete('/:id/roles/:roleID')
-  removeRole(@Param('id') id: number, @Param('roleID') roleID: number){
-    return this.userService.removeRole(id, roleID)
+  subtractUserRole(@Param('id') id: number, @Param('roleID') roleID: number){
+    return this.userService.subtractUserRole(id, roleID)
   }
 
   @ApiOperation({ summary: 'Banning an employee' })
   @ApiResponse({ status: 200, type: User })
   @Post('/ban')
-  ban(@Body() dto: BanUserDto){
-    return this.userService.ban(dto)
+  banUser(@Body() dto: BanUserDto){
+    return this.userService.banUser(dto)
   }
 
   @ApiOperation({ summary: 'Getting banned employees' })
   @ApiResponse({ status: 200, type: [User] })
   @Get('/ban')
-  getBanned(){
-    return this.userService.getBanned()
+  getBannedUsers(){
+    return this.userService.getBannedUsers()
   }
 
   @ApiOperation({ summary: 'Unbanning an employee' })
   @ApiResponse({ status: 200, type: User })
   @Post('/unban')
-  unban(@Body() dto: UnbanUserDto){
-    return this.userService.unban(dto)
+  unbanUser(@Body() dto: UnbanUserDto){
+    return this.userService.unbanUser(dto)
   }
 
   // User CRUD
@@ -71,16 +72,23 @@ export class UsersController {
     return this.userService.createUser(dto)
   }
 
+  @ApiOperation({ summary: 'Getting employees' })
+  @ApiResponse({ status: 200, type: [User] })
+  @Roles('admin')
+  @Get()
+  getUsers(@Query() dto: GetUsersDto){
+    return this.userService.getUsers(dto)
+  }
+
   @ApiOperation({ summary: "Searching employees by 'firstName', " +
       "'lastName', 'email', 'branchID', 'bitrixID'"
   })
   @ApiResponse({ status: 200, type: [User] })
   @Roles('admin')
-  @Get()
-  searchUsers(@Query() search: SearchUserDto){
-    return this.userService.searchUsers(search)
+  @Get('/search')
+  searchUsers(@Query() dto: SearchUserDto){
+    return this.userService.searchUsers(dto)
   }
-
 
   @ApiOperation({ summary: 'Getting an employee' })
   @ApiResponse({ status: 200, type: User })
@@ -88,15 +96,6 @@ export class UsersController {
   getUser(@Param('id') id: number){
     return this.userService.getUser(id)
   }
-
-  @ApiOperation({ summary: 'Getting employees' })
-  @ApiResponse({ status: 200, type: [User] })
-  @Roles('admin')
-  @Get()
-  getUsers(){
-    return this.userService.getUsers()
-  }
-
 
 
   @ApiOperation({ summary: 'Modifying an employee' })

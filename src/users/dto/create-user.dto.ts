@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDateString, IsEmail, IsNumber, IsString, Matches,
-  MaxLength, MinLength
+  MaxLength, MinLength, ValidateIf,
 } from 'class-validator';
 
 export class CreateUserDTO {
@@ -9,17 +9,18 @@ export class CreateUserDTO {
   @IsString()
   @MinLength(1)
   @MaxLength(50)
-  readonly firstName: string;
+  readonly first_name: string;
 
   @ApiProperty({ example: 'Mathew', description: 'last name' })
   @IsString()
   @MinLength(1)
   @MaxLength(50)
-  readonly lastName: string;
+  readonly last_name: string;
 
   @ApiProperty({ example: '2021-11-11T10:00:00:000Z', description: 'birthday' })
   @IsDateString()
-  readonly birthday: Date;
+  @ValidateIf((object, value) => value !== null)
+  readonly birthday!: Date | null;
 
   @ApiProperty({ example: 'john@mathew.com', description: 'email address' })
   @IsEmail()
@@ -27,11 +28,11 @@ export class CreateUserDTO {
 
   @ApiProperty({ example: '1', description: 'role' })
   @IsNumber()
-  readonly role: number;
+  readonly role_id: number;
 
-  @ApiProperty({ example: '5', description: 'privilege identifier' })
-  @IsNumber()
-  readonly privilegeID: number;
+  @ApiProperty({ example: 'ADMIN', description: 'unique permission' })
+  @IsString()
+  readonly permission: string;
 
   @ApiProperty({ example: '12345678', description: 'password' })
   @IsString()
@@ -45,9 +46,9 @@ export class CreateUserDTO {
 
   @ApiProperty({ example: '38', description: "delaware's branch identifier" })
   @IsNumber()
-  readonly branchID: number;
+  readonly branch_id: number;
 
   @ApiProperty({ example: '1826', description: "user's identifier in bitrix system" })
   @IsNumber()
-  readonly bitrixID: number;
+  readonly bitrix_id: number;
 }

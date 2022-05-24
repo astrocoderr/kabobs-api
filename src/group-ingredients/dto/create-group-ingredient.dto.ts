@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsBoolean, IsString, MaxLength, MinLength
+  IsString, MaxLength, MinLength
 } from 'class-validator';
 
 export class CreateGroupIngredientDto {
@@ -8,9 +8,5 @@ export class CreateGroupIngredientDto {
   @IsString()
   @MinLength(1)
   @MaxLength(50)
-  name: string;
-
-  @ApiProperty({ example: true, description: 'is group-ingredients is active' })
-  @IsBoolean()
-  active: boolean;
+  readonly name: string;
 }

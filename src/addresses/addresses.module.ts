@@ -1,31 +1,27 @@
 import { Module } from '@nestjs/common';
+import { SequelizeModule } from '@nestjs/sequelize';
+
 import { AddressesController } from './controllers/addresses.controller';
 import { AddressesService } from './services/addresses.service';
-import { SequelizeModule } from "@nestjs/sequelize";
-import { Role } from "../roles/models/roles.model";
-import { User } from "../users/models/user.model";
-import { UserRoles } from "../roles/models/user-roles.model";
-import { Customer } from "../customers/models/customers.model";
-import { Addresses } from "./models/addresses.model";
-import { CustomerAddresses } from "./models/customer-addresses.model";
-import { Promocode } from '../promocodes/models/promocodes.model';
-import { Order } from '../orders/models/orders.model';
-import { Kitchen } from '../kitchens/models/kitchens.model';
-import { KitchenUser } from '../kitchens/models/kitchen-users.model';
-import { OrderDays } from '../order-days/models/order-days.model';
-import { GroupIngredient } from '../group-ingredients/models/group-ingredients.model';
-import { Ingredient } from '../ingredients/models/ingredients.model';
-import { Techcard } from '../techcards/models/techcards.model';
+import { Addresses } from './models/addresses.model';
+import {
+  CustomerAddressesAssociations
+} from './models/customer-addresses-associations.model';
+import {
+  OrderAddressesAssociations
+} from './models/order-addresses-associations.model';
+import {
+  KitchenAddressesAssociations
+} from './models/kitchen-addresses-associations.model';
+
 
 @Module({
   controllers: [AddressesController],
   providers: [AddressesService],
   imports: [
     SequelizeModule.forFeature([
-      Role, User, UserRoles, Customer,
-      Addresses, CustomerAddresses, Promocode,
-      Order, Kitchen, KitchenUser, OrderDays,
-      GroupIngredient, Ingredient, Techcard
+      Addresses, OrderAddressesAssociations, KitchenAddressesAssociations,
+      CustomerAddressesAssociations
     ])
   ],
   exports: [

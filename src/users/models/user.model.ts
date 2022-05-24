@@ -1,19 +1,26 @@
-import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasOne, Model, Table } from "sequelize-typescript";
-import { ApiProperty } from "@nestjs/swagger";
-import { Role } from "../../roles/models/roles.model";
-import { UserRoles } from "../../roles/models/user-roles.model";
+import {
+  BelongsToMany, Column, DataType, HasMany, Model, Table
+} from 'sequelize-typescript';
+import { ApiProperty } from '@nestjs/swagger';
+
+import { Role } from '../../roles/models/roles.model';
+import {
+  UserRolesAssociations
+} from '../../roles/models/user-roles-associations.model';
+import { Customer } from '../../customers/models/customers.model';
+
 
 // user creation attributes
 interface UserFields {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   birthday: Date;
   email: string;
-  role: number;
-  privilegeID: number;
+  role_id: number;
+  permission: string;
   password: string;
-  branchID: number;
-  bitrixID: number;
+  branch_id: number;
+  bitrix_id: number;
 }
 
 // users model
@@ -30,11 +37,11 @@ export class User extends Model<User, UserFields>{
 
   @ApiProperty({ example: 'John', description: 'first name' })
   @Column({ type: DataType.STRING, allowNull: false })
-  firstName: string;
+  first_name: string;
 
   @ApiProperty({ example: 'Mathew', description: 'last name' })
   @Column({ type: DataType.STRING, allowNull: false })
-  lastName: string;
+  last_name: string;
 
   @ApiProperty({ example: '2021-11-11T10:00:00:000Z', description: 'birthday' })
   @Column({ type: DataType.DATE, allowNull: true })
@@ -62,12 +69,12 @@ export class User extends Model<User, UserFields>{
     type: 'object',
     description: 'role identifier'
   })
-  @BelongsToMany(() => Role, () => UserRoles)
+  @BelongsToMany(() => Role, () => UserRolesAssociations)
   role: number;
 
-  @ApiProperty({ example: '5', description: 'privilege identifier' })
-  @Column({ type: DataType.INTEGER, allowNull: false, onDelete: 'CASCADE' })
-  privilegeID: number;
+  @ApiProperty({ example: 'ADMIN', description: 'unique permission' })
+  @Column({ type: DataType.STRING, allowNull: false, onDelete: 'CASCADE' })
+  permission: string;
 
   @ApiProperty({
     example: '$2a$10$.DLLyE6GOFk2reMZml751eutkcrNawX2lCgqz0bXda55WYDZrLOcC',
@@ -82,11 +89,11 @@ export class User extends Model<User, UserFields>{
 
   @ApiProperty({ example: 'for spam', description: 'fake user' })
   @Column({ type: DataType.STRING, allowNull: true, defaultValue: null })
-  banReason: string;
+  ban_reason: string;
 
   @ApiProperty({ example: null, description: 'user paid commissions' })
   @Column({ type: DataType.STRING, allowNull: true, defaultValue: null })
-  unbanReason: string;
+  unban_reason: string;
 
   @ApiProperty({ example: true, description: 'is address is active' })
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
@@ -94,13 +101,34 @@ export class User extends Model<User, UserFields>{
 
   @ApiProperty({ example: '38', description: "delaware's branch identifier" })
   @Column({ type: DataType.INTEGER, allowNull: true })
-  branchID: number;
+  branch_id: number;
 
   @ApiProperty({ example: 'true', description: 'user uses 2 factor authentication' })
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
-  twoFA: boolean;
+  two_fa: boolean;
 
   @ApiProperty({ example: '1826', description: "user's identifier in bitrix system" })
   @Column({ type: DataType.INTEGER, unique: true, allowNull: true })
-  bitrixID: number;
+  bitrix_id: number;
+
+  @ApiProperty({
+    example: {
+      id: 1,
+      name: "user",
+      description: "role for user",
+      createdAt: "2021-11-12T01:20:50.480Z",
+      updatedAt: "2021-11-12T01:20:50.480Z",
+      UserRoles: {
+        id: 15,
+        roleID: 1,
+        userID: 30,
+        createdAt: "2021-11-13T22:31:21.118Z",
+        updatedAt: "2021-11-13T22:31:21.118Z"
+      }
+    },
+    type: 'object',
+    description: 'role identifier'
+  })
+  @HasMany(() => Customer)
+  customer: number;
 }

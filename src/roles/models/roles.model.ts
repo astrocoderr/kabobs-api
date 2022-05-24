@@ -1,8 +1,11 @@
-import { BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
+import {
+  BelongsToMany, Column, DataType, Model, Table
+} from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { User } from '../../users/models/user.model';
-import { UserRoles } from './user-roles.model';
+import { UserRolesAssociations } from './user-roles-associations.model';
+
 
 // role creation attributes
 interface RoleFields {
@@ -34,6 +37,6 @@ export class Role extends Model<Role, RoleFields>{
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
   active: boolean;
 
-  @BelongsToMany(() => User, () => UserRoles)
+  @BelongsToMany(() => User, () => UserRolesAssociations)
   user: User[]
 }
